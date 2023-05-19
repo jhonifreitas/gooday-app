@@ -40,6 +40,7 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
         return UtilController(context: context)
             .message('As senhas devem ser iguais!');
       }
+      _formKey.currentState!.save();
       UtilController(context: context).loading('Alterando...');
       // Navigator.of(context).pop();
       // Navigator.pushNamed(context, '/');
@@ -84,7 +85,7 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      FormFieldWidget(
+                      FormFieldCustom(
                         label: 'Senha',
                         controller: _passwordCtrl,
                         isRequired: true,
@@ -96,7 +97,7 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
                           onPressed: _onTogglePass,
                         ),
                       ),
-                      FormFieldWidget(
+                      FormFieldCustom(
                         label: 'Confirmar Senha',
                         controller: _passwordConfirmCtrl,
                         isRequired: true,
@@ -110,7 +111,7 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: ButtonWidget(
+                        child: ButtonCustom(
                           text: 'Alterar senha',
                           onPressed: () => _onSubmit(),
                         ),

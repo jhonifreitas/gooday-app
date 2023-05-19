@@ -21,6 +21,7 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       UtilController(context: context).loading('Enviado...');
       // Navigator.of(context).pop();
       // Navigator.pushNamed(context, '/');
@@ -68,7 +69,7 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      FormFieldWidget(
+                      FormFieldCustom(
                         label: 'E-mail',
                         controller: _emailCtrl,
                         isRequired: true,
@@ -76,7 +77,7 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: ButtonWidget(
+                        child: ButtonCustom(
                           text: 'Avançar',
                           onPressed: () => _onSubmit(),
                         ),

@@ -35,6 +35,7 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       UtilController(context: context).loading('Entrando...');
       // Navigator.of(context).pop();
       // Navigator.pushNamed(context, '/');
@@ -74,13 +75,13 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      FormFieldWidget(
+                      FormFieldCustom(
                         label: 'E-mail',
                         controller: _emailCtrl,
                         isRequired: true,
                         inputType: TextInputType.emailAddress,
                       ),
-                      FormFieldWidget(
+                      FormFieldCustom(
                         label: 'Senha',
                         controller: _passwordCtrl,
                         isRequired: true,
@@ -107,7 +108,7 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 20),
-                        child: ButtonWidget(
+                        child: ButtonCustom(
                           text: 'Entrar',
                           onPressed: () => _onSubmit(),
                         ),

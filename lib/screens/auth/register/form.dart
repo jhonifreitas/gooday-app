@@ -34,7 +34,7 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
       _formKey.currentState!.save();
       // UtilController(context: context).loading('Entrando...');
       // Navigator.of(context).pop();
-      // Navigator.pushNamed(context, '/');
+      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
     } else {
       UtilController(context: context)
           .message('Verifique os campos destacados!');
@@ -101,25 +101,26 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                     autovalidateMode: AutovalidateMode.always,
                     child: Column(
                       children: [
-                        FormFieldWidget(
+                        FormFieldCustom(
                           label: 'Nome',
                           controller: _nameCtrl,
                           isRequired: true,
                         ),
-                        FormFieldWidget(
+                        FormFieldCustom(
                           label: 'Celular',
                           controller: _phoneCtrl,
                           isRequired: true,
+                          minLength: 15,
                           inputType: TextInputType.phone,
                           mask: '(##) #####-####',
                         ),
-                        FormFieldWidget(
+                        FormFieldCustom(
                           label: 'E-mail',
                           controller: _emailCtrl,
                           isRequired: true,
                           inputType: TextInputType.emailAddress,
                         ),
-                        FormFieldWidget(
+                        FormFieldCustom(
                           label: 'Senha',
                           controller: _passwordCtrl,
                           isRequired: true,
@@ -127,8 +128,8 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: ButtonWidget(
-                            text: 'Entrar',
+                          child: ButtonCustom(
+                            text: 'Avançar',
                             onPressed: () => _onSubmit(),
                           ),
                         )
