@@ -8,7 +8,7 @@ import 'package:gooday/screens/auth/forgot_password.dart';
 import 'package:gooday/screens/auth/register/anamnesis.dart';
 
 class Routes {
-  static const initalRoute = '/introducao';
+  static const initalRoute = '/';
 
   static final routes = {
     '/': (context) => const HomeScreen(),
