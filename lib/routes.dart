@@ -1,5 +1,4 @@
 import 'package:gooday/screens/home.dart';
-
 import 'package:gooday/screens/intro.dart';
 import 'package:gooday/screens/auth/login.dart';
 import 'package:gooday/screens/auth/new_password.dart';

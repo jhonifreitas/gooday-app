@@ -15,27 +15,33 @@ class MyApp extends StatelessWidget {
       title: 'Gooday',
       routes: Routes.routes,
       initialRoute: Routes.initalRoute,
-      theme: ThemeData(
-        useMaterial3: true,
-        dialogBackgroundColor: Colors.white,
-        scaffoldBackgroundColor: Colors.white,
-        colorSchemeSeed: const Color(0xFF115AA7),
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(
-            fontSize: 26.0,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF115AA7),
-          ),
-          titleMedium: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF115AA7),
-          ),
-          titleSmall: TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF115AA7),
-          ),
+      theme: _theme(),
+    );
+  }
+
+  ThemeData _theme() {
+    return ThemeData(
+      useMaterial3: true,
+      dialogBackgroundColor: Colors.white,
+      scaffoldBackgroundColor: Colors.white,
+      colorSchemeSeed: const Color(0xFF115AA7),
+      appBarTheme: const AppBarTheme(titleTextStyle: TextStyle(fontSize: 18)),
+      listTileTheme: const ListTileThemeData(textColor: Colors.black),
+      textTheme: const TextTheme(
+        titleLarge: TextStyle(
+          fontSize: 26.0,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF115AA7),
+        ),
+        titleMedium: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF115AA7),
+        ),
+        titleSmall: TextStyle(
+          fontSize: 14.0,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF115AA7),
         ),
       ),
     );

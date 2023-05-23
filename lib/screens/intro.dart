@@ -99,10 +99,7 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 30),
-            child: SvgPicture.asset(
-              'assets/images/logo.svg',
-              width: 150,
-            ),
+            child: SvgPicture.asset('assets/images/logo.svg', width: 150),
           ),
         ],
       );
@@ -132,10 +129,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40),
-      child: SvgPicture.asset(
-        'assets/images/logo-white.svg',
-        width: 120,
-      ),
+      child: SvgPicture.asset('assets/images/logo-white.svg', width: 120),
     );
   }
 
@@ -206,10 +200,7 @@ class _IntroScreenState extends State<IntroScreen> {
           Align(
             heightFactor: 0.3,
             alignment: const Alignment(0, 1.5),
-            child: Image.asset(
-              'assets/images/betty-intro.png',
-              width: 200,
-            ),
+            child: Image.asset('assets/images/betty-intro.png', width: 200),
           ),
           Text(
             'Antes de qualquer coisa, quero lhe apresentar o Gooday.',
