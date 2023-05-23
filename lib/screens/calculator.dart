@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CalculateScreen extends StatefulWidget {
-  const CalculateScreen({super.key});
+class CalculatorScreen extends StatefulWidget {
+  const CalculatorScreen({super.key});
 
   @override
-  State<CalculateScreen> createState() => _CalculateScreenState();
+  State<CalculatorScreen> createState() => _CalculatorScreenState();
 }
 
-class _CalculateScreenState extends State<CalculateScreen> {
+class _CalculatorScreenState extends State<CalculatorScreen> {
   void _goToUser() {}
 
   @override

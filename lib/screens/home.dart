@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:gooday/screens/task.dart';
+import 'package:gooday/screens/goal.dart';
 import 'package:gooday/screens/profile.dart';
 import 'package:gooday/screens/welcome.dart';
-import 'package:gooday/screens/calculate.dart';
+import 'package:gooday/screens/calculator.dart';
 import 'package:gooday/screens/notification.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentScreen = 0;
   final List<Widget> _screens = const [
     WelcomeScreen(),
-    CalculateScreen(),
-    TaskScreen(),
+    CalculatorScreen(),
+    GoalScreen(),
     NotificationScreen(),
     ProfileScreen()
   ];
@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: BottomNavigationBar(
                 onTap: _changePage,
                 currentIndex: _currentScreen,
+                elevation: 0,
                 showSelectedLabels: false,
                 selectedItemColor: const Color(0xFFF7C006),
                 unselectedItemColor: Theme.of(context).primaryColor,

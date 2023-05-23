@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:gooday/routes.dart';
 
@@ -11,10 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('pt_BR', null);
     return MaterialApp(
       title: 'Gooday',
       routes: Routes.routes,
       initialRoute: Routes.initalRoute,
+      locale: const Locale('br'),
       theme: _theme(),
     );
   }
@@ -25,8 +28,19 @@ class MyApp extends StatelessWidget {
       dialogBackgroundColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
       colorSchemeSeed: const Color(0xFF115AA7),
-      appBarTheme: const AppBarTheme(titleTextStyle: TextStyle(fontSize: 18)),
+      appBarTheme: const AppBarTheme(
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       listTileTheme: const ListTileThemeData(textColor: Colors.black),
+      cardTheme: const CardTheme(
+          color: Colors.white, surfaceTintColor: Colors.transparent),
+      progressIndicatorTheme:
+          ProgressIndicatorThemeData(linearTrackColor: Colors.grey.shade400),
       textTheme: const TextTheme(
         titleLarge: TextStyle(
           fontSize: 26.0,

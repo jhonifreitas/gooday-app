@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gooday/models/user.dart';
+import 'package:intl/intl.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -38,9 +39,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void _openNotification() {}
 
   String get _timeLabel {
-    String minute = _now.minute.toString();
-    if (_now.minute < 10) minute = '0$minute';
-    return '${_now.hour}:$minute';
+    return DateFormat('H:mm').format(_now);
   }
 
   @override
