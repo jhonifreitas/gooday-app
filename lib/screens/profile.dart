@@ -20,154 +20,149 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(bottom: 80),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 30),
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage('assets/images/background.png'),
-                ),
-              ),
-              child: Column(
-                children: [
-                  AppBarCustom(
-                    prefix: SvgPicture.asset(
-                      'assets/icons/user.svg',
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    title: const Text('Meu Perfil',
-                        style: TextStyle(color: Colors.white)),
-                    suffix: SvgPicture.asset(
-                      width: 20,
-                      'assets/icons/edit-square.svg',
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                  _ProfileImage(image: _user?.image),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      '${_user?.name}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+      padding: const EdgeInsets.only(bottom: 80),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(bottom: 30),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage('assets/images/background.png'),
               ),
             ),
-            Transform.translate(
-              offset: const Offset(0, -25),
-              child: Card(
-                elevation: 15,
-                clipBehavior: Clip.hardEdge,
-                margin: const EdgeInsets.symmetric(horizontal: 25),
-                child: ListTile(
-                  onTap: _goToGoodies,
-                  title: Row(
-                    children: [
-                      SvgPicture.asset('assets/images/logo.svg', width: 80),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: SvgPicture.asset('assets/icons/coin.svg',
-                            width: 30),
-                      ),
-                      Text(
-                        '$_coins coins',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal, fontSize: 16),
-                      )
-                    ],
+            child: Column(
+              children: [
+                AppBarCustom(
+                  prefix: SvgPicture.asset(
+                    'assets/icons/user.svg',
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
                   ),
-                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                  title: const Text('Meu Perfil',
+                      style: TextStyle(color: Colors.white)),
+                  suffix: SvgPicture.asset(
+                    width: 20,
+                    'assets/icons/edit-square.svg',
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
-              ),
+                _ProfileImage(image: _user?.image),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    '${_user?.name}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Card(
-                elevation: 15,
-                clipBehavior: Clip.hardEdge,
-                child: Column(
+          ),
+          Transform.translate(
+            offset: const Offset(0, -25),
+            child: Card(
+              elevation: 15,
+              clipBehavior: Clip.hardEdge,
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              child: ListTile(
+                onTap: _goToGoodies,
+                title: Row(
                   children: [
-                    _ProfileListTile(
-                      text: 'Notificações',
-                      icon: const Icon(Icons.notifications_active,
-                          size: 15, color: Colors.white),
-                      onTap: () {},
+                    SvgPicture.asset('assets/images/logo.svg', width: 80),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child:
+                          SvgPicture.asset('assets/icons/coin.svg', width: 30),
                     ),
-                    _ProfileListTile(
-                      text: 'Conta',
-                      icon:
-                          const Icon(Icons.face, size: 15, color: Colors.white),
-                      onTap: () {},
-                    ),
-                    _ProfileListTile(
-                      text: 'Privacidade',
-                      icon: const Icon(Icons.visibility,
-                          size: 15, color: Colors.white),
-                      onTap: () {},
-                    ),
-                    _ProfileListTile(
-                      text: 'Segurança',
-                      icon:
-                          const Icon(Icons.lock, size: 15, color: Colors.white),
-                      onTap: () {},
-                    ),
-                    _ProfileListTile(
-                      text: 'Ajuda',
-                      icon: const Icon(Icons.question_mark,
-                          size: 15, color: Colors.white),
-                      onTap: () {},
-                    ),
-                    _ProfileListTile(
-                      text: 'Suporte',
-                      icon: Padding(
-                        padding: const EdgeInsets.all(3),
-                        child: SvgPicture.asset('assets/icons/logo-white.svg'),
-                      ),
-                      onTap: () {},
+                    Text(
+                      '$_coins coins',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 16),
                     )
                   ],
                 ),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-              child: Card(
-                elevation: 15,
-                clipBehavior: Clip.hardEdge,
-                child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  title: const Text(
-                    'Configurar Assistente Virtual',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Card(
+              elevation: 15,
+              clipBehavior: Clip.hardEdge,
+              child: Column(
+                children: [
+                  _ProfileListTile(
+                    text: 'Notificações',
+                    icon: const Icon(Icons.notifications_active,
+                        size: 15, color: Colors.white),
+                    onTap: () {},
                   ),
-                  leading: Image.asset('assets/images/betty-avatar.png'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
-                ),
+                  _ProfileListTile(
+                    text: 'Conta',
+                    icon: const Icon(Icons.face, size: 15, color: Colors.white),
+                    onTap: () {},
+                  ),
+                  _ProfileListTile(
+                    text: 'Privacidade',
+                    icon: const Icon(Icons.visibility,
+                        size: 15, color: Colors.white),
+                    onTap: () {},
+                  ),
+                  _ProfileListTile(
+                    text: 'Segurança',
+                    icon: const Icon(Icons.lock, size: 15, color: Colors.white),
+                    onTap: () {},
+                  ),
+                  _ProfileListTile(
+                    text: 'Ajuda',
+                    icon: const Icon(Icons.question_mark,
+                        size: 15, color: Colors.white),
+                    onTap: () {},
+                  ),
+                  _ProfileListTile(
+                    text: 'Suporte',
+                    icon: Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: SvgPicture.asset('assets/icons/logo-white.svg'),
+                    ),
+                    onTap: () {},
+                  )
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            child: Card(
+              elevation: 15,
+              clipBehavior: Clip.hardEdge,
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                title: const Text(
+                  'Configurar Assistente Virtual',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                leading: Image.asset('assets/images/betty-avatar.png'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {},
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

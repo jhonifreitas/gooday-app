@@ -43,64 +43,59 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          padding: const EdgeInsets.only(bottom: 80),
-          child: Column(
-            children: [
-              AppBarCustom(
-                prefix: SvgPicture.asset('assets/icons/bell.svg'),
-                title: const Text('Lembrete de Medicamentos'),
-                suffix: SvgPicture.asset(width: 20, 'assets/icons/coin.svg'),
+        Column(
+          children: [
+            AppBarCustom(
+              prefix: SvgPicture.asset('assets/icons/bell.svg'),
+              title: const Text('Lembrete de Medicamentos'),
+              suffix: SvgPicture.asset(width: 20, 'assets/icons/coin.svg'),
+            ),
+            Container(
+              decoration: BoxDecoration(color: Colors.grey.shade300),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: _goToPrev,
+                    icon: const Icon(Icons.arrow_left),
+                  ),
+                  Text(_getDateFullLabel),
+                  IconButton(
+                    onPressed: _goToNext,
+                    icon: const Icon(Icons.arrow_right),
+                  )
+                ],
               ),
-              Container(
-                decoration: BoxDecoration(color: Colors.grey.shade300),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: _goToPrev,
-                      icon: const Icon(Icons.arrow_left),
-                    ),
-                    Text(_getDateFullLabel),
-                    IconButton(
-                      onPressed: _goToNext,
-                      icon: const Icon(Icons.arrow_right),
-                    )
-                  ],
-                ),
-              ),
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text.rich(
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.only(
+                    top: 20, bottom: 160, left: 20, right: 20),
+                children: [
+                  Container(
+                    alignment: Alignment.topLeft,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text.rich(
+                      TextSpan(
+                        text: '',
+                        children: [
                           TextSpan(
-                            text: '',
-                            children: [
-                              TextSpan(
-                                text: 'Hoje '.toUpperCase(),
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              TextSpan(
-                                text: '| $_getDateLabel',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                            text: 'Hoje '.toUpperCase(),
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                        ),
+                          TextSpan(
+                            text: '| $_getDateLabel',
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ],
                       ),
                     ),
-                    _NotificationCard(),
-                    _NotificationCard(),
-                  ],
-                ),
+                  ),
+                  _NotificationCard(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Positioned(
           right: 20,
@@ -145,7 +140,6 @@ class _NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 100,
