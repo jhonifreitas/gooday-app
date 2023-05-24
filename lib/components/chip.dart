@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ChipCustom extends StatelessWidget {
-  final String text;
-  final bool selected;
-  final Function(bool)? onSelected;
-
   const ChipCustom({
     super.key,
     required this.text,
     required this.selected,
     this.onSelected,
   });
+
+  final String text;
+  final bool selected;
+  final void Function(bool)? onSelected;
 
   @override
   Widget build(BuildContext context) {

@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
-
+import 'package:gooday/models/option.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-class Option {
-  final String id;
-  final String name;
-
-  const Option({required this.id, required this.name});
-}
-
 class FormFieldCustom extends StatelessWidget {
+  const FormFieldCustom({
+    super.key,
+    required this.label,
+    required this.controller,
+    this.inputType,
+    this.mask,
+    this.obscureText = false,
+    this.isRequired = false,
+    this.isDisabled = false,
+    this.isDropdown = false,
+    this.maxLength,
+    this.minLength,
+    this.options,
+    this.onChange,
+    this.suffixIcon,
+    this.prefixIcon,
+  });
+
   final String label;
   final TextEditingController controller;
   final TextInputType? inputType;
@@ -28,24 +39,6 @@ class FormFieldCustom extends StatelessWidget {
   final int? minLength;
 
   final ValueChanged<String?>? onChange;
-
-  const FormFieldCustom({
-    super.key,
-    required this.label,
-    required this.controller,
-    this.inputType,
-    this.mask,
-    this.obscureText = false,
-    this.isRequired = false,
-    this.isDisabled = false,
-    this.isDropdown = false,
-    this.maxLength,
-    this.minLength,
-    this.options,
-    this.onChange,
-    this.suffixIcon,
-    this.prefixIcon,
-  });
 
   String? _valiation(String? value) {
     if (isRequired && (value == null || value.isEmpty)) {
@@ -82,7 +75,17 @@ class FormFieldCustom extends StatelessWidget {
       value: controller.value.text != "" ? controller.value.text : null,
       items: [
         for (var option in options!)
-          DropdownMenuItem(value: option.id, child: Text(option.name))
+          DropdownMenuItem(
+            value: option.id,
+            child: Text(
+              option.name,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          )
       ],
       focusColor: Colors.white,
       decoration: InputDecoration(labelText: label),

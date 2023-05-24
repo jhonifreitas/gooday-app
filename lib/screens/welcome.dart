@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gooday/models/user.dart';
-import 'package:intl/intl.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -15,7 +15,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   User? _user;
-  int _temperature = 10;
+  double _temperature = 10;
   DateTime _now = DateTime.now();
 
   Timer? _timer;
@@ -36,12 +36,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.dispose();
   }
 
-  void _openNotification() {}
-
-  String get _timeLabel {
-    return DateFormat('H:mm').format(_now);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,26 +48,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
       child: Column(
         children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(bottom: 22, top: 10, left: 15, right: 20),
-            child: AppBar(
-              centerTitle: false,
-              backgroundColor: Colors.transparent,
-              title:
-                  SvgPicture.asset(width: 80, 'assets/images/logo-white.svg'),
-              actions: [
-                Text(
-                  '$_temperature ºC | $_timeLabel',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _WelcomeAppBar(temperature: _temperature, time: _now),
           Padding(
             padding: const EdgeInsets.only(bottom: 20, left: 30, right: 30),
             child: Align(
@@ -95,7 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
           ),
-          _notificationBuild(),
+          _WelcomeNotificationList(),
           Expanded(
             child: Image.asset('assets/images/betty.png'),
           )
@@ -103,8 +78,46 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
     );
   }
+}
 
-  Widget _notificationBuild() {
+class _WelcomeAppBar extends StatelessWidget {
+  const _WelcomeAppBar({required this.temperature, required this.time});
+
+  final DateTime time;
+  final double temperature;
+
+  String get _timeLabel {
+    return DateFormat('H:mm').format(time);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 22, top: 10, left: 15, right: 20),
+      child: AppBar(
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        title: SvgPicture.asset(width: 80, 'assets/images/logo-white.svg'),
+        actions: [
+          Text(
+            '$temperature ºC | $_timeLabel',
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WelcomeNotificationList extends StatelessWidget {
+  void _openNotification() {}
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: 170,
       padding: const EdgeInsets.only(bottom: 20),
@@ -132,12 +145,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
                           Text(
-                            'Refeições',
-                            style: TextStyle(color: Colors.white),
+                            'Medicamento',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                           Text(
                             '03:00',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 12),
                           )
                         ],
                       ),
@@ -149,8 +162,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                               color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -161,17 +175,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
-                              children: const [
+                              children: [
                                 Padding(
-                                  padding: EdgeInsets.only(right: 10),
-                                  child: Icon(
-                                    Icons.fastfood,
-                                    color: Colors.white,
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: SvgPicture.asset(
+                                    width: 25,
+                                    'assets/icons/bell.svg',
+                                    colorFilter: const ColorFilter.mode(
+                                        Colors.white, BlendMode.srcIn),
                                   ),
                                 ),
-                                Text(
-                                  'Meu progresso',
-                                  style: TextStyle(color: Colors.white),
+                                const Text(
+                                  'Lembretes',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
                                 )
                               ],
                             ),

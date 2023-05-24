@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppBarCustom extends StatelessWidget {
-  final Widget title;
-  final bool titleCenter;
-  final Widget? prefix;
-  final Widget? suffix;
-
   const AppBarCustom({
     super.key,
     required this.title,
@@ -13,6 +8,11 @@ class AppBarCustom extends StatelessWidget {
     this.prefix,
     this.suffix,
   });
+
+  final Widget title;
+  final bool titleCenter;
+  final Widget? prefix;
+  final Widget? suffix;
 
   @override
   Widget build(BuildContext context) {

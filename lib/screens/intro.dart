@@ -15,14 +15,6 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   int _step = 0;
 
-  void _openWebsite() {}
-
-  void _openFacebook() {}
-
-  void _openTwitter() {}
-
-  void _openInstagram() {}
-
   void _goToHome() {
     Navigator.pushNamed(context, '/');
   }
@@ -41,12 +33,12 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget stepBuild = _step1Build();
+    Widget stepBuild = _IntroStep1(onNext: _goToNext);
 
     if (_step == 1) {
-      stepBuild = _step2Build();
+      stepBuild = _IntroStep2();
     } else if (_step == 2) {
-      stepBuild = _step3Build();
+      stepBuild = _IntroStep3();
     }
 
     return Scaffold(
@@ -65,18 +57,27 @@ class _IntroScreenState extends State<IntroScreen> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: _headerBuild(),
+              child: _IntroHeader(step: _step, onSkip: _goToHome),
             ),
             stepBuild,
-            if (_step > 0) _footerBuild(),
+            if (_step > 0)
+              _IntroFooter(step: _step, onBack: _goToBack, onNext: _goToNext),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _headerBuild() {
-    if (_step == 1) {
+class _IntroHeader extends StatelessWidget {
+  const _IntroHeader({required this.step, required this.onSkip});
+
+  final int step;
+  final VoidCallback onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    if (step == 1) {
       return Column(
         children: [
           Align(
@@ -92,7 +93,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     Color.fromRGBO(231, 231, 231, 1),
                   ),
                 ),
-                onPressed: _goToHome,
+                onPressed: onSkip,
                 child: const Text('Pular'),
               ),
             ),
@@ -103,7 +104,7 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
         ],
       );
-    } else if (_step == 2) {
+    } else if (step == 2) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -119,7 +120,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   Color.fromRGBO(231, 231, 231, 1),
                 ),
               ),
-              onPressed: _goToHome,
+              onPressed: onSkip,
               child: const Text('Pular'),
             ),
           ),
@@ -132,8 +133,18 @@ class _IntroScreenState extends State<IntroScreen> {
       child: SvgPicture.asset('assets/images/logo-white.svg', width: 120),
     );
   }
+}
 
-  Widget _footerBuild() {
+class _IntroFooter extends StatelessWidget {
+  const _IntroFooter(
+      {required this.step, required this.onNext, required this.onBack});
+
+  final int step;
+  final VoidCallback onNext;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
       child: Row(
@@ -151,7 +162,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 color: Theme.of(context).primaryColor,
               ),
             ),
-            onPressed: _goToBack,
+            onPressed: onBack,
             child: Icon(
               Icons.arrow_back,
               color: Theme.of(context).primaryColor,
@@ -162,7 +173,7 @@ class _IntroScreenState extends State<IntroScreen> {
             children: [
               for (var i = 1; i < 3; i++)
                 Icon(
-                  i == _step
+                  i == step
                       ? Icons.fiber_manual_record
                       : Icons.fiber_manual_record_outlined,
                   size: 12,
@@ -177,7 +188,7 @@ class _IntroScreenState extends State<IntroScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
-            onPressed: _goToNext,
+            onPressed: onNext,
             child: Icon(
               Icons.arrow_forward,
               color: Theme.of(context).colorScheme.onPrimary,
@@ -187,8 +198,15 @@ class _IntroScreenState extends State<IntroScreen> {
       ),
     );
   }
+}
 
-  Widget _step1Build() {
+class _IntroStep1 extends StatelessWidget {
+  const _IntroStep1({required this.onNext});
+
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
       decoration: const BoxDecoration(
@@ -218,14 +236,17 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
           ButtonCustom(
             text: 'Avançar',
-            onPressed: _goToNext,
+            onPressed: onNext,
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _step2Build() {
+class _IntroStep2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
       child: Column(
@@ -242,7 +263,8 @@ class _IntroScreenState extends State<IntroScreen> {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
               'Percebemos que pessoas com diabetes têm dificuldades em '
-              'gerenciar o diabetes e precisam de orientações que vão além da consulta médica.',
+              'gerenciar o diabetes e precisam de orientações que vão além da '
+              'consulta médica.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -255,10 +277,21 @@ class _IntroScreenState extends State<IntroScreen> {
       ),
     );
   }
+}
 
-  Widget _step3Build() {
-    final youtubeCtrl = YoutubePlayerController(initialVideoId: 'S_bnutPbyWc');
+class _IntroStep3 extends StatelessWidget {
+  final _youtubeCtrl = YoutubePlayerController(initialVideoId: 'S_bnutPbyWc');
 
+  void _openWebsite() {}
+
+  void _openFacebook() {}
+
+  void _openTwitter() {}
+
+  void _openInstagram() {}
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
       child: Column(
@@ -293,7 +326,7 @@ class _IntroScreenState extends State<IntroScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: YoutubePlayer(
-                controller: youtubeCtrl,
+                controller: _youtubeCtrl,
               ),
             ),
           ),

@@ -40,9 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
           bottom: 0,
           child: Container(
             decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(blurRadius: 10, color: Colors.grey.shade300),
-              ],
+              boxShadow: _currentScreen > 0
+                  ? [BoxShadow(blurRadius: 10, color: Colors.grey.shade300)]
+                  : null,
             ),
             child: ClipRRect(
               borderRadius: const BorderRadius.only(

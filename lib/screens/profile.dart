@@ -15,9 +15,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   User? _user;
   int _coins = 0;
 
-  void _goToUser() {}
-
-  void _onImageUpload() {}
+  void _goToGoodies() {}
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+              padding: const EdgeInsets.only(bottom: 30),
               decoration: const BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
@@ -56,52 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  Stack(
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: Material(
-                          clipBehavior: Clip.hardEdge,
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(50),
-                          child: InkWell(
-                            onTap: _onImageUpload,
-                            splashColor: Colors.black.withAlpha(30),
-                            child: Padding(
-                              padding: const EdgeInsets.all(30),
-                              child: SvgPicture.asset(
-                                'assets/icons/user.svg',
-                                colorFilter: const ColorFilter.mode(
-                                  Colors.white,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        width: 30,
-                        height: 30,
-                        child: IconButton(
-                          padding: const EdgeInsets.all(6),
-                          onPressed: _onImageUpload,
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll<Color>(
-                                Color(0xFFF7C006)),
-                          ),
-                          icon: const Icon(
-                            size: 15,
-                            color: Colors.white,
-                            Icons.photo_camera_outlined,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                  _ProfileImage(image: _user?.image),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
@@ -113,83 +66,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  Align(
-                    heightFactor: 0.5,
-                    alignment: const Alignment(0, -1),
-                    child: Card(
-                      elevation: 15,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                SvgPicture.asset('assets/images/logo.svg',
-                                    width: 80),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: SvgPicture.asset(
-                                      'assets/icons/coin.svg',
-                                      width: 30),
-                                ),
-                                Text('$_coins coins')
-                              ],
-                            ),
-                            const Icon(Icons.chevron_right, color: Colors.grey)
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
+            Transform.translate(
+              offset: const Offset(0, -25),
+              child: Card(
+                elevation: 15,
+                clipBehavior: Clip.hardEdge,
+                margin: const EdgeInsets.symmetric(horizontal: 25),
+                child: ListTile(
+                  onTap: _goToGoodies,
+                  title: Row(
+                    children: [
+                      SvgPicture.asset('assets/images/logo.svg', width: 80),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SvgPicture.asset('assets/icons/coin.svg',
+                            width: 30),
+                      ),
+                      Text(
+                        '$_coins coins',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, fontSize: 16),
+                      )
+                    ],
+                  ),
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Card(
                 elevation: 15,
                 clipBehavior: Clip.hardEdge,
                 child: Column(
                   children: [
-                    _listTile(
-                      'Notificações',
-                      () {},
-                      const Icon(Icons.notifications_active,
+                    _ProfileListTile(
+                      text: 'Notificações',
+                      icon: const Icon(Icons.notifications_active,
                           size: 15, color: Colors.white),
+                      onTap: () {},
                     ),
-                    _listTile(
-                      'Conta',
-                      () {},
-                      const Icon(Icons.face, size: 15, color: Colors.white),
+                    _ProfileListTile(
+                      text: 'Conta',
+                      icon:
+                          const Icon(Icons.face, size: 15, color: Colors.white),
+                      onTap: () {},
                     ),
-                    _listTile(
-                      'Privacidade',
-                      () {},
-                      const Icon(Icons.visibility,
+                    _ProfileListTile(
+                      text: 'Privacidade',
+                      icon: const Icon(Icons.visibility,
                           size: 15, color: Colors.white),
+                      onTap: () {},
                     ),
-                    _listTile(
-                      'Segurança',
-                      () {},
-                      const Icon(Icons.lock, size: 15, color: Colors.white),
+                    _ProfileListTile(
+                      text: 'Segurança',
+                      icon:
+                          const Icon(Icons.lock, size: 15, color: Colors.white),
+                      onTap: () {},
                     ),
-                    _listTile(
-                      'Ajuda',
-                      () {},
-                      const Icon(Icons.question_mark,
+                    _ProfileListTile(
+                      text: 'Ajuda',
+                      icon: const Icon(Icons.question_mark,
                           size: 15, color: Colors.white),
+                      onTap: () {},
                     ),
-                    _listTile(
-                      'Suporte',
-                      () {},
-                      Padding(
+                    _ProfileListTile(
+                      text: 'Suporte',
+                      icon: Padding(
                         padding: const EdgeInsets.all(3),
                         child: SvgPicture.asset('assets/icons/logo-white.svg'),
                       ),
-                    ),
+                      onTap: () {},
+                    )
                   ],
                 ),
               ),
@@ -220,8 +171,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+}
 
-  Widget _listTile(String text, VoidCallback onTap, Widget icon) {
+class _ProfileImage extends StatelessWidget {
+  const _ProfileImage({this.image});
+
+  final String? image;
+
+  void _onUpload() {}
+
+  @override
+  Widget build(BuildContext context) {
+    if (image == null) {
+      return SizedBox(
+        width: 100,
+        height: 100,
+        child: FloatingActionButton(
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          tooltip: 'Enviar foto',
+          splashColor: Colors.white.withOpacity(0.2),
+          heroTag: 'profile-btn-image',
+          backgroundColor: Colors.transparent,
+          shape: const StadiumBorder(
+            side: BorderSide(width: 1, color: Colors.white),
+          ),
+          onPressed: _onUpload,
+          child: const Icon(Icons.camera_alt_outlined,
+              color: Colors.white, size: 40),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        Material(
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink.image(
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            image: const AssetImage('assets/images/avatar.png'),
+            child: InkWell(onTap: _onUpload),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          width: 30,
+          height: 30,
+          child: IconButton(
+            padding: const EdgeInsets.all(6),
+            onPressed: _onUpload,
+            style: const ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll<Color>(Color(0xFFF7C006)),
+            ),
+            icon: const Icon(
+              size: 15,
+              color: Colors.white,
+              Icons.photo_camera_outlined,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class _ProfileListTile extends StatelessWidget {
+  const _ProfileListTile(
+      {required this.text, required this.icon, required this.onTap});
+
+  final String text;
+  final Widget icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return ListTile(
       title: Text(
         text,

@@ -28,12 +28,6 @@ class _GoalScreenState extends State<GoalScreen> {
     return "$week, ${_date.day} de $month".toUpperCase();
   }
 
-  String get _lastUpdateLabel {
-    final month = DateFormat('MMMM', 'pt_BR').format(_lastUpdate);
-    final time = DateFormat('H:mm').format(_lastUpdate);
-    return "${_lastUpdate.day} de $month, $time";
-  }
-
   int get _goalTotal {
     return 70;
   }
@@ -84,117 +78,133 @@ class _GoalScreenState extends State<GoalScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(bottom: 130),
-            child: Column(
-              children: [
-                AppBarCustom(
-                  prefix: SvgPicture.asset('assets/icons/heart.svg'),
-                  title: const Text('Registro de Atividades Físicas'),
-                  suffix: SvgPicture.asset('assets/icons/coin.svg', width: 20),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(color: Colors.grey.shade300),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                          onPressed: _goToPrev,
-                          icon: const Icon(Icons.arrow_left)),
-                      Text(_getDateLabel),
-                      IconButton(
-                          onPressed: _goToNext,
-                          icon: const Icon(Icons.arrow_right))
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Objetivo Diário',
-                                style: Theme.of(context).textTheme.titleMedium),
-                            TextButton(
-                              onPressed: _goToDaily,
-                              child: const Text('Ver mais'),
-                            )
-                          ],
-                        ),
-                      ),
-                      _cardGoal(
-                        'assets/icons/target.svg',
-                        _goalTotal / 100,
-                        '$_goalTotal%',
-                        'concluído',
-                        SvgPicture.asset('assets/icons/gift.svg', width: 24),
-                        Theme.of(context).primaryColor,
-                      ),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text('Visão Geral',
-                              style: Theme.of(context).textTheme.titleMedium),
-                        ),
-                      ),
-                      _cardGoal(
-                        'assets/icons/shoe.svg',
-                        1,
-                        _getStepLabel,
-                        'passos',
-                        const Text('5000',
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        Colors.green,
-                      ),
-                      _cardGoal(
-                        'assets/icons/pin.svg',
-                        0.5,
-                        _getDistanceLabel,
-                        'Km',
-                        const Text('4',
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        Colors.yellow,
-                      ),
-                      _cardGoal(
-                        'assets/icons/fire.svg',
-                        0.945,
-                        _getCalorieLabel,
-                        'Calorias',
-                        const Text('-1000',
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        Colors.red,
-                      ),
-                      _cardGoal(
-                        'assets/icons/clock-race.svg',
-                        1,
-                        _getMinuteLabel,
-                        'minutos ativos',
-                        const Text('70',
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
-                        Colors.purple,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+        Column(
+          children: [
+            AppBarCustom(
+              prefix: SvgPicture.asset('assets/icons/heart.svg'),
+              title: const Text('Registro de Atividades Físicas'),
+              suffix: SvgPicture.asset('assets/icons/coin.svg', width: 20),
             ),
-          ),
+            Container(
+              decoration: BoxDecoration(color: Colors.grey.shade300),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: _goToPrev, icon: const Icon(Icons.arrow_left)),
+                  Text(_getDateLabel),
+                  IconButton(
+                      onPressed: _goToNext, icon: const Icon(Icons.arrow_right))
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.only(
+                    top: 20, bottom: 150, left: 20, right: 20),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Objetivo Diário',
+                            style: Theme.of(context).textTheme.titleMedium),
+                        TextButton(
+                          onPressed: _goToDaily,
+                          child: const Text('Ver mais'),
+                        )
+                      ],
+                    ),
+                  ),
+                  _GoalCard(
+                    iconAssets: 'assets/icons/target.svg',
+                    value: _goalTotal / 100,
+                    textValue: '$_goalTotal%',
+                    text: 'concluído',
+                    suffix:
+                        SvgPicture.asset('assets/icons/gift.svg', width: 24),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Text('Visão Geral',
+                          style: Theme.of(context).textTheme.titleMedium),
+                    ),
+                  ),
+                  _GoalCard(
+                    iconAssets: 'assets/icons/shoe.svg',
+                    value: 1,
+                    textValue: _getStepLabel,
+                    text: 'passos',
+                    suffix: const Text('5000',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    color: Colors.green,
+                  ),
+                  _GoalCard(
+                    iconAssets: 'assets/icons/pin.svg',
+                    value: 0.5,
+                    textValue: _getDistanceLabel,
+                    text: 'Km',
+                    suffix: const Text('4',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    color: Colors.yellow,
+                  ),
+                  _GoalCard(
+                    iconAssets: 'assets/icons/fire.svg',
+                    value: 0.945,
+                    textValue: _getCalorieLabel,
+                    text: 'Calorias',
+                    suffix: const Text('-1000',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    color: Colors.red,
+                  ),
+                  _GoalCard(
+                    iconAssets: 'assets/icons/clock-race.svg',
+                    value: 1,
+                    textValue: _getMinuteLabel,
+                    text: 'minutos ativos',
+                    suffix: const Text('70',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    color: Colors.purple,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        Positioned(bottom: 80, left: 10, right: 10, child: _card())
+        Positioned(
+          bottom: 80,
+          left: 10,
+          right: 10,
+          child: _GoalCardUpdate(onLoad: _loadData, lastUpdate: _lastUpdate),
+        )
       ],
     );
   }
+}
 
-  Widget _cardGoal(String iconAssets, double value, String textValue,
-      String text, Widget suffix, Color color) {
+class _GoalCard extends StatelessWidget {
+  const _GoalCard({
+    required this.iconAssets,
+    required this.value,
+    required this.textValue,
+    required this.text,
+    required this.suffix,
+    required this.color,
+  });
+
+  final String iconAssets;
+  final double value;
+  final String textValue;
+  final String text;
+  final Widget suffix;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 0,
       color: Colors.grey.shade200,
@@ -254,14 +264,28 @@ class _GoalScreenState extends State<GoalScreen> {
       ),
     );
   }
+}
 
-  Widget _card() {
+class _GoalCardUpdate extends StatelessWidget {
+  const _GoalCardUpdate({required this.onLoad, required this.lastUpdate});
+
+  final DateTime lastUpdate;
+  final VoidCallback onLoad;
+
+  String get _lastUpdateLabel {
+    final month = DateFormat('MMMM', 'pt_BR').format(lastUpdate);
+    final time = DateFormat('H:mm').format(lastUpdate);
+    return "${lastUpdate.day} de $month, $time";
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 10,
       margin: EdgeInsets.zero,
       clipBehavior: Clip.hardEdge,
       child: ListTile(
-        onTap: _loadData,
+        onTap: onLoad,
         leading: Image.asset(
           Platform.isIOS
               ? 'assets/icons/apple-health.png'

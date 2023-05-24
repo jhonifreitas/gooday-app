@@ -27,7 +27,7 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
 
   void _signInApple() {}
 
-  void _onUpload() {}
+  void _onImageUpload() {}
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
@@ -90,7 +90,7 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                         shape: const StadiumBorder(
                           side: BorderSide(width: 1, color: Colors.grey),
                         ),
-                        onPressed: _onUpload,
+                        onPressed: _onImageUpload,
                         child: const Icon(Icons.camera_alt_outlined,
                             color: Colors.grey, size: 40),
                       ),

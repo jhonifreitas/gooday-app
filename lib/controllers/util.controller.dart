@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class UtilController {
-  final BuildContext context;
-
   const UtilController({required this.context});
+
+  final BuildContext context;
 
   Future<void> loading([String? text]) {
     return showDialog<void>(
