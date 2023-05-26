@@ -72,23 +72,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 padding: const EdgeInsets.only(
                     top: 20, bottom: 160, left: 20, right: 20),
                 children: [
-                  Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Text.rich(
-                      TextSpan(
-                        text: '',
-                        children: [
-                          TextSpan(
-                            text: 'Hoje '.toUpperCase(),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          TextSpan(
-                            text: '| $_getDateLabel',
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Hoje '.toUpperCase(),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        TextSpan(
+                          text: '| $_getDateLabel',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ],
                     ),
                   ),
                   _NotificationCard(),
@@ -104,23 +99,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
             width: 70,
             height: 70,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
+              backgroundColor: const Color(0xFFF7C006),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50),
+                side: const BorderSide(width: 10, color: Colors.white),
               ),
               onPressed: _onEdit,
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF7C006),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: SvgPicture.asset(
-                  width: 30,
-                  'assets/icons/edit-square.svg',
-                  colorFilter:
-                      const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                ),
+              child: SvgPicture.asset(
+                width: 30,
+                'assets/icons/edit-square.svg',
+                colorFilter:
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               ),
             ),
           ),
@@ -211,8 +200,6 @@ class _NotificationCardListTile extends StatelessWidget {
         ),
         child: Checkbox(
           value: false,
-          side: BorderSide(width: 1, color: Colors.grey.shade400),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           onChanged: (value) {},
         ),
       ),

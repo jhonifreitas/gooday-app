@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-
 class IntroScreen2 extends StatefulWidget {
   const IntroScreen2({super.key});
 
@@ -23,7 +21,7 @@ class _IntroScreen2State extends State<IntroScreen2> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SvgPicture.asset('assets/images/logo.svg'),
+            Image.asset('assets/images/logo.png'),
             const SizedBox(height: 20),
             Column(
               children: [

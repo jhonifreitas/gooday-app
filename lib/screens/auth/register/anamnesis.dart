@@ -19,15 +19,19 @@ class _AuthRegisterAnamnesisScreenState
     extends State<AuthRegisterAnamnesisScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  int _step = 0;
+  int _currentPage = 0;
   final _ctrl = UserController();
+  final _pageCtrl = PageController();
 
-  void _onSubmit() {
+  void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // UtilController(context: context).loading('Entrando...');
-      // Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/introducao');
+      UtilController(context: context).loading('Entrando...');
+      await Future.delayed(const Duration(seconds: 5));
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, '/introducao');
+      }
     } else {
       UtilController(context: context)
           .message('Verifique os campos destacados!');
@@ -37,7 +41,6 @@ class _AuthRegisterAnamnesisScreenState
   void _onDiabete(bool? value) {
     setState(() {
       _ctrl.diabeteCtrl = value;
-      debugPrint(value.toString());
     });
   }
 
@@ -53,57 +56,66 @@ class _AuthRegisterAnamnesisScreenState
     });
   }
 
-  void _goToNext() {
-    if (_step > 0) {
-      _onSubmit();
-      return;
-    }
-
+  void _onPageChanged(int index) {
     setState(() {
-      _step++;
+      _currentPage = index;
     });
   }
 
+  void _goToNext() {
+    if (_currentPage == 1) {
+      _onSubmit();
+    } else {
+      _pageCtrl.nextPage(
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    }
+  }
+
   void _goToBack() {
-    setState(() {
-      _step--;
-    });
+    _pageCtrl.previousPage(
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget stepBuild =
-        _AuthRegisterAnamneseStep1(context: context, ctrl: _ctrl);
-
-    if (_step == 1) {
-      stepBuild = _AuthRegisterAnamneseStep2(
-        ctrl: _ctrl,
-        onDiabete: _onDiabete,
-        onDiabeteType: _onDiabeteType,
-        onInsulin: _onInsulin,
-      );
-    }
-
     return Scaffold(
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.symmetric(vertical: 30),
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.always,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 40),
-                child: SvgPicture.asset(
-                  'assets/images/logo.svg',
-                  width: 80,
+              Image.asset('assets/images/logo.png', width: 80),
+              const SizedBox(height: 40),
+              Expanded(
+                child: PageView(
+                  controller: _pageCtrl,
+                  onPageChanged: _onPageChanged,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: _AuthRegisterAnamneseStep1(
+                          context: context, ctrl: _ctrl),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: _AuthRegisterAnamneseStep2(
+                        ctrl: _ctrl,
+                        onDiabete: _onDiabete,
+                        onDiabeteType: _onDiabeteType,
+                        onInsulin: _onInsulin,
+                      ),
+                    )
+                  ],
                 ),
               ),
-              Flexible(child: stepBuild),
-              Padding(
-                padding: const EdgeInsets.only(top: 40),
+              const SizedBox(height: 40),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -116,13 +128,13 @@ class _AuthRegisterAnamnesisScreenState
                       shape: StadiumBorder(
                         side: BorderSide(
                             width: 1,
-                            color: _step > 0
+                            color: _currentPage > 0
                                 ? Theme.of(context).primaryColor
                                 : Colors.grey),
                       ),
-                      onPressed: _step > 0 ? () => _goToBack() : null,
+                      onPressed: _currentPage > 0 ? () => _goToBack() : null,
                       child: Icon(Icons.arrow_back,
-                          color: _step > 0
+                          color: _currentPage > 0
                               ? Theme.of(context).primaryColor
                               : Colors.grey),
                     ),
@@ -131,7 +143,7 @@ class _AuthRegisterAnamnesisScreenState
                       children: [
                         for (var i = 0; i < 2; i++)
                           Icon(
-                            i == _step
+                            i == _currentPage
                                 ? Icons.fiber_manual_record
                                 : Icons.fiber_manual_record_outlined,
                             size: 12,
@@ -148,7 +160,7 @@ class _AuthRegisterAnamnesisScreenState
                       ),
                       onPressed: () => _goToNext(),
                       child: Icon(
-                        Icons.arrow_forward,
+                        _currentPage < 1 ? Icons.arrow_forward : Icons.check,
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
@@ -208,20 +220,13 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text('Olá, ${ctrl.data.name}?',
-                    style: Theme.of(context).textTheme.titleLarge),
-              ),
-            ),
-            const Align(
-              alignment: Alignment.topLeft,
-              child: Text('Para finalizar seu cadastro, '
-                  'precisamos de mais algumas informações suas.'),
-            ),
+            Text('Olá, ${ctrl.data.name}?',
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            const Text('Para finalizar seu cadastro, '
+                'precisamos de mais algumas informações suas.'),
           ],
         ),
         Column(
@@ -234,16 +239,14 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                     controller: ctrl.dateBirthCtrl,
                   ),
                 ),
+                const SizedBox(width: 20),
                 SizedBox(
                   width: 140,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: FormFieldCustom(
-                      label: 'Sexo',
-                      controller: ctrl.sexCtrl,
-                      isDropdown: true,
-                      options: ctrl.sexList,
-                    ),
+                  child: FormFieldCustom(
+                    label: 'Sexo',
+                    controller: ctrl.sexCtrl,
+                    isDropdown: true,
+                    options: ctrl.sexList,
                   ),
                 ),
               ],
@@ -297,155 +300,129 @@ class _AuthRegisterAnamneseStep2 extends StatelessWidget {
   });
 
   final UserController ctrl;
-  final void Function(bool?) onDiabete;
-  final void Function(String?) onDiabeteType;
-  final void Function(bool?) onInsulin;
+  final ValueChanged<bool?> onDiabete;
+  final ValueChanged<String?> onDiabeteType;
+  final ValueChanged<bool?> onInsulin;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text('Você tem diabetes?',
-                      style: Theme.of(context).textTheme.titleLarge),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Você tem diabetes?',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 5),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                ChipCustom(
+                  text: 'Sim',
+                  selected: ctrl.diabeteCtrl != null
+                      ? ctrl.diabeteCtrl == true
+                      : false,
+                  onSelected: (value) =>
+                      value ? onDiabete(true) : onDiabete(null),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: ChipCustom(
-                        text: 'Sim',
-                        selected: ctrl.diabeteCtrl != null
-                            ? ctrl.diabeteCtrl == true
-                            : false,
-                        onSelected: (value) =>
-                            value ? onDiabete(true) : onDiabete(null),
-                      ),
-                    ),
-                    ChipCustom(
-                      text: 'Não',
-                      selected: ctrl.diabeteCtrl != null
-                          ? ctrl.diabeteCtrl == false
-                          : false,
-                      onSelected: (value) =>
-                          value ? onDiabete(false) : onDiabete(null),
-                    ),
-                  ],
+                const SizedBox(width: 10),
+                ChipCustom(
+                  text: 'Não',
+                  selected: ctrl.diabeteCtrl != null
+                      ? ctrl.diabeteCtrl == false
+                      : false,
+                  onSelected: (value) =>
+                      value ? onDiabete(false) : onDiabete(null),
                 ),
-              )
-            ],
-          ),
+              ],
+            )
+          ],
         ),
-        if (ctrl.diabeteCtrl == true)
-          Column(
+        const SizedBox(height: 20),
+        Visibility(
+          visible: ctrl.diabeteCtrl == true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text('Tipo'),
-                      ),
+              const Text('Tipo'),
+              const SizedBox(height: 5),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  for (var option in ctrl.diabeteTypeList)
+                    ChipCustom(
+                      text: option.name,
+                      selected: ctrl.diabeteTypeCtrl == option.id,
+                      onSelected: (value) => value
+                          ? onDiabeteType(option.id)
+                          : onDiabeteType(null),
                     ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          for (var option in ctrl.diabeteTypeList)
-                            ChipCustom(
-                              text: option.name,
-                              selected: ctrl.diabeteTypeCtrl == option.id,
-                              onSelected: (value) => value
-                                  ? onDiabeteType(option.id)
-                                  : onDiabeteType(null),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
-              if (ctrl.diabeteTypeCtrl != null)
-                Column(
+              const SizedBox(height: 20),
+              Visibility(
+                visible: ctrl.diabeteTypeCtrl != null,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(ctrl.diabeteTypeCtrl == 'type-1'
+                            ? 'Utiliza Bomba de Insulina?'
+                            : 'Utiliza Insulina?'),
+                        const SizedBox(height: 5),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            ChipCustom(
+                              text: 'Sim',
+                              selected: ctrl.insulinCtrl != null
+                                  ? ctrl.insulinCtrl == true
+                                  : false,
+                              onSelected: (value) =>
+                                  value ? onInsulin(true) : onInsulin(null),
+                            ),
+                            const SizedBox(width: 10),
+                            ChipCustom(
+                              text: 'Não',
+                              selected: ctrl.insulinCtrl != null
+                                  ? ctrl.insulinCtrl == false
+                                  : false,
+                              onSelected: (value) =>
+                                  value ? onInsulin(false) : onInsulin(null),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Visibility(
+                      visible: ctrl.insulinCtrl != null,
                       child: Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 5),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(ctrl.diabeteTypeCtrl == 'type-1'
-                                    ? 'Utiliza Bomba de Insulina?'
-                                    : 'Utiliza Insulina?')),
-                          ),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: ChipCustom(
-                                    text: 'Sim',
-                                    selected: ctrl.insulinCtrl != null
-                                        ? ctrl.insulinCtrl == true
-                                        : false,
-                                    onSelected: (value) => value
-                                        ? onInsulin(true)
-                                        : onInsulin(null),
-                                  ),
-                                ),
-                                ChipCustom(
-                                  text: 'Não',
-                                  selected: ctrl.insulinCtrl != null
-                                      ? ctrl.insulinCtrl == false
-                                      : false,
-                                  onSelected: (value) => value
-                                      ? onInsulin(false)
-                                      : onInsulin(null),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    if (ctrl.insulinCtrl != null)
-                      Column(
-                        children: [
-                          if ((ctrl.diabeteTypeCtrl == 'type-1' &&
-                                  ctrl.insulinCtrl == false) ||
-                              (ctrl.diabeteTypeCtrl == 'type-2' &&
-                                  ctrl.insulinCtrl == true))
-                            FormFieldCustom(
+                          Visibility(
+                            visible: (ctrl.diabeteTypeCtrl == 'type-1' &&
+                                    ctrl.insulinCtrl == false) ||
+                                (ctrl.diabeteTypeCtrl == 'type-2' &&
+                                    ctrl.insulinCtrl == true),
+                            child: FormFieldCustom(
                               label: 'Basal (Lenta)',
                               controller: ctrl.insulinSlowCtrl,
                               isDropdown: true,
                               options: ctrl.insulinSlowList,
                             ),
-                          if (!(ctrl.diabeteTypeCtrl == 'type-2' &&
-                              ctrl.insulinCtrl == false))
-                            FormFieldCustom(
+                          ),
+                          Visibility(
+                            visible: !(ctrl.diabeteTypeCtrl == 'type-2' &&
+                                ctrl.insulinCtrl == false),
+                            child: FormFieldCustom(
                               label: ctrl.diabeteTypeCtrl == 'type-1' &&
                                       ctrl.insulinCtrl == true
                                   ? 'Insulina'
@@ -454,6 +431,7 @@ class _AuthRegisterAnamneseStep2 extends StatelessWidget {
                               isDropdown: true,
                               options: ctrl.insulinFastList,
                             ),
+                          ),
                           FormFieldCustom(
                             label: 'Medicamentos',
                             controller: ctrl.drugCtrl,
@@ -462,10 +440,13 @@ class _AuthRegisterAnamneseStep2 extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
                   ],
                 ),
+              ),
             ],
           ),
+        ),
       ],
     );
   }

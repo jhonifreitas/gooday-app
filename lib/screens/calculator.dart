@@ -21,6 +21,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppBarCustom(
           prefix: const Icon(Icons.calculate_outlined),
@@ -108,10 +109,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 borderRadius: BorderRadius.circular(10)),
           ),
         ),
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
-          child: const Text('Hoje', style: TextStyle(fontSize: 20)),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 10, left: 20, right: 20),
+          child: Text('Hoje', style: TextStyle(fontSize: 20)),
         ),
         Expanded(
           child: ListView(

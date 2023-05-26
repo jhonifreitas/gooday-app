@@ -103,20 +103,18 @@ class _GoalScreenState extends State<GoalScreen> {
                 padding: const EdgeInsets.only(
                     top: 20, bottom: 150, left: 20, right: 20),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Objetivo Diário',
-                            style: Theme.of(context).textTheme.titleMedium),
-                        TextButton(
-                          onPressed: _goToDaily,
-                          child: const Text('Ver mais'),
-                        )
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Objetivo Diário',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      TextButton(
+                        onPressed: _goToDaily,
+                        child: const Text('Ver mais'),
+                      )
+                    ],
                   ),
+                  const SizedBox(height: 10),
                   _GoalCard(
                     iconAssets: 'assets/icons/target.svg',
                     value: _goalTotal / 100,
@@ -126,14 +124,9 @@ class _GoalScreenState extends State<GoalScreen> {
                         SvgPicture.asset('assets/icons/gift.svg', width: 24),
                     color: Theme.of(context).primaryColor,
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Text('Visão Geral',
-                          style: Theme.of(context).textTheme.titleMedium),
-                    ),
-                  ),
+                  Text('Visão Geral',
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 10),
                   _GoalCard(
                     iconAssets: 'assets/icons/shoe.svg',
                     value: 1,
@@ -230,24 +223,22 @@ class _GoalCard extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text.rich(TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '$textValue ',
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            TextSpan(text: text)
-                          ],
-                        )),
-                        suffix
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text.rich(TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$textValue ',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          TextSpan(text: text)
+                        ],
+                      )),
+                      suffix
+                    ],
                   ),
+                  const SizedBox(height: 2),
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     child: LinearProgressIndicator(
@@ -298,10 +289,8 @@ class _GoalCardUpdate extends StatelessWidget {
         ),
         subtitle: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 5),
-              child: Icon(Icons.sync, size: 20),
-            ),
+            const Icon(Icons.sync, size: 20),
+            const SizedBox(width: 5),
             Text(
               _lastUpdateLabel,
               style: const TextStyle(color: Colors.grey, fontSize: 12),

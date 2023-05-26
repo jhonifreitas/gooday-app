@@ -10,7 +10,7 @@ class ChipCustom extends StatelessWidget {
 
   final String text;
   final bool selected;
-  final void Function(bool)? onSelected;
+  final ValueChanged<bool>? onSelected;
 
   @override
   Widget build(BuildContext context) {

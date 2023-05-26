@@ -16,13 +16,22 @@ class AppBarCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget? backButton;
+    if (prefix == null && Navigator.canPop(context)) {
+      backButton = IconButton(
+        tooltip: 'Voltar',
+        icon: const Icon(Icons.keyboard_backspace, color: Colors.black),
+        onPressed: () => Navigator.of(context).pop(),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: AppBar(
-        leadingWidth: 20,
-        centerTitle: true,
+        leadingWidth: prefix != null ? 20 : null,
+        centerTitle: titleCenter,
         backgroundColor: Colors.transparent,
-        leading: prefix,
+        leading: prefix ?? backButton,
         title: title,
         actions: suffix != null ? [suffix!] : null,
       ),

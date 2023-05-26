@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-
 import 'package:gooday/components/button.dart';
 import 'package:gooday/components/form_field.dart';
 import 'package:gooday/controllers/util.controller.dart';
@@ -34,7 +32,7 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
     });
   }
 
-  void _onSubmit() {
+  void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordCtrl.text != _passwordConfirmCtrl.text) {
         return UtilController(context: context)
@@ -42,8 +40,11 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
       }
       _formKey.currentState!.save();
       UtilController(context: context).loading('Alterando...');
-      // Navigator.of(context).pop();
-      // Navigator.pushNamed(context, '/');
+      await Future.delayed(const Duration(seconds: 5));
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, '/auth/entrar');
+      }
     } else {
       UtilController(context: context)
           .message('Verifique os campos destacados!');
@@ -69,18 +70,21 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
                 IconButton(
                     onPressed: () => goToLogin(),
                     icon: const Icon(Icons.arrow_back)),
-                SvgPicture.asset(
-                  'assets/images/logo.svg',
+                Image.asset(
                   width: 80,
+                  'assets/images/logo.png',
                 ),
                 const SizedBox(width: 50),
               ],
             ),
             Column(
               children: [
-                Text('Já possui conta?',
-                    style: Theme.of(context).textTheme.titleLarge),
-                const Text('Acesse agora para ver sua conta!'),
+                Text(
+                  'Vamos alterar sua senha?',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const Text('Informe sua nova senha de acesso!'),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -123,11 +127,9 @@ class _AuthNewPasswordScreenState extends State<AuthNewPasswordScreen> {
             ),
             Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text('Tudo certo com sua conta?',
-                      style: Theme.of(context).textTheme.titleMedium),
-                ),
+                Text('Tudo certo com sua conta?',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 10),
                 FilledButton.tonal(
                     onPressed: () => goToLogin(), child: const Text('Acessar'))
               ],

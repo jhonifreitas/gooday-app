@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
       routes: Routes.routes,
       initialRoute: Routes.initalRoute,
       locale: const Locale('br'),
-      theme: _theme(),
+      theme: _themeData,
     );
   }
 
-  ThemeData _theme() {
+  ThemeData get _themeData {
     return ThemeData(
       useMaterial3: true,
       dialogBackgroundColor: Colors.white,
@@ -42,6 +42,10 @@ class MyApp extends StatelessWidget {
           color: Colors.white, surfaceTintColor: Colors.transparent),
       progressIndicatorTheme:
           ProgressIndicatorThemeData(linearTrackColor: Colors.grey.shade400),
+      checkboxTheme: CheckboxThemeData(
+        side: BorderSide(width: 1, color: Colors.grey.shade400),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
       textTheme: const TextTheme(
         titleLarge: TextStyle(
           fontSize: 26.0,

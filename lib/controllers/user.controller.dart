@@ -23,7 +23,6 @@ class UserController {
     Option(id: 'fem', name: 'Feminino'),
     Option(id: 'other', name: 'Outro'),
   ];
-
   final List<Option> diabeteTypeList = const [
     Option(id: 'type-1', name: 'Tipo 1'),
     Option(id: 'type-2', name: 'Tipo 2'),

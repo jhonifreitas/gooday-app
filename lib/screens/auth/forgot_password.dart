@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-
 import 'package:gooday/components/button.dart';
 import 'package:gooday/components/form_field.dart';
 import 'package:gooday/controllers/util.controller.dart';
@@ -19,12 +17,15 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
 
   final _emailCtrl = TextEditingController();
 
-  void _onSubmit() {
+  void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       UtilController(context: context).loading('Enviado...');
-      // Navigator.of(context).pop();
-      // Navigator.pushNamed(context, '/');
+      await Future.delayed(const Duration(seconds: 5));
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, '/auth/nova-senha');
+      }
     } else {
       UtilController(context: context)
           .message('Verifique os campos destacados!');
@@ -50,9 +51,9 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
                 IconButton(
                     onPressed: () => _goToBack(),
                     icon: const Icon(Icons.arrow_back)),
-                SvgPicture.asset(
-                  'assets/images/logo.svg',
+                Image.asset(
                   width: 80,
+                  'assets/images/logo.png',
                 ),
                 const SizedBox(width: 50),
               ],
@@ -89,11 +90,9 @@ class _AuthForgotPasswordScreenState extends State<AuthForgotPasswordScreen> {
             ),
             Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text('Tudo certo com sua conta?',
-                      style: Theme.of(context).textTheme.titleMedium),
-                ),
+                Text('Tudo certo com sua conta?',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 10),
                 FilledButton.tonal(
                     onPressed: () => _goToBack(), child: const Text('Acessar'))
               ],

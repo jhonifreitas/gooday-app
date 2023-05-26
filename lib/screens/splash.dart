@@ -1,4 +1,3 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -20,7 +19,7 @@ class SplashScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 50),
             Expanded(
-              child: SvgPicture.asset('assets/images/logo-white.svg'),
+              child: Image.asset('assets/images/logo-white.png'),
             ),
             const CircularProgressIndicator(color: Colors.white)
           ],

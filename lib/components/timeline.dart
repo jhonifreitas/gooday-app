@@ -22,9 +22,9 @@ class TimelineItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contentList = [Align(alignment: Alignment.topLeft, child: title)];
+    final contentList = [title];
     if (subtitle != null) {
-      contentList.add(Align(alignment: Alignment.topLeft, child: subtitle!));
+      contentList.add(subtitle!);
     }
 
     return Stack(
@@ -47,6 +47,7 @@ class TimelineItem extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: contentList,
                       ),
                     ),
@@ -58,15 +59,19 @@ class TimelineItem extends StatelessWidget {
             ),
           ),
         ),
-        if (!isFirst)
-          const Positioned(
+        Visibility(
+          visible: !isFirst,
+          child: const Positioned(
             top: 0,
             left: 32,
             child: SizedBox(height: 8, child: VerticalDivider()),
           ),
-        if (!isLast)
-          const Positioned(
-              top: 55, bottom: 0, left: 32, child: VerticalDivider())
+        ),
+        Visibility(
+          visible: !isLast,
+          child: const Positioned(
+              top: 55, bottom: 0, left: 32, child: VerticalDivider()),
+        )
       ],
     );
   }

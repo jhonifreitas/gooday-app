@@ -29,12 +29,15 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
 
   void _onImageUpload() {}
 
-  void _onSubmit() {
+  void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // UtilController(context: context).loading('Entrando...');
-      // Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+      UtilController(context: context).loading('Cadastrando...');
+      await Future.delayed(const Duration(seconds: 5));
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+      }
     } else {
       UtilController(context: context)
           .message('Verifique os campos destacados!');
@@ -65,9 +68,9 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                   IconButton(
                       onPressed: () => _goToBack(),
                       icon: const Icon(Icons.arrow_back)),
-                  SvgPicture.asset(
-                    'assets/images/logo.svg',
+                  Image.asset(
                     width: 80,
+                    'assets/images/logo.png',
                   ),
                   const SizedBox(width: 50),
                 ],
@@ -77,23 +80,21 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                   Text('E você?',
                       style: Theme.of(context).textTheme.titleLarge),
                   const Text('Queremos conhecê-lo'),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: FloatingActionButton(
-                        elevation: 0,
-                        tooltip: 'Enviar foto',
-                        heroTag: 'register-btn-image',
-                        backgroundColor: Colors.white,
-                        shape: const StadiumBorder(
-                          side: BorderSide(width: 1, color: Colors.grey),
-                        ),
-                        onPressed: _onImageUpload,
-                        child: const Icon(Icons.camera_alt_outlined,
-                            color: Colors.grey, size: 40),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: FloatingActionButton(
+                      elevation: 0,
+                      tooltip: 'Enviar foto',
+                      heroTag: 'register-btn-image',
+                      backgroundColor: Colors.white,
+                      shape: const StadiumBorder(
+                        side: BorderSide(width: 1, color: Colors.grey),
                       ),
+                      onPressed: _onImageUpload,
+                      child: const Icon(Icons.camera_alt_outlined,
+                          color: Colors.grey, size: 40),
                     ),
                   ),
                   Form(
@@ -136,11 +137,9 @@ class _AuthRegisterScreenState extends State<AuthRegisterScreen> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Text('Já possui uma conta?',
-                        style: Theme.of(context).textTheme.titleMedium),
-                  ),
+                  Text('Já possui uma conta?',
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 10),
                   FilledButton.tonal(
                       onPressed: () => _goToRegister(),
                       child: const Text('Acessar'))

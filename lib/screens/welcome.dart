@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:gooday/components/appbar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   DateTime _now = DateTime.now();
 
   Timer? _timer;
+
+  String get _timeLabel {
+    return DateFormat('H:mm').format(_now);
+  }
 
   @override
   void initState() {
@@ -47,66 +52,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _WelcomeAppBar(temperature: _temperature, time: _now),
           Padding(
-            padding: const EdgeInsets.only(bottom: 20, left: 30, right: 30),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text.rich(
-                TextSpan(
-                  text: 'Bom dia, ',
-                  children: [
-                    TextSpan(
-                      text: '${_user?.name}!',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
+            padding: const EdgeInsets.only(bottom: 20, top: 10),
+            child: AppBarCustom(
+              titleCenter: false,
+              title: Image.asset(width: 80, 'assets/images/logo-white.png'),
+              suffix: Text(
+                '$_temperature ºC | $_timeLabel',
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 14,
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20, left: 35, right: 35),
+            child: Text.rich(
+              TextSpan(
+                text: 'Bom dia, ',
+                children: [
+                  TextSpan(
+                    text: '${_user?.name}!',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              style: const TextStyle(
+                fontSize: 24,
+                color: Colors.white,
               ),
             ),
           ),
           _WelcomeNotificationList(),
           Expanded(
-            child: Image.asset('assets/images/betty.png'),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class _WelcomeAppBar extends StatelessWidget {
-  const _WelcomeAppBar({required this.temperature, required this.time});
-
-  final DateTime time;
-  final double temperature;
-
-  String get _timeLabel {
-    return DateFormat('H:mm').format(time);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 22, top: 10, left: 15, right: 20),
-      child: AppBar(
-        centerTitle: false,
-        backgroundColor: Colors.transparent,
-        title: SvgPicture.asset(width: 80, 'assets/images/logo-white.svg'),
-        actions: [
-          Text(
-            '$temperature ºC | $_timeLabel',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+            child: Align(
+              alignment: Alignment.center,
+              child: Image.asset('assets/images/betty.png'),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -118,12 +105,11 @@ class _WelcomeNotificationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 170,
-      padding: const EdgeInsets.only(bottom: 20),
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 22),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         children: [
           SizedBox(
             width: 270,
@@ -158,7 +144,7 @@ class _WelcomeNotificationList extends StatelessWidget {
                         child: Container(
                           alignment: Alignment.center,
                           child: const Text(
-                            'Acabei de montarl seu café da manhã!',
+                            'Acabei de montar seu café da manhã!',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -176,15 +162,13 @@ class _WelcomeNotificationList extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: SvgPicture.asset(
-                                    width: 25,
-                                    'assets/icons/bell.svg',
-                                    colorFilter: const ColorFilter.mode(
-                                        Colors.white, BlendMode.srcIn),
-                                  ),
+                                SvgPicture.asset(
+                                  width: 25,
+                                  'assets/icons/bell.svg',
+                                  colorFilter: const ColorFilter.mode(
+                                      Colors.white, BlendMode.srcIn),
                                 ),
+                                const SizedBox(width: 5),
                                 const Text(
                                   'Lembretes',
                                   style: TextStyle(

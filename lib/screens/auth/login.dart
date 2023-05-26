@@ -62,9 +62,9 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SvgPicture.asset(
-              'assets/images/logo.svg',
+            Image.asset(
               width: 80,
+              'assets/images/logo.png',
             ),
             Column(
               children: [
@@ -94,7 +94,7 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Align(
                           alignment: Alignment.topRight,
                           child: TextButton(
@@ -106,24 +106,23 @@ class _AuthLoginScreenState extends State<AuthLoginScreen> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 20),
-                        child: ButtonCustom(
-                          text: 'Entrar',
-                          onPressed: () => _onSubmit(),
-                        ),
+                      ButtonCustom(
+                        text: 'Entrar',
+                        onPressed: _onSubmit,
                       )
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text('Não possui uma conta?',
-                      style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 20),
+                Text(
+                  'Não possui uma conta?',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
+                const SizedBox(height: 10),
                 FilledButton.tonal(
-                    onPressed: () => _goToRegister(),
-                    child: const Text('Cadastre-se'))
+                  onPressed: _goToRegister,
+                  child: const Text('Cadastre-se'),
+                )
               ],
             ),
             Row(

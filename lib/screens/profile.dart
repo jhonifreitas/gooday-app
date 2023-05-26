@@ -17,6 +17,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _goToGoodies() {}
 
+  void _goToUser() {}
+
+  void _goToBetty() {
+    Navigator.pushNamed(context, '/betty/config');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -77,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: _goToGoodies,
                 title: Row(
                   children: [
-                    SvgPicture.asset('assets/images/logo.svg', width: 80),
+                    Image.asset('assets/images/logo.png', width: 80),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child:
@@ -110,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _ProfileListTile(
                     text: 'Conta',
                     icon: const Icon(Icons.face, size: 15, color: Colors.white),
-                    onTap: () {},
+                    onTap: _goToUser,
                   ),
                   _ProfileListTile(
                     text: 'Privacidade',
@@ -158,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 leading: Image.asset('assets/images/betty-avatar.png'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {},
+                onTap: _goToBetty,
               ),
             ),
           ),

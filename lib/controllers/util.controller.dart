@@ -20,14 +20,12 @@ class UtilController {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: SizedBox(
-                    height: 25,
-                    width: 25,
-                    child: CircularProgressIndicator(strokeWidth: 3),
-                  ),
+                const SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: CircularProgressIndicator(strokeWidth: 3),
                 ),
+                const SizedBox(width: 10),
                 Text(text ?? 'Aguarde...'),
               ],
             ),

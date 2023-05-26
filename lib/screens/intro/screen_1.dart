@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-
 import 'package:gooday/models/user.dart';
 
 class IntroScreen1 extends StatefulWidget {
@@ -56,8 +54,7 @@ class _IntroScreen1State extends State<IntroScreen1> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
-              child:
-                  SvgPicture.asset('assets/images/logo-white.svg', width: 120),
+              child: Image.asset('assets/images/logo-white.png', width: 120),
             ),
             Container(
               height: 300,
@@ -100,44 +97,38 @@ class _IntroScreen1State extends State<IntroScreen1> {
                   Expanded(
                     child: PageView(
                       controller: _pageCtrl,
-                      allowImplicitScrolling: false,
                       onPageChanged: _onPageChanged,
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Olá, ${_user?.name}!',
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 20),
-                                ),
+                              Text(
+                                'Olá, ${_user?.name}!',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 20),
                               ),
                               const SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text.rich(
-                                  TextSpan(
-                                    text: 'Sou ',
-                                    children: [
-                                      TextSpan(
-                                        text: 'Betty',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
+                              Text.rich(
+                                TextSpan(
+                                  text: 'Sou ',
+                                  children: [
+                                    TextSpan(
+                                      text: 'Betty',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
                                       ),
-                                      const TextSpan(
-                                          text: ', muito prazer. Serei sua '
-                                              'colaboradora para auxilia-lo a '
-                                              'gerenciar seu diabetes.')
-                                    ],
-                                  ),
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                    const TextSpan(
+                                        text: ', muito prazer. Serei sua '
+                                            'colaboradora para auxilia-lo a '
+                                            'gerenciar seu diabetes.')
+                                  ],
                                 ),
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ],
                           ),
@@ -151,13 +142,9 @@ class _IntroScreen1State extends State<IntroScreen1> {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               const SizedBox(height: 20),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Vamos começar?',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                              Text(
+                                'Vamos começar?',
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ],
                           ),
@@ -165,12 +152,15 @@ class _IntroScreen1State extends State<IntroScreen1> {
                       ],
                     ),
                   ),
-                  Container(
+                  Align(
                     alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: SizedBox(
+                    child: AnimatedContainer(
                       height: 55,
-                      width: _currentPage == 0 ? null : double.infinity,
+                      width: _currentPage == 0
+                          ? 55
+                          : MediaQuery.of(context).size.width,
+                      duration: const Duration(milliseconds: 500),
+                      margin: const EdgeInsets.symmetric(horizontal: 30),
                       child: FilledButton(
                         onPressed: _goToNext,
                         child: _currentPage == 0
@@ -178,7 +168,7 @@ class _IntroScreen1State extends State<IntroScreen1> {
                             : const Text('Avançar'),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             )
