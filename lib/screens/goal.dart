@@ -15,12 +15,20 @@ class GoalScreen extends StatefulWidget {
   State<GoalScreen> createState() => _GoalScreenState();
 }
 
-class _GoalScreenState extends State<GoalScreen> {
-  bool _loading = false;
+class _GoalScreenState extends State<GoalScreen> with TickerProviderStateMixin {
   DateTime _date = DateTime.now();
   DateTime _lastUpdate = DateTime.now();
 
   Goal _data = Goal();
+
+  late final AnimationController _loaderCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 1),
+  );
+  late final Animation<double> _loaderAnimation = CurvedAnimation(
+    parent: _loaderCtrl,
+    curve: Curves.easeInOut,
+  );
 
   String get _getDateLabel {
     final week = DateFormat('EEEE', 'pt_BR').format(_date);
@@ -48,15 +56,22 @@ class _GoalScreenState extends State<GoalScreen> {
     return NumberFormat().format(_data.minutes);
   }
 
+  @override
+  void dispose() {
+    _loaderCtrl.dispose();
+    super.dispose();
+  }
+
   void _loadData() async {
     setState(() {
-      _loading = true;
+      _loaderCtrl.repeat();
     });
 
     await Future.delayed(const Duration(seconds: 5));
 
     setState(() {
-      _loading = false;
+      _lastUpdate = DateTime.now();
+      _loaderCtrl.stop();
     });
   }
 
@@ -172,7 +187,11 @@ class _GoalScreenState extends State<GoalScreen> {
           bottom: 80,
           left: 10,
           right: 10,
-          child: _GoalCardUpdate(onLoad: _loadData, lastUpdate: _lastUpdate),
+          child: _GoalCardUpdate(
+            loaderAnimation: _loaderAnimation,
+            onLoad: _loadData,
+            lastUpdate: _lastUpdate,
+          ),
         )
       ],
     );
@@ -258,10 +277,15 @@ class _GoalCard extends StatelessWidget {
 }
 
 class _GoalCardUpdate extends StatelessWidget {
-  const _GoalCardUpdate({required this.onLoad, required this.lastUpdate});
+  const _GoalCardUpdate({
+    required this.loaderAnimation,
+    required this.onLoad,
+    required this.lastUpdate,
+  });
 
   final DateTime lastUpdate;
   final VoidCallback onLoad;
+  final Animation<double> loaderAnimation;
 
   String get _lastUpdateLabel {
     final month = DateFormat('MMMM', 'pt_BR').format(lastUpdate);
@@ -298,7 +322,10 @@ class _GoalCardUpdate extends StatelessWidget {
           ],
         ),
         trailing: Wrap(children: [
-          Icon(Icons.sync, color: Theme.of(context).primaryColor),
+          RotationTransition(
+            turns: loaderAnimation,
+            child: Icon(Icons.sync, color: Theme.of(context).primaryColor),
+          ),
           const Icon(Icons.chevron_right)
         ]),
       ),

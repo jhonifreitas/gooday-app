@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:gooday/components/button.dart';
-
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import 'package:gooday/components/button.dart';
 
 class IntroScreen3 extends StatefulWidget {
   const IntroScreen3({super.key});
@@ -15,13 +17,25 @@ class IntroScreen3 extends StatefulWidget {
 class _IntroScreen3State extends State<IntroScreen3> {
   final _youtubeCtrl = YoutubePlayerController(initialVideoId: 'S_bnutPbyWc');
 
-  void _openWebsite() {}
+  void _openWebsite() async {
+    final url = Uri.parse('https://google.com.br');
+    launchUrl(url);
+  }
 
-  void _openFacebook() {}
+  void _openFacebook() {
+    final url = Uri.parse('https://facebook.com.br');
+    launchUrl(url);
+  }
 
-  void _openTwitter() {}
+  void _openTwitter() {
+    final url = Uri.parse('https://twitter.com.br');
+    launchUrl(url);
+  }
 
-  void _openInstagram() {}
+  void _openInstagram() {
+    final url = Uri.parse('https://instagram.com.br');
+    launchUrl(url);
+  }
 
   void _goToBack() {
     Navigator.pop(context);
@@ -74,11 +88,14 @@ class _IntroScreen3State extends State<IntroScreen3> {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  // child: YoutubePlayer(
-                  //   controller: _youtubeCtrl,
-                  // ),
+                Visibility(
+                  visible: Platform.isAndroid || Platform.isIOS,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: YoutubePlayer(
+                      controller: _youtubeCtrl,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Text(

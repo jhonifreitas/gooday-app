@@ -36,6 +36,8 @@ class MyApp extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      bottomAppBarTheme:
+          const BottomAppBarTheme(surfaceTintColor: Colors.transparent),
       dialogTheme: const DialogTheme(surfaceTintColor: Colors.transparent),
       listTileTheme: const ListTileThemeData(textColor: Colors.black),
       cardTheme: const CardTheme(
