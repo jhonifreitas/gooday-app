@@ -5,6 +5,9 @@ import 'package:gooday/models/option.dart';
 class UserController {
   final User data = const User(authId: '', name: '', email: '');
 
+  final nameCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
   final sexCtrl = TextEditingController();
   final dateBirthCtrl = TextEditingController();
   final heightCtrl = TextEditingController();

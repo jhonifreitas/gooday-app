@@ -19,7 +19,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushNamed(context, '/goodies');
   }
 
-  void _goToUser() {}
+  void _goToUser() {
+    Navigator.pushNamed(context, '/user');
+  }
 
   void _goToBetty() {
     Navigator.pushNamed(context, '/betty/config');
