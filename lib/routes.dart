@@ -1,4 +1,6 @@
 import 'package:gooday/screens/home.dart';
+import 'package:gooday/screens/meal.dart';
+import 'package:gooday/screens/goodies.dart';
 import 'package:gooday/screens/auth/login.dart';
 import 'package:gooday/screens/betty/intro.dart';
 import 'package:gooday/screens/betty/config.dart';
@@ -29,6 +31,8 @@ class Routes {
     '/introducao/1': (context) => const IntroScreen1(),
     '/introducao/2': (context) => const IntroScreen2(),
     '/introducao/3': (context) => const IntroScreen3(),
+    '/refeicao': (context) => const MealFormScreen(),
+    '/goodies': (context) => const GoodiesScreen(),
     '/betty/introducao': (context) => const BettyIntroScreen(),
     '/betty/config': (context) => const BettyConfigScreen(),
     '/betty/config/todos': (context) => const BettyFormAllScreen(),

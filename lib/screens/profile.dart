@@ -15,7 +15,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   User? _user;
   int _coins = 0;
 
-  void _goToGoodies() {}
+  void _goToGoodies() {
+    Navigator.pushNamed(context, '/goodies');
+  }
 
   void _goToUser() {}
 

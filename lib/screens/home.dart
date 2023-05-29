@@ -146,7 +146,7 @@ class _HomeBottomButton extends StatelessWidget {
       height: 50,
       child: AnimatedAlign(
         duration: const Duration(milliseconds: 300),
-        alignment: active ? const Alignment(0, -4.5) : Alignment.center,
+        alignment: active ? const Alignment(0, -5) : Alignment.center,
         child: IconButton(
           onPressed: onPressed,
           icon: Icon(

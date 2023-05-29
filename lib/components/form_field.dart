@@ -5,10 +5,11 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 class FormFieldCustom extends StatelessWidget {
   const FormFieldCustom({
     super.key,
-    required this.label,
     required this.controller,
+    this.label,
     this.inputType,
     this.mask,
+    this.placeholder,
     this.obscureText = false,
     this.isRequired = false,
     this.isDisabled = false,
@@ -21,7 +22,7 @@ class FormFieldCustom extends StatelessWidget {
     this.prefixIcon,
   });
 
-  final String label;
+  final String? label;
   final TextEditingController controller;
   final TextInputType? inputType;
   final List<Option>? options;
@@ -32,6 +33,7 @@ class FormFieldCustom extends StatelessWidget {
   final bool isDropdown;
 
   final String? mask;
+  final String? placeholder;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
 
@@ -109,8 +111,10 @@ class FormFieldCustom extends StatelessWidget {
       inputFormatters: [if (mask != null) maskFormatter],
       decoration: InputDecoration(
         labelText: label,
+        hintText: placeholder,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        hintStyle: const TextStyle(fontWeight: FontWeight.normal),
       ),
       style: const TextStyle(fontSize: 14),
       keyboardType: inputType,

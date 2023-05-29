@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:gooday/routes.dart';
 
@@ -12,12 +12,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('pt_BR', null);
     return MaterialApp(
       title: 'Gooday',
       routes: Routes.routes,
       initialRoute: Routes.initalRoute,
-      locale: const Locale('br'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      supportedLocales: const [Locale('pt')],
       theme: _themeData,
     );
   }
@@ -36,6 +39,8 @@ class MyApp extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      bottomSheetTheme:
+          const BottomSheetThemeData(surfaceTintColor: Colors.transparent),
       bottomAppBarTheme:
           const BottomAppBarTheme(surfaceTintColor: Colors.transparent),
       dialogTheme: const DialogTheme(surfaceTintColor: Colors.transparent),

@@ -1,6 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
+import 'package:gooday/screens/glycemia.dart';
 import 'package:gooday/components/appbar.dart';
 import 'package:gooday/components/timeline.dart';
 
@@ -12,10 +13,17 @@ class CalculatorScreen extends StatefulWidget {
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
-  void _openGlycemiaForm() {}
+  void _openGlycemiaForm() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return const GlycemiaScreen();
+      },
+    );
+  }
 
   void _goToMealForm() {
-    Navigator.pushNamed(context, '/calculadora/refeicao');
+    Navigator.pushNamed(context, '/refeicao');
   }
 
   @override
@@ -38,29 +46,40 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(10),
                   child: InkWell(
-                    onTap: _openGlycemiaForm,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: const [
-                          // SvgPicture.asset('assets/icons/blood.svg'),
-                          Text(
-                            'Calcular',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
+                    onTap: _goToMealForm,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Image.asset('assets/images/betty-intro.png',
+                              width: 70),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: const [
+                              // SvgPicture.asset('assets/icons/blood.svg'),
+                              Text(
+                                'Calcular',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                'Refeição',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            ],
                           ),
-                          Text(
-                            'Refeição',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
