@@ -1,75 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'package:gooday/routes.dart';
+import 'package:gooday/src/app.dart';
+import 'package:gooday/src/firebase_options.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gooday',
-      routes: Routes.routes,
-      initialRoute: Routes.initalRoute,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate
-      ],
-      supportedLocales: const [Locale('pt')],
-      theme: _themeData,
-    );
-  }
-
-  ThemeData get _themeData {
-    return ThemeData(
-      useMaterial3: true,
-      dialogBackgroundColor: Colors.white,
-      scaffoldBackgroundColor: Colors.white,
-      colorSchemeSeed: const Color(0xFF115AA7),
-      appBarTheme: const AppBarTheme(
-        surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(
-          fontSize: 15,
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      bottomSheetTheme:
-          const BottomSheetThemeData(surfaceTintColor: Colors.transparent),
-      bottomAppBarTheme:
-          const BottomAppBarTheme(surfaceTintColor: Colors.transparent),
-      dialogTheme: const DialogTheme(surfaceTintColor: Colors.transparent),
-      listTileTheme: const ListTileThemeData(textColor: Colors.black),
-      cardTheme: const CardTheme(
-          color: Colors.white, surfaceTintColor: Colors.transparent),
-      progressIndicatorTheme:
-          ProgressIndicatorThemeData(linearTrackColor: Colors.grey.shade400),
-      checkboxTheme: CheckboxThemeData(
-        side: BorderSide(width: 1, color: Colors.grey.shade400),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      ),
-      textTheme: const TextTheme(
-        titleLarge: TextStyle(
-          fontSize: 26.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF115AA7),
-        ),
-        titleMedium: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF115AA7),
-        ),
-        titleSmall: TextStyle(
-          fontSize: 14.0,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF115AA7),
-        ),
-      ),
-    );
-  }
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+    ],
+    child: const MyApp(),
+  ));
 }

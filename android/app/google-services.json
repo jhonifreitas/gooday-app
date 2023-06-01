@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "285656052775",
+    "project_id": "gooday-app",
+    "storage_bucket": "gooday-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285656052775:android:aca5c1857d249880f80a02",
+        "android_client_info": {
+          "package_name": "care.gooday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "285656052775-2n12tluafdgftpf3hg3nsfbholg539lm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCiABqWhJzlukSbbCQ5wckMYEfoFq6wBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "285656052775-2n12tluafdgftpf3hg3nsfbholg539lm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "285656052775-4qpll6des14c85ovum5onmhmkjfkkaqs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "gooday"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285656052775:android:79b67207c92a44ebf80a02",
+        "android_client_info": {
+          "package_name": "gooday.care"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "285656052775-0bkcad381r1bgcaobau009hdes230lnd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "gooday.care",
+            "certificate_hash": "3583459b7d17244892bbaf5067722e613a2b5d70"
+          }
+        },
+        {
+          "client_id": "285656052775-iobmpq349ga4sms40fnbp2fro726331v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "gooday.care",
+            "certificate_hash": "576b9ec271575711856bb10d2def794ce82e3976"
+          }
+        },
+        {
+          "client_id": "285656052775-2n12tluafdgftpf3hg3nsfbholg539lm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCiABqWhJzlukSbbCQ5wckMYEfoFq6wBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "285656052775-2n12tluafdgftpf3hg3nsfbholg539lm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "285656052775-4qpll6des14c85ovum5onmhmkjfkkaqs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "gooday"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
