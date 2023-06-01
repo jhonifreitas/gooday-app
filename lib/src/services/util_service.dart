@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class UtilService {
   const UtilService(this.context);
@@ -18,6 +19,7 @@ class UtilService {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(
@@ -29,6 +31,33 @@ class UtilService {
                 Text(text ?? 'Aguarde...'),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void dateTimePicker({
+    required ValueChanged<DateTime> onChange,
+    DateTime? initialDateTime,
+    DateTime? maximumDate,
+    DateTime? minimumDate,
+    CupertinoDatePickerMode? mode,
+  }) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 250,
+          color: Colors.white,
+          child: CupertinoDatePicker(
+            use24hFormat: true,
+            maximumDate: maximumDate,
+            minimumDate: minimumDate,
+            initialDateTime: initialDateTime,
+            dateOrder: DatePickerDateOrder.dmy,
+            mode: mode ?? CupertinoDatePickerMode.date,
+            onDateTimeChanged: onChange,
           ),
         );
       },

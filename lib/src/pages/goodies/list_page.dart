@@ -5,14 +5,14 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
 
-class GoodiesPage extends StatefulWidget {
-  const GoodiesPage({super.key});
+class GoodiesListPage extends StatefulWidget {
+  const GoodiesListPage({super.key});
 
   @override
-  State<GoodiesPage> createState() => _GoodiesPageState();
+  State<GoodiesListPage> createState() => _GoodiesListPageState();
 }
 
-class _GoodiesPageState extends State<GoodiesPage> {
+class _GoodiesListPageState extends State<GoodiesListPage> {
   final int _total = 0;
 
   @override
@@ -69,12 +69,12 @@ class _GoodiesPageState extends State<GoodiesPage> {
                       SvgPicture.asset(
                         'assets/icons/shoe.svg',
                         width: 25,
-                        colorFilter: ColorFilter.mode(
+                        colorFilter: const ColorFilter.mode(
                           primaryColor,
                           BlendMode.srcIn,
                         ),
                       ),
-                      Text(
+                      const Text(
                         '8:00',
                         style: TextStyle(
                           fontSize: 12,
@@ -85,7 +85,7 @@ class _GoodiesPageState extends State<GoodiesPage> {
                   ),
                   suffix: Row(
                     children: [
-                      Text(
+                      const Text(
                         '10',
                         style: TextStyle(
                           fontSize: 12,

@@ -9,17 +9,20 @@ import 'package:gooday/src/pages/betty/form/all.dart';
 import 'package:gooday/src/pages/betty/form/food.dart';
 import 'package:gooday/src/pages/intro/three_page.dart';
 import 'package:gooday/src/pages/betty/form/health.dart';
+import 'package:gooday/src/pages/profile/goal_page.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
+import 'package:gooday/src/pages/goodies/list_page.dart';
 import 'package:gooday/src/pages/auth/register/form.dart';
 import 'package:gooday/src/pages/betty/form/fitness.dart';
 import 'package:gooday/src/pages/calculator/meal_page.dart';
 import 'package:gooday/src/pages/betty/form/education.dart';
 import 'package:gooday/src/pages/auth/forgot_password.dart';
-import 'package:gooday/src/pages/profile/goodies_page.dart';
+import 'package:gooday/src/pages/profile/insulin_page.dart';
+import 'package:gooday/src/pages/profile/glycemia_page.dart';
 import 'package:gooday/src/pages/auth/register/anamnesis.dart';
 
 class Routes {
-  static const initalRoute = '/spash';
+  static const initalRoute = '/splash';
 
   static final routes = {
     '/': (context) => const HomePage(),
@@ -33,7 +36,10 @@ class Routes {
     '/introducao/3': (context) => const IntroThreePage(),
     '/user': (context) => const UserPage(),
     '/refeicao': (context) => const MealFormPage(),
-    '/goodies': (context) => const GoodiesPage(),
+    '/metas/config': (context) => const GoalConfigPage(),
+    '/goodies': (context) => const GoodiesListPage(),
+    '/glicemia/config': (context) => const GlycemiaConfigPage(),
+    '/insulina/config': (context) => const InsulinConfigPage(),
     '/betty/introducao': (context) => const BettyIntroPage(),
     '/betty/config': (context) => const BettyConfigPage(),
     '/betty/config/todos': (context) => const BettyFormAllPage(),

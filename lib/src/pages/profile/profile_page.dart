@@ -30,20 +30,67 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pushNamed(context, '/user');
   }
 
+  void _goToGlycemia() {
+    Navigator.pushNamed(context, '/glicemia/config');
+  }
+
+  void _goToGoalConfig() {
+    Navigator.pushNamed(context, '/metas/config');
+  }
+
+  void _goToPasswordReset() {
+    Navigator.pushNamed(context, '/user/redefinir-senha');
+  }
+
   void _goToBetty() {
     Navigator.pushNamed(context, '/betty/config');
   }
 
+  Future<bool> _openConfirmSignOut() async {
+    final dialog = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Desconectar?'),
+          content: const Text('Deseja realmente desconectar de sua conta?'),
+          actions: [
+            TextButton(
+              child: const Text('Não'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: const MaterialStatePropertyAll(Colors.red),
+                overlayColor:
+                    MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
+              ),
+              child: const Text('Sim'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+    return dialog ?? false;
+  }
+
   Future<void> _onSignOut() async {
-    UtilService(context).loading('Saindo...');
-    final authCtrl = AuthController(context);
+    final confirmed = await _openConfirmSignOut();
 
-    await authCtrl.signOut();
-    if (!mounted) return;
+    if (confirmed) {
+      if (!mounted) return;
 
-    Navigator.of(context).pop();
-    Navigator.pushNamedAndRemoveUntil(
-        context, '/auth/entrar', (route) => false);
+      UtilService(context).loading('Saindo...');
+      final authCtrl = AuthController(context);
+
+      await authCtrl.signOut();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop();
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/auth/entrar', (route) => false);
+    }
   }
 
   Future<void> _onUploadImage() async {
@@ -148,41 +195,27 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   _ProfileListTile(
-                    text: 'Notificações',
-                    icon: const Icon(Icons.notifications_active,
-                        size: 15, color: Colors.white),
-                    onTap: () {},
-                  ),
-                  _ProfileListTile(
                     text: 'Conta',
                     icon: const Icon(Icons.face, size: 15, color: Colors.white),
                     onTap: _goToUser,
                   ),
                   _ProfileListTile(
-                    text: 'Privacidade',
-                    icon: const Icon(Icons.visibility,
+                    text: 'Glicemia',
+                    icon: const Icon(Icons.bloodtype,
                         size: 15, color: Colors.white),
-                    onTap: () {},
+                    onTap: _goToGlycemia,
+                  ),
+                  _ProfileListTile(
+                    text: 'Configurar Metas',
+                    icon: const Icon(Icons.favorite,
+                        size: 15, color: Colors.white),
+                    onTap: _goToGoalConfig,
                   ),
                   _ProfileListTile(
                     text: 'Segurança',
                     icon: const Icon(Icons.lock, size: 15, color: Colors.white),
-                    onTap: () {},
+                    onTap: _goToPasswordReset,
                   ),
-                  _ProfileListTile(
-                    text: 'Ajuda',
-                    icon: const Icon(Icons.question_mark,
-                        size: 15, color: Colors.white),
-                    onTap: () {},
-                  ),
-                  _ProfileListTile(
-                    text: 'Suporte',
-                    icon: Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: SvgPicture.asset('assets/icons/logo-white.svg'),
-                    ),
-                    onTap: () {},
-                  )
                 ],
               ),
             ),

@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 import 'package:gooday/src/widgets/chip.dart';
@@ -11,6 +10,7 @@ import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
+import 'package:gooday/src/pages/goodies/congratulation_page.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -51,6 +51,17 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
+  void _openGoodiesCongratulation() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          content: GoodiesCongratulationPage(value: 50),
+        );
+      },
+    );
+  }
+
   void _onDateBirth() {
     DateTime initialDateTime = DateTime(DateTime.now().year - 10);
     if (_userCtrl.dateBirthCtrl.text.isNotEmpty) {
@@ -58,27 +69,14 @@ class _UserPageState extends State<UserPage> {
           DateFormat('dd/MM/yyyy').parse(_userCtrl.dateBirthCtrl.text);
     }
 
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: 300,
-          color: Colors.white,
-          padding: const EdgeInsets.all(20),
-          child: CupertinoDatePicker(
-            use24hFormat: true,
-            maximumDate: DateTime.now(),
-            initialDateTime: initialDateTime,
-            mode: CupertinoDatePickerMode.date,
-            dateOrder: DatePickerDateOrder.dmy,
-            onDateTimeChanged: (DateTime newDate) {
-              setState(() {
-                _userCtrl.dateBirthCtrl.text =
-                    DateFormat('dd/MM/yyyy').format(newDate);
-              });
-            },
-          ),
-        );
+    UtilService(context).dateTimePicker(
+      maximumDate: DateTime.now(),
+      initialDateTime: initialDateTime,
+      onChange: (dateTime) {
+        setState(() {
+          _userCtrl.dateBirthCtrl.text =
+              DateFormat('dd/MM/yyyy').format(dateTime);
+        });
       },
     );
   }
@@ -175,7 +173,7 @@ class _UserPageState extends State<UserPage> {
                       ],
                     ),
                     FloatingActionButton(
-                      tooltip: 'Avançar',
+                      tooltip: _currentPage < 1 ? 'Avançar' : 'Salvar',
                       heroTag: 'btn-next',
                       backgroundColor: primaryColor,
                       shape: RoundedRectangleBorder(
@@ -300,7 +298,7 @@ class _UserForm extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
-                  width: 120,
+                  width: MediaQuery.of(context).size.width / 3,
                   child: FormFieldCustom(
                     label: 'Sexo',
                     controller: userCtrl.genreCtrl,

@@ -1,13 +1,13 @@
-import 'package:gooday/src/common/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
+import 'package:gooday/src/common/item.dart';
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
-import 'package:gooday/src/common/item.dart';
+import 'package:gooday/src/services/util_service.dart';
 
 class MealFormPage extends StatefulWidget {
   const MealFormPage({super.key});
@@ -45,25 +45,10 @@ class _MealFormPageState extends State<MealFormPage> {
   void _onSubmit() {}
 
   void _onDateTime() {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: 300,
-          color: Colors.white,
-          padding: const EdgeInsets.all(20),
-          child: CupertinoDatePicker(
-            use24hFormat: true,
-            initialDateTime: _dateCtrl,
-            maximumDate: DateTime.now(),
-            mode: CupertinoDatePickerMode.date,
-            dateOrder: DatePickerDateOrder.dmy,
-            onDateTimeChanged: (DateTime newDate) {
-              setState(() => _dateCtrl = newDate);
-            },
-          ),
-        );
-      },
+    UtilService(context).dateTimePicker(
+      initialDateTime: _dateCtrl,
+      maximumDate: DateTime.now(),
+      onChange: (dateTime) => setState(() => _dateCtrl = dateTime),
     );
   }
 

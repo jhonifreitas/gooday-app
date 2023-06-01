@@ -48,6 +48,11 @@ class UserController {
     Item(id: 'drug-2', name: 'Medicamento 2'),
     Item(id: 'drug-3', name: 'Medicamento 3'),
   ];
+  final List<Item> scaleInsulinList = const [
+    Item(id: '0.1', name: '0.1'),
+    Item(id: '0.5', name: '0.5'),
+    Item(id: '1.0', name: '1.0'),
+  ];
 
   initData(UserModel data) {
     if (data.name != null) nameCtrl.text = data.name!;

@@ -11,12 +11,14 @@ class FormFieldCustom extends StatelessWidget {
     this.inputType,
     this.masks,
     this.placeholder,
+    this.helper,
     this.obscureText = false,
     this.readOnly = false,
     this.isRequired = false,
     this.isDisabled = false,
     this.isDropdown = false,
     this.maskReverse = false,
+    this.showCounter = false,
     this.maxLength,
     this.minLength,
     this.options,
@@ -36,10 +38,12 @@ class FormFieldCustom extends StatelessWidget {
   final bool isRequired;
   final bool isDisabled;
   final bool isDropdown;
+  final bool showCounter;
 
   final List<String>? masks;
   final bool maskReverse;
 
+  final String? helper;
   final String? placeholder;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -135,9 +139,11 @@ class FormFieldCustom extends StatelessWidget {
       inputFormatters: inputMask != null ? [inputMask] : null,
       decoration: InputDecoration(
         labelText: label,
+        helperText: helper,
         hintText: placeholder,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        counterText: showCounter ? null : '',
         hintStyle: const TextStyle(fontWeight: FontWeight.normal),
       ),
     );

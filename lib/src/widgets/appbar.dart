@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
+
 class AppBarCustom extends StatelessWidget {
   const AppBarCustom({
     super.key,
@@ -20,7 +22,7 @@ class AppBarCustom extends StatelessWidget {
     if (prefix == null && Navigator.canPop(context)) {
       backButton = IconButton(
         tooltip: 'Voltar',
-        icon: const Icon(Icons.keyboard_backspace, color: Colors.black),
+        icon: const Icon(Icons.keyboard_backspace, color: primaryColor),
         onPressed: () => Navigator.of(context).pop(),
       );
     }

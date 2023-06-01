@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 import 'package:gooday/src/common/theme.dart';
@@ -49,27 +48,14 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           DateFormat('dd/MM/yyyy').parse(_userCtrl.dateBirthCtrl.text);
     }
 
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: 300,
-          color: Colors.white,
-          padding: const EdgeInsets.all(20),
-          child: CupertinoDatePicker(
-            use24hFormat: true,
-            maximumDate: DateTime.now(),
-            initialDateTime: initialDateTime,
-            mode: CupertinoDatePickerMode.date,
-            dateOrder: DatePickerDateOrder.dmy,
-            onDateTimeChanged: (DateTime newDate) {
-              setState(() {
-                _userCtrl.dateBirthCtrl.text =
-                    DateFormat('dd/MM/yyyy').format(newDate);
-              });
-            },
-          ),
-        );
+    UtilService(context).dateTimePicker(
+      maximumDate: DateTime.now(),
+      initialDateTime: initialDateTime,
+      onChange: (dateTime) {
+        setState(() {
+          _userCtrl.dateBirthCtrl.text =
+              DateFormat('dd/MM/yyyy').format(dateTime);
+        });
       },
     );
   }
@@ -256,7 +242,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
-                  width: 140,
+                  width: MediaQuery.of(context).size.width / 3,
                   child: FormFieldCustom(
                     label: 'Sexo',
                     controller: userCtrl.genreCtrl,
