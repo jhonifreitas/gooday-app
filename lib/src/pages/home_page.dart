@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/pages/goal_page.dart';
 import 'package:gooday/src/pages/welcome_page.dart';
 import 'package:gooday/src/widgets/circle_notch.dart';
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
           bgColor: Colors.white,
           position: _positionPage,
           radius: circleNotchRadius,
-          circleColor: Theme.of(context).primaryColor,
+          circleColor: primaryColor,
         ),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
@@ -157,7 +158,7 @@ class _HomeBottomButton extends StatelessWidget {
           onPressed: onPressed,
           icon: Icon(
             icon,
-            color: active ? Colors.white : Theme.of(context).primaryColor,
+            color: active ? Colors.white : primaryColor,
           ),
         ),
       ),

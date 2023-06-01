@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -26,8 +27,9 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> add(UserModel data) async {
-    await _ref.add(data);
-    _data = data;
+    final docRef = await _ref.add(data);
+    final doc = await docRef.get();
+    _data = doc.data();
     notifyListeners();
   }
 
@@ -36,16 +38,37 @@ class UserProvider extends ChangeNotifier {
       final query = _ref.doc(_data!.id);
       data['updatedAt'] = DateTime.now();
       await query.update(data);
+
       final doc = await query.get();
       _data = doc.data();
+
+      _updateFbUser();
       notifyListeners();
     }
   }
 
   Future<void> uploadImage(File file) async {
-    final ref =
-        FirebaseStorage.instance.refFromURL('users/${_data!.id}/image.png');
-    final snapshot = await ref.putFile(file);
-    await update({'image': snapshot.ref.fullPath});
+    if (_data != null) {
+      final ref =
+          FirebaseStorage.instance.refFromURL('users/${_data!.id}/image.png');
+      final snapshot = await ref.putFile(file);
+      await update({'image': snapshot.ref.fullPath});
+    }
+  }
+
+  Future<void> _updateFbUser() async {
+    final fbUser = FirebaseAuth.instance.currentUser;
+
+    if (fbUser != null) {
+      if (_data?.name != null) {
+        await fbUser.updateDisplayName(_data!.name!);
+      }
+      if (_data?.email != null) {
+        await fbUser.updateEmail(_data!.email!);
+      }
+      if (_data?.image != null) {
+        await fbUser.updatePhotoURL(_data!.image!);
+      }
+    }
   }
 }

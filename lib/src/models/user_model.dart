@@ -4,8 +4,8 @@ import 'package:gooday/src/models/base_model.dart';
 
 class UserModel extends BaseModel {
   final String authId;
-  final String name;
-  final String email;
+  final String? name;
+  final String? email;
   final String? phone;
   final String? image;
   final String? genre;
@@ -14,8 +14,8 @@ class UserModel extends BaseModel {
 
   UserModel({
     this.authId = '',
-    this.name = '',
-    this.email = '',
+    this.name,
+    this.email,
     this.phone,
     this.image,
     this.genre,

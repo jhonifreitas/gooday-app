@@ -1,9 +1,14 @@
+import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
-import 'package:gooday/src/widgets/chip.dart';
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/pages/profile/user_page.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 
 class AuthRegisterAnamnesisPage extends StatefulWidget {
@@ -18,39 +23,55 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
   final _formKey = GlobalKey<FormState>();
 
   int _currentPage = 0;
-  final _userctrl = UserController();
+  final _userCtrl = UserController();
   final _pageCtrl = PageController();
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      UtilService(context).loading('Entrando...');
-      await Future.delayed(const Duration(seconds: 5));
-      if (context.mounted) {
-        Navigator.of(context).pop();
-        Navigator.pushNamed(context, '/introducao');
-      }
+      UtilService(context).loading('Salvando...');
+
+      final data = _userCtrl.onSerialize();
+      await context.read<UserProvider>().update(data);
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, '/introducao/1');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
   }
 
-  void _onDiabete(bool? value) {
-    setState(() {
-      _userctrl.diabeteCtrl = value;
-    });
-  }
+  void _onDateBirth() {
+    DateTime initialDateTime = DateTime(DateTime.now().year - 10);
+    if (_userCtrl.dateBirthCtrl.text.isNotEmpty) {
+      initialDateTime =
+          DateFormat('dd/MM/yyyy').parse(_userCtrl.dateBirthCtrl.text);
+    }
 
-  void _onDiabeteType(String? value) {
-    setState(() {
-      _userctrl.diabeteTypeCtrl.text = value ?? '';
-    });
-  }
-
-  void _onInsulin(bool? value) {
-    setState(() {
-      _userctrl.insulinCtrl = value;
-    });
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 300,
+          color: Colors.white,
+          padding: const EdgeInsets.all(20),
+          child: CupertinoDatePicker(
+            use24hFormat: true,
+            maximumDate: DateTime.now(),
+            initialDateTime: initialDateTime,
+            mode: CupertinoDatePickerMode.date,
+            dateOrder: DatePickerDateOrder.dmy,
+            onDateTimeChanged: (DateTime newDate) {
+              setState(() {
+                _userCtrl.dateBirthCtrl.text =
+                    DateFormat('dd/MM/yyyy').format(newDate);
+              });
+            },
+          ),
+        );
+      },
+    );
   }
 
   void _onPageChanged(int index) {
@@ -96,16 +117,13 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: _AuthRegisterAnamneseStep1(
-                          context: context, ctrl: _userctrl),
+                        userCtrl: _userCtrl,
+                        onDateBirth: _onDateBirth,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: _AuthRegisterAnamneseStep2(
-                        ctrl: _userctrl,
-                        onDiabete: _onDiabete,
-                        onDiabeteType: _onDiabeteType,
-                        onInsulin: _onInsulin,
-                      ),
+                      child: UserAnamneseForm(userCtrl: _userCtrl),
                     )
                   ],
                 ),
@@ -125,15 +143,12 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                       shape: StadiumBorder(
                         side: BorderSide(
                             width: 1,
-                            color: _currentPage > 0
-                                ? Theme.of(context).primaryColor
-                                : Colors.grey),
+                            color:
+                                _currentPage > 0 ? primaryColor : Colors.grey),
                       ),
                       onPressed: _currentPage > 0 ? () => _goToBack() : null,
                       child: Icon(Icons.arrow_back,
-                          color: _currentPage > 0
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey),
+                          color: _currentPage > 0 ? primaryColor : Colors.grey),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -144,21 +159,21 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                                 ? Icons.fiber_manual_record
                                 : Icons.fiber_manual_record_outlined,
                             size: 12,
-                            color: Theme.of(context).primaryColor,
+                            color: primaryColor,
                           )
                       ],
                     ),
                     FloatingActionButton(
                       tooltip: 'Avançar',
                       heroTag: 'btn-next',
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
                       onPressed: () => _goToNext(),
                       child: Icon(
                         _currentPage < 1 ? Icons.arrow_forward : Icons.check,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: primaryColor,
                       ),
                     ),
                   ],
@@ -173,25 +188,26 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
 }
 
 class _AuthRegisterAnamneseStep1 extends StatelessWidget {
-  const _AuthRegisterAnamneseStep1({required this.context, required this.ctrl});
+  const _AuthRegisterAnamneseStep1(
+      {required this.userCtrl, required this.onDateBirth});
 
-  final UserController ctrl;
-  final BuildContext context;
+  final UserController userCtrl;
+  final VoidCallback onDateBirth;
 
-  void _openGoodies() {
+  void _openGoodies(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Column(
             children: [
-              Text(
+              const Text(
                 'O que é Goodies?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
+                  color: primaryColor,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
                 ),
               ),
               SvgPicture.asset(
@@ -233,7 +249,9 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 Expanded(
                   child: FormFieldCustom(
                     label: 'Data de Nascimento',
-                    controller: ctrl.dateBirthCtrl,
+                    controller: userCtrl.dateBirthCtrl,
+                    readOnly: true,
+                    onTap: onDateBirth,
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -241,25 +259,26 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                   width: 140,
                   child: FormFieldCustom(
                     label: 'Sexo',
-                    controller: ctrl.genreCtrl,
+                    controller: userCtrl.genreCtrl,
                     isDropdown: true,
-                    options: ctrl.genreList,
+                    options: userCtrl.genreList,
                   ),
                 ),
               ],
             ),
             FormFieldCustom(
               label: 'Qual a sua altura?',
-              controller: ctrl.heightCtrl,
+              controller: userCtrl.heightCtrl,
               inputType: TextInputType.number,
-              masks: const ['9,9', '9,99'],
-              maskReverse: true,
+              minLength: 4,
+              masks: const ['9,99'],
             ),
             FormFieldCustom(
               label: 'Quanto você pesa?',
-              controller: ctrl.weightCtrl,
+              controller: userCtrl.weightCtrl,
               inputType: TextInputType.number,
-              masks: const ['9,9', '99,9', '999,9'],
+              minLength: 2,
+              masks: const ['99', '99,9', '999,9'],
               maskReverse: true,
             ),
           ],
@@ -275,176 +294,15 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 Text('Preencha seus dados e ganhe 10 Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
-                  onPressed: _openGoodies,
-                  icon: Icon(
+                  onPressed: () => _openGoodies,
+                  icon: const Icon(
                     Icons.info_outline,
-                    color: Theme.of(context).primaryColor,
+                    color: primaryColor,
                   ),
                 )
               ],
             ),
           ],
-        ),
-      ],
-    );
-  }
-}
-
-class _AuthRegisterAnamneseStep2 extends StatelessWidget {
-  const _AuthRegisterAnamneseStep2({
-    required this.ctrl,
-    required this.onDiabete,
-    required this.onDiabeteType,
-    required this.onInsulin,
-  });
-
-  final UserController ctrl;
-  final ValueChanged<bool?> onDiabete;
-  final ValueChanged<String?> onDiabeteType;
-  final ValueChanged<bool?> onInsulin;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Você tem diabetes?',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 5),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                ChipCustom(
-                  text: 'Sim',
-                  selected: ctrl.diabeteCtrl != null
-                      ? ctrl.diabeteCtrl == true
-                      : false,
-                  onSelected: (value) =>
-                      value ? onDiabete(true) : onDiabete(null),
-                ),
-                const SizedBox(width: 10),
-                ChipCustom(
-                  text: 'Não',
-                  selected: ctrl.diabeteCtrl != null
-                      ? ctrl.diabeteCtrl == false
-                      : false,
-                  onSelected: (value) =>
-                      value ? onDiabete(false) : onDiabete(null),
-                ),
-              ],
-            )
-          ],
-        ),
-        const SizedBox(height: 20),
-        Visibility(
-          visible: ctrl.diabeteCtrl == true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Tipo'),
-              const SizedBox(height: 5),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  for (var option in ctrl.diabeteTypeList)
-                    ChipCustom(
-                      text: option.name,
-                      selected: ctrl.diabeteTypeCtrl.text == option.id,
-                      onSelected: (value) => value
-                          ? onDiabeteType(option.id)
-                          : onDiabeteType(null),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Visibility(
-                visible: ctrl.diabeteTypeCtrl.text.isNotEmpty,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(ctrl.diabeteTypeCtrl.text == 'type-1'
-                            ? 'Utiliza Bomba de Insulina?'
-                            : 'Utiliza Insulina?'),
-                        const SizedBox(height: 5),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: [
-                            ChipCustom(
-                              text: 'Sim',
-                              selected: ctrl.insulinCtrl != null
-                                  ? ctrl.insulinCtrl == true
-                                  : false,
-                              onSelected: (value) =>
-                                  value ? onInsulin(true) : onInsulin(null),
-                            ),
-                            const SizedBox(width: 10),
-                            ChipCustom(
-                              text: 'Não',
-                              selected: ctrl.insulinCtrl != null
-                                  ? ctrl.insulinCtrl == false
-                                  : false,
-                              onSelected: (value) =>
-                                  value ? onInsulin(false) : onInsulin(null),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Visibility(
-                      visible: ctrl.insulinCtrl != null,
-                      child: Column(
-                        children: [
-                          Visibility(
-                            visible: (ctrl.diabeteTypeCtrl.text == 'type-1' &&
-                                    ctrl.insulinCtrl == false) ||
-                                (ctrl.diabeteTypeCtrl.text == 'type-2' &&
-                                    ctrl.insulinCtrl == true),
-                            child: FormFieldCustom(
-                              label: 'Basal (Lenta)',
-                              controller: ctrl.insulinSlowCtrl,
-                              isDropdown: true,
-                              options: ctrl.insulinSlowList,
-                            ),
-                          ),
-                          Visibility(
-                            visible: !(ctrl.diabeteTypeCtrl.text == 'type-2' &&
-                                ctrl.insulinCtrl == false),
-                            child: FormFieldCustom(
-                              label: ctrl.diabeteTypeCtrl.text == 'type-1' &&
-                                      ctrl.insulinCtrl == true
-                                  ? 'Insulina'
-                                  : 'Boulos (Rápida)',
-                              controller: ctrl.insulinFastCtrl,
-                              isDropdown: true,
-                              options: ctrl.insulinFastList,
-                            ),
-                          ),
-                          FormFieldCustom(
-                            label: 'Medicamentos',
-                            controller: ctrl.drugCtrl,
-                            isDropdown: true,
-                            options: ctrl.drugList,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ],
     );

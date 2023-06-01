@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 
 class BettyConfigPage extends StatefulWidget {
@@ -98,8 +99,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: Icon(Icons.chevron_right,
-                              color: Theme.of(context).primaryColor),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: primaryColor),
                         ),
                       ),
                       Card(
@@ -127,8 +128,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: Icon(Icons.chevron_right,
-                              color: Theme.of(context).primaryColor),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: primaryColor),
                         ),
                       ),
                       Card(
@@ -156,8 +157,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: Icon(Icons.chevron_right,
-                              color: Theme.of(context).primaryColor),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: primaryColor),
                         ),
                       ),
                       Card(
@@ -185,8 +186,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                               fontSize: 12,
                             ),
                           ),
-                          trailing: Icon(Icons.chevron_right,
-                              color: Theme.of(context).primaryColor),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: primaryColor),
                         ),
                       )
                     ],

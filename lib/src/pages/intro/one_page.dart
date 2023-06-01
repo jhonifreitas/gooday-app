@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 
 class IntroOnePage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _IntroOnePageState extends State<IntroOnePage> {
                       children: [
                         Icon(
                           size: 10,
-                          color: Theme.of(context).primaryColor,
+                          color: primaryColor,
                           _currentPage == 0
                               ? Icons.circle
                               : Icons.circle_outlined,
@@ -85,7 +86,7 @@ class _IntroOnePageState extends State<IntroOnePage> {
                         const SizedBox(width: 5),
                         Icon(
                           size: 10,
-                          color: Theme.of(context).primaryColor,
+                          color: primaryColor,
                           _currentPage == 1
                               ? Icons.circle
                               : Icons.circle_outlined,
@@ -105,23 +106,22 @@ class _IntroOnePageState extends State<IntroOnePage> {
                             children: [
                               Text(
                                 'Olá, ${context.watch<UserProvider>().data?.name}!',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 20),
+                                style: const TextStyle(
+                                    color: primaryColor, fontSize: 20),
                               ),
                               const SizedBox(height: 10),
                               Text.rich(
-                                TextSpan(
+                                const TextSpan(
                                   text: 'Sou ',
                                   children: [
                                     TextSpan(
                                       text: 'Betty',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor,
+                                        color: primaryColor,
                                       ),
                                     ),
-                                    const TextSpan(
+                                    TextSpan(
                                         text: ', muito prazer. Serei sua '
                                             'colaboradora para auxilia-lo a '
                                             'gerenciar seu diabetes.')

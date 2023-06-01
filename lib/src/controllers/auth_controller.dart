@@ -1,61 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/models/user_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 
 class AuthController {
+  AuthController(this.context);
+
+  final BuildContext context;
+
+  UserProvider get _userProvider => context.read<UserProvider>();
+
   // SIGN IN
-  Future<void> signInGoogle() async {
-    await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+  Future<UserModel?> signInGoogle() async {
+    final fbUser =
+        await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
 
-    // _createUser(fbUser);
+    final authId = fbUser.user?.uid;
+
+    if (authId != null) {
+      await _userProvider.getByAuthId(authId);
+      if (_userProvider.data == null) {
+        await _createUser(fbUser);
+        await _userProvider.getByAuthId(authId);
+      }
+    }
+
+    return _userProvider.data;
   }
 
-  Future<void> signInFacebook() async {
-    await FirebaseAuth.instance.signInWithProvider(FacebookAuthProvider());
+  Future<UserModel?> signInFacebook() async {
+    final fbUser =
+        await FirebaseAuth.instance.signInWithProvider(FacebookAuthProvider());
 
-    // _createUser(fbUser);
+    final authId = fbUser.user?.uid;
+
+    if (authId != null) {
+      await _userProvider.getByAuthId(authId);
+      if (_userProvider.data == null) {
+        await _createUser(fbUser);
+        await _userProvider.getByAuthId(authId);
+      }
+    }
+
+    return _userProvider.data;
   }
 
-  Future<void> signInApple() async {
+  Future<UserModel?> signInApple() async {
     final fbUser =
         await FirebaseAuth.instance.signInWithProvider(AppleAuthProvider());
+    final authId = fbUser.user?.uid;
 
-    _createUser(fbUser);
+    if (authId != null) {
+      await _userProvider.getByAuthId(authId);
+      if (_userProvider.data == null) {
+        await _createUser(fbUser);
+        await _userProvider.getByAuthId(authId);
+      }
+    }
+
+    return _userProvider.data;
   }
 
-  Future<void> signInEmail(String email, String password) async {
-    await FirebaseAuth.instance
+  Future<UserModel?> signInEmail(String email, String password) async {
+    final fbUser = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
+    final authId = fbUser.user?.uid;
+
+    if (authId != null) {
+      await _userProvider.getByAuthId(authId);
+    }
+    return _userProvider.data;
   }
 
   // REGISTER
-  Future<void> registerWithEmail(String email, String password) async {
+  Future<UserModel?> registerWithEmail(String email, String password) async {
     final fbUser = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
+    final authId = fbUser.user?.uid;
 
-    await _createUser(fbUser);
+    if (authId != null) {
+      await _createUser(fbUser);
+      await _userProvider.getByAuthId(authId);
+    }
+    return _userProvider.data;
   }
 
-  Future<void> signOut() async {
+  // RESET PASSWORD
+  Future<void> sendPasswordReset(String email) {
+    return FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  Future<String> verifyPasswordResetCode(String code) {
+    return FirebaseAuth.instance.verifyPasswordResetCode(code);
+  }
+
+  Future<void> passwordReset(String newPassword, String code) {
+    return FirebaseAuth.instance
+        .confirmPasswordReset(newPassword: newPassword, code: code);
+  }
+
+  // SIGN OUT
+  Future<void> signOut() {
     return FirebaseAuth.instance.signOut();
   }
 
-  Future<String?> fetchUser() async {
-    final fbUser = FirebaseAuth.instance.currentUser;
-    if (fbUser == null) return null;
-
-    return fbUser.uid;
+  // FETCH USER
+  Future<UserModel?> fetchUser() async {
+    final authId = FirebaseAuth.instance.currentUser?.uid;
+    if (authId != null) await _userProvider.getByAuthId(authId);
+    return _userProvider.data;
   }
 
-  Future<void> _createUser(UserCredential credential) async {
+  // CREATE USER
+  Future<void> _createUser(UserCredential credential) {
     final user = UserModel(
       authId: credential.user!.uid,
-      name: credential.user!.displayName ?? '',
-      email: credential.user!.email ?? '',
+      name: credential.user!.displayName,
+      email: credential.user!.email,
       image: credential.user!.photoURL,
-      phone: credential.user!.phoneNumber,
+      phone: credential.user!.phoneNumber?.replaceAll('+55', ''),
     );
-    await UserProvider().add(user);
+    return _userProvider.add(user);
   }
 }

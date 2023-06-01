@@ -7,7 +7,7 @@ class BettyIntroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/betty'),
+        onTap: () => Navigator.pushNamed(context, '/betty/config/todos'),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 40),

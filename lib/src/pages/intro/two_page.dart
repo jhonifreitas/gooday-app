@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
+
 class IntroTwoPage extends StatefulWidget {
   const IntroTwoPage({super.key});
 
@@ -54,7 +56,7 @@ class _IntroTwoPageState extends State<IntroTwoPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _goToNext,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         child: const Icon(Icons.arrow_forward, color: Colors.white),
       ),

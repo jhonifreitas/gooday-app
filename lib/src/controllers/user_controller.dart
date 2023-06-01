@@ -50,9 +50,8 @@ class UserController {
   ];
 
   initData(UserModel data) {
-    nameCtrl.text = data.name;
-    emailCtrl.text = data.email;
-
+    if (data.name != null) nameCtrl.text = data.name!;
+    if (data.email != null) emailCtrl.text = data.email!;
     if (data.phone != null) phoneCtrl.text = data.phone!;
     if (data.genre != null) genreCtrl.text = data.genre!;
     if (data.dateBirth != null) {

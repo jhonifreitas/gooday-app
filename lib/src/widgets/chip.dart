@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
+
 class ChipCustom extends StatelessWidget {
   const ChipCustom({
     super.key,
@@ -17,15 +19,14 @@ class ChipCustom extends StatelessWidget {
     return InputChip(
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      selectedColor: Theme.of(context).primaryColor,
-      side: BorderSide(color: Theme.of(context).primaryColor),
+      selectedColor: primaryColor,
+      side: const BorderSide(color: primaryColor),
       showCheckmark: false,
       selected: selected,
       label: Text(
         text,
         style: TextStyle(
-          color:
-              selected == false ? Theme.of(context).primaryColor : Colors.white,
+          color: selected == false ? primaryColor : Colors.white,
           fontWeight: FontWeight.bold,
         ),
       ),

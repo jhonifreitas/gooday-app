@@ -140,20 +140,20 @@ class _NotificationCard extends StatelessWidget {
                 ),
               ),
               child: Column(
-                children: [
+                children: const [
                   Text(
                     'Manhã',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Theme.of(context).primaryColor,
+                      color: primaryColor,
                     ),
                   ),
                   Text(
                     '8:00',
                     style: TextStyle(
                       fontSize: 16,
+                      color: primaryColor,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
                     ),
                   )
                 ],
@@ -185,11 +185,11 @@ class _NotificationCardListTile extends StatelessWidget {
           fontWeight: FontWeight.normal,
         ),
       ),
-      subtitle: Text(
+      subtitle: const Text(
         '1 Comprimido',
         style: TextStyle(
           fontSize: 12,
-          color: Theme.of(context).primaryColor,
+          color: primaryColor,
         ),
       ),
       trailing: Container(

@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
-import 'package:gooday/src/models/goal_model.dart';
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/models/goal_model.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({super.key});
@@ -137,7 +138,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                     text: 'concluído',
                     suffix:
                         SvgPicture.asset('assets/icons/gift.svg', width: 24),
-                    color: Theme.of(context).primaryColor,
+                    color: primaryColor,
                   ),
                   Text('Visão Geral',
                       style: Theme.of(context).textTheme.titleMedium),
@@ -324,7 +325,7 @@ class _GoalCardUpdate extends StatelessWidget {
         trailing: Wrap(children: [
           RotationTransition(
             turns: loaderAnimation,
-            child: Icon(Icons.sync, color: Theme.of(context).primaryColor),
+            child: const Icon(Icons.sync, color: primaryColor),
           ),
           const Icon(Icons.chevron_right)
         ]),

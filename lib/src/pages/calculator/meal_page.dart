@@ -262,10 +262,10 @@ class _MealFormPageState extends State<MealFormPage> {
                                   onTap: () => _openMealEdit(item),
                                   title: Text(
                                     item.name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).primaryColor,
+                                      color: primaryColor,
                                     ),
                                   ),
                                   subtitle: Text(
@@ -279,17 +279,17 @@ class _MealFormPageState extends State<MealFormPage> {
                                   leading: SvgPicture.asset(
                                     'assets/icons/edit-square.svg',
                                     width: 20,
-                                    colorFilter: ColorFilter.mode(
-                                      Theme.of(context).primaryColor,
+                                    colorFilter: const ColorFilter.mode(
+                                      primaryColor,
                                       BlendMode.srcIn,
                                     ),
                                   ),
-                                  trailing: Text(
+                                  trailing: const Text(
                                     '80g',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).primaryColor,
+                                      color: primaryColor,
                                     ),
                                   ),
                                 )
@@ -404,11 +404,11 @@ class _MealFormPageState extends State<MealFormPage> {
                         backgroundColor:
                             MaterialStatePropertyAll(secondaryColor),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Salvar Refeição',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Theme.of(context).primaryColor,
+                          color: primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -507,8 +507,8 @@ class _MealEditState extends State<_MealEdit> {
             alignment: Alignment.center,
             child: Text(
               widget.item.name,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
+              style: const TextStyle(
+                color: primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

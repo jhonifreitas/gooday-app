@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:gooday/src/widgets/chip.dart';
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/pages/betty/form/all.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
@@ -415,7 +416,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
               borderRadius: BorderRadius.circular(50),
               side: const BorderSide(width: 10, color: Colors.white),
             ),
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: primaryColor,
             onPressed: _onSubmit,
             child: const Icon(Icons.check, color: Colors.white),
           ),

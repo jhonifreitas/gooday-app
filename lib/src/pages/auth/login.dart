@@ -15,13 +15,19 @@ class AuthLoginPage extends StatefulWidget {
 }
 
 class _AuthLoginPageState extends State<AuthLoginPage> {
-  final _authCtrl = AuthController();
+  late final AuthController _authCtrl;
   final _formKey = GlobalKey<FormState>();
 
   bool _togglePass = true;
 
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _authCtrl = AuthController(context);
+  }
 
   _onTogglePass() {
     setState(() {
@@ -31,32 +37,32 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
 
   Future<void> _signInFacebook() async {
     UtilService(context).loading('Entrando...');
-    await _authCtrl.signInFacebook();
+    final user = await _authCtrl.signInFacebook();
 
-    if (!mounted) return;
-
-    Navigator.of(context).pop();
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
   }
 
   Future<void> _signInGoogle() async {
     UtilService(context).loading('Entrando...');
-    await _authCtrl.signInGoogle();
+    final user = await _authCtrl.signInGoogle();
 
-    if (!mounted) return;
-
-    Navigator.of(context).pop();
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
   }
 
   Future<void> _signInApple() async {
     UtilService(context).loading('Entrando...');
-    await _authCtrl.signInApple();
+    final user = await _authCtrl.signInApple();
 
-    if (!mounted) return;
-
-    Navigator.of(context).pop();
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
   }
 
   Future<void> _onSubmit() async {
@@ -64,12 +70,13 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
       UtilService(context).loading('Entrando...');
 
       try {
-        await _authCtrl.signInEmail(_emailCtrl.text, _passwordCtrl.text);
+        final user =
+            await _authCtrl.signInEmail(_emailCtrl.text, _passwordCtrl.text);
 
-        if (!mounted) return;
-
-        Navigator.of(context).pop();
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        if (user != null && mounted) {
+          Navigator.of(context).pop();
+          Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        }
       } on FirebaseAuthException {
         Navigator.of(context).pop();
         UtilService(context).message('E-mail ou senha inválido!');

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/item.dart';
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
-import 'package:gooday/src/common/item.dart';
 
 class GlycemiaPage extends StatefulWidget {
   const GlycemiaPage({super.key});
@@ -43,12 +44,12 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
+          const Align(
             alignment: Alignment.center,
             child: Text(
               'Registrar Glicemia',
               style: TextStyle(
-                color: Theme.of(context).primaryColor,
+                color: primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

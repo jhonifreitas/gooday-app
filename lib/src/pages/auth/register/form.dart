@@ -1,10 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/widgets/profile_image.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/controllers/auth_controller.dart';
 
 class AuthRegisterPage extends StatefulWidget {
   const AuthRegisterPage({super.key});
@@ -14,27 +20,89 @@ class AuthRegisterPage extends StatefulWidget {
 }
 
 class _AuthRegisterPageState extends State<AuthRegisterPage> {
+  late final AuthController _authCtrl;
   final _formKey = GlobalKey<FormState>();
+
+  File? _image;
 
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
-  void _signInFacebook() {}
+  @override
+  void initState() {
+    super.initState();
+    _authCtrl = AuthController(context);
+  }
 
-  void _signInGoogle() {}
+  Future<void> _signInFacebook() async {
+    UtilService(context).loading('Entrando...');
+    final user = await _authCtrl.signInFacebook();
 
-  void _signInApple() {}
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+    }
+  }
 
-  void _onImageUpload() {}
+  Future<void> _signInGoogle() async {
+    UtilService(context).loading('Entrando...');
+    final user = await _authCtrl.signInGoogle();
+
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+    }
+  }
+
+  Future<void> _signInApple() async {
+    UtilService(context).loading('Entrando...');
+    final user = await _authCtrl.signInApple();
+
+    if (user != null && mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+    }
+  }
+
+  Future<void> _onUploadImage() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null && context.mounted) {
+        UtilService(context).loading('Carregando...');
+
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+
+        if (context.mounted) Navigator.of(context).pop();
+      }
+    }
+  }
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
       UtilService(context).loading('Cadastrando...');
-      await Future.delayed(const Duration(seconds: 5));
-      if (context.mounted) {
+
+      final user = await _authCtrl.registerWithEmail(
+          _emailCtrl.text, _passwordCtrl.text);
+
+      if (!mounted) return;
+
+      if (user != null) {
+        final userProvider = context.read<UserProvider>();
+        final data = {
+          'name': _nameCtrl.text,
+          'phone': _phoneCtrl.text,
+        };
+
+        await userProvider.update(data);
+        if (_image != null) await userProvider.uploadImage(_image!);
+
+        if (!mounted) return;
         Navigator.of(context).pop();
         Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
       }
@@ -80,21 +148,9 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       style: Theme.of(context).textTheme.titleLarge),
                   const Text('Queremos conhecê-lo'),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: FloatingActionButton(
-                      elevation: 0,
-                      tooltip: 'Enviar foto',
-                      heroTag: 'register-btn-image',
-                      backgroundColor: Colors.white,
-                      shape: const StadiumBorder(
-                        side: BorderSide(width: 1, color: Colors.grey),
-                      ),
-                      onPressed: _onImageUpload,
-                      child: const Icon(Icons.camera_alt_outlined,
-                          color: Colors.grey, size: 40),
-                    ),
+                  ProfileImage(
+                    image: _image?.path,
+                    onUpload: _onUploadImage,
                   ),
                   Form(
                     key: _formKey,

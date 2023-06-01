@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
+
 class GridImageItem extends StatefulWidget {
   final String image;
   final bool? selected;
@@ -42,8 +44,7 @@ class _GridImageItemState extends State<GridImageItem> {
         shape: RoundedRectangleBorder(
           side: BorderSide(
             width: 3,
-            color:
-                _selected ? Theme.of(context).primaryColor : Colors.transparent,
+            color: _selected ? primaryColor : Colors.transparent,
           ),
           borderRadius: BorderRadius.circular(10),
         ),
@@ -52,9 +53,7 @@ class _GridImageItemState extends State<GridImageItem> {
           fit: BoxFit.cover,
           image: AssetImage(widget.image),
           child: Container(
-            color: _selected
-                ? Theme.of(context).primaryColor.withOpacity(.4)
-                : null,
+            color: _selected ? primaryColor.withOpacity(.4) : null,
             child: InkWell(onTap: _onSelected),
           ),
         ),

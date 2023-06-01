@@ -1,6 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/pages/betty/form/food.dart';
 import 'package:gooday/src/pages/betty/form/health.dart';
 import 'package:gooday/src/pages/betty/form/fitness.dart';
@@ -112,15 +113,16 @@ class BettyRecommendDayli extends StatelessWidget {
                         ),
                         const WidgetSpan(child: SizedBox(width: 5)),
                         TextSpan(
-                            text: title,
-                            style: Theme.of(context).textTheme.titleLarge),
+                          text: title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Recomendações Diárias'.toUpperCase(),
-                    style: TextStyle(color: Theme.of(context).primaryColor),
+                    style: const TextStyle(color: primaryColor),
                   )
                 ],
               ),
@@ -134,9 +136,9 @@ class BettyRecommendDayli extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   description ?? "",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).primaryColor,
+                    color: primaryColor,
                   ),
                 ),
               ],
@@ -159,13 +161,13 @@ class _BettyButtonFooter extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback? onPrev;
 
-  List<Widget> dots(BuildContext context) {
+  List<Widget> dots() {
     final List<Widget> dots = [];
 
     for (var i = 0; i < 4; i++) {
       if (i > 0) dots.add(const SizedBox(width: 3));
       dots.add(Icon(step == i ? Icons.circle : Icons.circle_outlined,
-          color: Theme.of(context).primaryColor, size: 8));
+          color: primaryColor, size: 8));
     }
 
     return dots;
@@ -184,15 +186,13 @@ class _BettyButtonFooter extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onPrev,
-            color: Theme.of(context).primaryColor,
+            color: primaryColor,
             style: IconButton.styleFrom(
               padding: const EdgeInsets.all(15),
               shape: CircleBorder(
                 side: BorderSide(
                   width: 1,
-                  color: onPrev != null
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey,
+                  color: onPrev != null ? primaryColor : Colors.grey,
                 ),
               ),
             ),
@@ -201,15 +201,15 @@ class _BettyButtonFooter extends StatelessWidget {
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: dots(context),
+              children: dots(),
             ),
           ),
           IconButton(
             onPressed: onNext,
             color: Colors.white,
             style: IconButton.styleFrom(
+              backgroundColor: primaryColor,
               padding: const EdgeInsets.all(15),
-              backgroundColor: Theme.of(context).primaryColor,
             ),
             icon: Icon(step < 3 ? Icons.arrow_forward : Icons.check),
           ),

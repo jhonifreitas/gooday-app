@@ -70,7 +70,7 @@ class _GoodiesPageState extends State<GoodiesPage> {
                         'assets/icons/shoe.svg',
                         width: 25,
                         colorFilter: ColorFilter.mode(
-                          Theme.of(context).primaryColor,
+                          primaryColor,
                           BlendMode.srcIn,
                         ),
                       ),
@@ -78,7 +78,7 @@ class _GoodiesPageState extends State<GoodiesPage> {
                         '8:00',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).primaryColor,
+                          color: primaryColor,
                         ),
                       )
                     ],
@@ -90,7 +90,7 @@ class _GoodiesPageState extends State<GoodiesPage> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: primaryColor,
                         ),
                       ),
                       SvgPicture.asset('assets/icons/coin.svg', width: 20)

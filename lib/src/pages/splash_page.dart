@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class SplashPage extends StatefulWidget {
@@ -19,13 +17,12 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _loadUser() async {
-    final authCtrl = AuthController();
-    final authId = await authCtrl.fetchUser();
+    final authCtrl = AuthController(context);
+    final user = await authCtrl.fetchUser();
 
     if (!mounted) return;
 
-    if (authId != null) {
-      context.read<UserProvider>().getByAuthId(authId);
+    if (user != null) {
       Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } else {
       Navigator.pushNamedAndRemoveUntil(

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/widgets/profile_image.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
@@ -35,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _onSignOut() async {
     UtilService(context).loading('Saindo...');
-    final authCtrl = AuthController();
+    final authCtrl = AuthController(context);
 
     await authCtrl.signOut();
     if (!mounted) return;
@@ -43,6 +44,20 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.of(context).pop();
     Navigator.pushNamedAndRemoveUntil(
         context, '/auth/entrar', (route) => false);
+  }
+
+  Future<void> _onUploadImage() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null && context.mounted) {
+        UtilService(context).loading('Carregando...');
+        final file = File(pickedFile.path);
+        await context.read<UserProvider>().uploadImage(file);
+        if (context.mounted) Navigator.of(context).pop();
+      }
+    }
   }
 
   @override
@@ -74,12 +89,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: const Text('Meu Perfil',
                         style: TextStyle(color: Colors.white)),
                     suffix: IconButton(
+                      tooltip: 'Sair',
                       onPressed: _onSignOut,
                       icon: const Icon(Icons.logout, color: Colors.white),
                     ),
                   ),
                 ),
-                _ProfileImage(image: context.watch<UserProvider>().data?.image),
+                ProfileImage(
+                  onUpload: _onUploadImage,
+                  image: context.watch<UserProvider>().data?.image,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
@@ -195,84 +214,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class _ProfileImage extends StatelessWidget {
-  const _ProfileImage({this.image});
-
-  final String? image;
-
-  Future<void> _onUpload(BuildContext context) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null && context.mounted) {
-      UtilService(context).loading('Carregando...');
-      final file = File(pickedFile.path);
-      await context.read<UserProvider>().uploadImage(file);
-      if (context.mounted) Navigator.of(context).pop();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (image == null || image!.isEmpty) {
-      return SizedBox(
-        width: 100,
-        height: 100,
-        child: FloatingActionButton(
-          elevation: 0,
-          focusElevation: 0,
-          hoverElevation: 0,
-          highlightElevation: 0,
-          tooltip: 'Enviar foto',
-          heroTag: 'profile-btn-image',
-          backgroundColor: Colors.transparent,
-          splashColor: Colors.white.withOpacity(0.2),
-          shape: const StadiumBorder(
-            side: BorderSide(width: 1, color: Colors.white),
-          ),
-          onPressed: () => _onUpload(context),
-          child: const Icon(Icons.camera_alt_outlined,
-              color: Colors.white, size: 40),
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        Material(
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          child: Ink.image(
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            image: const AssetImage('assets/images/avatar.png'),
-            child: InkWell(onTap: () => _onUpload(context)),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          bottom: 0,
-          width: 30,
-          height: 30,
-          child: IconButton(
-            padding: const EdgeInsets.all(6),
-            onPressed: () => _onUpload(context),
-            style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll<Color>(secondaryColor),
-            ),
-            icon: const Icon(
-              size: 15,
-              color: Colors.white,
-              Icons.photo_camera_outlined,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-}
-
 class _ProfileListTile extends StatelessWidget {
   const _ProfileListTile(
       {required this.text, required this.icon, required this.onTap});
@@ -295,7 +236,7 @@ class _ProfileListTile extends StatelessWidget {
         width: 25,
         height: 25,
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: primaryColor,
           borderRadius: BorderRadius.circular(50),
         ),
         child: icon,

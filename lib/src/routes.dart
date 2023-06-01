@@ -2,14 +2,12 @@ import 'package:gooday/src/pages/home_page.dart';
 import 'package:gooday/src/pages/auth/login.dart';
 import 'package:gooday/src/pages/splash_page.dart';
 import 'package:gooday/src/pages/betty/intro.dart';
-import 'package:gooday/src/pages/goodies_page.dart';
 import 'package:gooday/src/pages/betty/config.dart';
 import 'package:gooday/src/pages/intro/one_page.dart';
 import 'package:gooday/src/pages/intro/two_page.dart';
 import 'package:gooday/src/pages/betty/form/all.dart';
 import 'package:gooday/src/pages/betty/form/food.dart';
 import 'package:gooday/src/pages/intro/three_page.dart';
-import 'package:gooday/src/pages/auth/new_password.dart';
 import 'package:gooday/src/pages/betty/form/health.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
 import 'package:gooday/src/pages/auth/register/form.dart';
@@ -17,17 +15,17 @@ import 'package:gooday/src/pages/betty/form/fitness.dart';
 import 'package:gooday/src/pages/calculator/meal_page.dart';
 import 'package:gooday/src/pages/betty/form/education.dart';
 import 'package:gooday/src/pages/auth/forgot_password.dart';
+import 'package:gooday/src/pages/profile/goodies_page.dart';
 import 'package:gooday/src/pages/auth/register/anamnesis.dart';
 
 class Routes {
-  static const initalRoute = '/splash';
+  static const initalRoute = '/spash';
 
   static final routes = {
     '/': (context) => const HomePage(),
     '/splash': (context) => const SplashPage(),
     '/auth/entrar': (context) => const AuthLoginPage(),
     '/auth/esqueci-senha': (context) => const AuthForgotPasswordPage(),
-    '/auth/nova-senha': (context) => const AuthNewPasswordPage(),
     '/auth/cadastrar': (context) => const AuthRegisterPage(),
     '/auth/cadastrar/anamnese': (context) => const AuthRegisterAnamnesisPage(),
     '/introducao/1': (context) => const IntroOnePage(),

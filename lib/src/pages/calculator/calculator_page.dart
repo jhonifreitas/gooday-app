@@ -44,7 +44,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
               Expanded(
                 child: Material(
                   clipBehavior: Clip.hardEdge,
-                  color: Theme.of(context).primaryColor,
+                  color: primaryColor,
                   borderRadius: BorderRadius.circular(10),
                   child: InkWell(
                     onTap: _goToMealForm,
@@ -151,14 +151,13 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   ),
                 ),
                 prefix: Column(
-                  children: [
-                    Icon(Icons.lunch_dining_outlined,
-                        color: Theme.of(context).primaryColor),
+                  children: const [
+                    Icon(Icons.lunch_dining_outlined, color: primaryColor),
                     Text(
                       '8:00',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Theme.of(context).primaryColor,
+                        color: primaryColor,
                       ),
                     )
                   ],

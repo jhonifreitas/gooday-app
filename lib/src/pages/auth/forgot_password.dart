@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/controllers/auth_controller.dart';
 
 class AuthForgotPasswordPage extends StatefulWidget {
   const AuthForgotPasswordPage({super.key});
@@ -18,13 +19,17 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
       UtilService(context).loading('Enviado...');
-      await Future.delayed(const Duration(seconds: 5));
-      if (context.mounted) {
-        Navigator.of(context).pop();
-        Navigator.pushNamed(context, '/auth/nova-senha');
-      }
+
+      await AuthController(context).sendPasswordReset(_emailCtrl.text);
+
+      if (!mounted) return;
+
+      UtilService(context)
+          .message('Verifique a caixa de entrada de seu e-mail!');
+
+      Navigator.of(context).pop();
+      Navigator.pushNamed(context, '/auth/entrar');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
