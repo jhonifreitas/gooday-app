@@ -20,6 +20,7 @@ import 'package:gooday/src/pages/auth/forgot_password.dart';
 import 'package:gooday/src/pages/profile/insulin_page.dart';
 import 'package:gooday/src/pages/profile/glycemia_page.dart';
 import 'package:gooday/src/pages/auth/register/anamnesis.dart';
+import 'package:gooday/src/pages/profile/reset_password_page.dart';
 
 class Routes {
   static const initalRoute = '/splash';
@@ -35,6 +36,7 @@ class Routes {
     '/introducao/2': (context) => const IntroTwoPage(),
     '/introducao/3': (context) => const IntroThreePage(),
     '/user': (context) => const UserPage(),
+    '/user/redefinir-senha': (context) => const ResetPasswordPage(),
     '/refeicao': (context) => const MealFormPage(),
     '/metas/config': (context) => const GoalConfigPage(),
     '/goodies': (context) => const GoodiesListPage(),

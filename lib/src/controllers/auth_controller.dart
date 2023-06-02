@@ -96,9 +96,13 @@ class AuthController {
     return FirebaseAuth.instance.verifyPasswordResetCode(code);
   }
 
-  Future<void> passwordReset(String newPassword, String code) {
+  Future<void> passwordResetCode(String newPassword, String code) {
     return FirebaseAuth.instance
         .confirmPasswordReset(newPassword: newPassword, code: code);
+  }
+
+  Future<void> passwordReset(String newPassword) async {
+    return FirebaseAuth.instance.currentUser?.updatePassword(newPassword);
   }
 
   // SIGN OUT

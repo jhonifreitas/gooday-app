@@ -22,10 +22,10 @@ class FormFieldCustom extends StatelessWidget {
     this.maxLength,
     this.minLength,
     this.options,
-    this.onChange,
-    this.onTap,
     this.suffixIcon,
     this.prefixIcon,
+    this.onChange,
+    this.onTap,
   });
 
   final String? label;
@@ -139,9 +139,9 @@ class FormFieldCustom extends StatelessWidget {
       inputFormatters: inputMask != null ? [inputMask] : null,
       decoration: InputDecoration(
         labelText: label,
+        icon: prefixIcon,
         helperText: helper,
         hintText: placeholder,
-        prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         counterText: showCounter ? null : '',
         hintStyle: const TextStyle(fontWeight: FontWeight.normal),

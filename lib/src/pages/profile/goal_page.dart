@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/controllers/user_controller.dart';
 
 class GoalConfigPage extends StatefulWidget {
   const GoalConfigPage({super.key});
@@ -57,21 +58,37 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
                   label: 'Passos',
                   controller: _userCtrl.nameCtrl,
                   inputType: TextInputType.number,
+                  prefixIcon: SvgPicture.asset(
+                    'assets/icons/shoe.svg',
+                    width: 30,
+                  ),
                 ),
                 FormFieldCustom(
                   label: 'Kilometros',
                   controller: _userCtrl.nameCtrl,
                   inputType: TextInputType.number,
+                  prefixIcon: SvgPicture.asset(
+                    'assets/icons/pin.svg',
+                    width: 30,
+                  ),
                 ),
                 FormFieldCustom(
                   label: 'Calorias',
                   controller: _userCtrl.nameCtrl,
                   inputType: TextInputType.number,
+                  prefixIcon: SvgPicture.asset(
+                    'assets/icons/fire.svg',
+                    width: 30,
+                  ),
                 ),
                 FormFieldCustom(
                   label: 'Minutos ativos',
                   controller: _userCtrl.nameCtrl,
                   inputType: TextInputType.number,
+                  prefixIcon: SvgPicture.asset(
+                    'assets/icons/clock-race.svg',
+                    width: 30,
+                  ),
                 ),
               ],
             ),
