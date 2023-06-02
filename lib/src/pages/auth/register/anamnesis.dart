@@ -29,7 +29,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 
-      final data = _userCtrl.onSerialize();
+      final data = _userCtrl.toSerialize();
       await context.read<UserProvider>().update(data);
 
       if (!mounted) return;
@@ -159,7 +159,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                       onPressed: () => _goToNext(),
                       child: Icon(
                         _currentPage < 1 ? Icons.arrow_forward : Icons.check,
-                        color: primaryColor,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -196,10 +196,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SvgPicture.asset(
-                'assets/icons/coin.svg',
-                width: 30,
-              ),
+              SvgPicture.asset('assets/icons/coin.svg', width: 30),
             ],
           ),
           content: const Text(
@@ -221,7 +218,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Olá, ${''.toString()}?',
+            Text('Olá, ${context.watch<UserProvider>().data?.name}?',
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
             const Text('Para finalizar seu cadastro, '
@@ -280,11 +277,8 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 Text('Preencha seus dados e ganhe 10 Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
-                  onPressed: () => _openGoodies,
-                  icon: const Icon(
-                    Icons.info_outline,
-                    color: primaryColor,
-                  ),
+                  onPressed: () => _openGoodies(context),
+                  icon: const Icon(Icons.info_outline, color: primaryColor),
                 )
               ],
             ),

@@ -192,9 +192,11 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     backgroundColor: Colors.white,
-                    child: SvgPicture.asset('assets/icons/facebook.svg',
-                        width: 30),
-                    onPressed: () => _signInFacebook(),
+                    onPressed: _signInFacebook,
+                    child: SvgPicture.asset(
+                      'assets/icons/facebook.svg',
+                      width: 30,
+                    ),
                   ),
                 ),
                 Padding(
@@ -206,9 +208,11 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child:
-                        SvgPicture.asset('assets/icons/google.svg', width: 30),
-                    onPressed: () => _signInGoogle(),
+                    onPressed: _signInGoogle,
+                    child: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      width: 30,
+                    ),
                   ),
                 ),
                 Padding(
@@ -220,9 +224,11 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child:
-                        SvgPicture.asset('assets/icons/apple.svg', width: 30),
-                    onPressed: () => _signInApple(),
+                    onPressed: _signInApple,
+                    child: SvgPicture.asset(
+                      'assets/icons/apple.svg',
+                      width: 30,
+                    ),
                   ),
                 ),
               ],

@@ -15,7 +15,7 @@ class UtilService {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 100),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 50),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(

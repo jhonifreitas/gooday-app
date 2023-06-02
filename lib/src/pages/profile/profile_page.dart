@@ -143,6 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 ProfileImage(
+                  color: Colors.white,
                   onUpload: _onUploadImage,
                   image: context.watch<UserProvider>().data?.image,
                 ),

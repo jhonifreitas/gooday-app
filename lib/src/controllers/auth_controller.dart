@@ -80,10 +80,8 @@ class AuthController {
         .createUserWithEmailAndPassword(email: email, password: password);
     final authId = fbUser.user?.uid;
 
-    if (authId != null) {
-      await _createUser(fbUser);
-      await _userProvider.getByAuthId(authId);
-    }
+    if (authId != null) await _createUser(fbUser);
+
     return _userProvider.data;
   }
 

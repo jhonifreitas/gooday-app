@@ -90,7 +90,7 @@ class UserController {
     }
   }
 
-  Map<String, dynamic> onSerialize() {
+  Map<String, dynamic> toSerialize() {
     String? phone;
     DateTime? dateBirth;
     double? height;
@@ -123,8 +123,7 @@ class UserController {
         'insulinSlow': insulinSlowCtrl.text,
         'insulinFast': insulinFastCtrl.text,
         'drug': drugCtrl.text,
-        'diabete': diabeteCtrl,
-        'diabeteType': diabeteTypeCtrl,
+        'diabeteType': diabeteTypeCtrl.text,
         'insulin': insulinCtrl,
       }
     };

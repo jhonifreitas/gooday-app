@@ -39,7 +39,7 @@ class _UserPageState extends State<UserPage> {
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
-      final data = _userCtrl.onSerialize();
+      final data = _userCtrl.toSerialize();
       await _userProvider.update(data);
 
       if (!mounted) return;
@@ -257,7 +257,7 @@ class _UserForm extends StatelessWidget {
                 Text('Preencha seus dados e ganhe 10 Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
-                  onPressed: () => _openGoodies,
+                  onPressed: () => _openGoodies(context),
                   icon: const Icon(
                     Icons.info_outline,
                     color: primaryColor,

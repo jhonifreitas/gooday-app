@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
@@ -22,12 +24,10 @@ class AuthRegisterPage extends StatefulWidget {
 class _AuthRegisterPageState extends State<AuthRegisterPage> {
   late final AuthController _authCtrl;
   final _formKey = GlobalKey<FormState>();
+  final _userCtrl = UserController();
 
   File? _image;
 
-  final _nameCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController();
-  final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
   @override
@@ -85,26 +85,30 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      UtilService(context).loading('Cadastrando...');
+      try {
+        UtilService(context).loading('Cadastrando...');
 
-      final user = await _authCtrl.registerWithEmail(
-          _emailCtrl.text, _passwordCtrl.text);
-
-      if (!mounted) return;
-
-      if (user != null) {
-        final userProvider = context.read<UserProvider>();
-        final data = {
-          'name': _nameCtrl.text,
-          'phone': _phoneCtrl.text,
-        };
-
-        await userProvider.update(data);
-        if (_image != null) await userProvider.uploadImage(_image!);
+        final user = await _authCtrl.registerWithEmail(
+            _userCtrl.emailCtrl.text, _passwordCtrl.text);
 
         if (!mounted) return;
+
+        if (user != null) {
+          final userProvider = context.read<UserProvider>();
+          final data = _userCtrl.toSerialize();
+
+          await userProvider.update(data);
+          if (_image != null) await userProvider.uploadImage(_image!);
+
+          if (!mounted) return;
+          Navigator.of(context).pop();
+          Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+        }
+      } on FirebaseAuthException catch (e) {
         Navigator.of(context).pop();
-        Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+        String msg = 'Não foi possível realizar o cadastro!';
+        if (e.code == 'email-already-in-use') msg = 'Usuário já cadastrado!';
+        UtilService(context).message(msg);
       }
     } else {
       UtilService(context).message('Verifique os campos destacados!');
@@ -133,12 +137,10 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                      onPressed: () => _goToBack(),
-                      icon: const Icon(Icons.arrow_back)),
-                  Image.asset(
-                    width: 80,
-                    'assets/images/logo.png',
+                    onPressed: () => _goToBack(),
+                    icon: const Icon(Icons.arrow_back),
                   ),
+                  Image.asset('assets/images/logo.png', width: 80),
                   const SizedBox(width: 50),
                 ],
               ),
@@ -148,10 +150,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       style: Theme.of(context).textTheme.titleLarge),
                   const Text('Queremos conhecê-lo'),
                   const SizedBox(height: 10),
-                  ProfileImage(
-                    image: _image?.path,
-                    onUpload: _onUploadImage,
-                  ),
+                  ProfileImage(image: _image?.path, onUpload: _onUploadImage),
                   Form(
                     key: _formKey,
                     autovalidateMode: AutovalidateMode.always,
@@ -159,12 +158,12 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       children: [
                         FormFieldCustom(
                           label: 'Nome',
-                          controller: _nameCtrl,
+                          controller: _userCtrl.nameCtrl,
                           isRequired: true,
                         ),
                         FormFieldCustom(
                           label: 'Celular',
-                          controller: _phoneCtrl,
+                          controller: _userCtrl.phoneCtrl,
                           isRequired: true,
                           minLength: 15,
                           inputType: TextInputType.number,
@@ -172,13 +171,14 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                         ),
                         FormFieldCustom(
                           label: 'E-mail',
-                          controller: _emailCtrl,
+                          controller: _userCtrl.emailCtrl,
                           isRequired: true,
                           inputType: TextInputType.emailAddress,
                         ),
                         FormFieldCustom(
                           label: 'Senha',
                           controller: _passwordCtrl,
+                          minLength: 6,
                           isRequired: true,
                           obscureText: true,
                         ),
@@ -192,12 +192,15 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       ],
                     ),
                   ),
-                  Text('Já possui uma conta?',
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Já possui uma conta?',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 10),
                   FilledButton.tonal(
-                      onPressed: () => _goToRegister(),
-                      child: const Text('Acessar'))
+                    onPressed: () => _goToRegister(),
+                    child: const Text('Acessar'),
+                  )
                 ],
               ),
               Padding(
@@ -229,9 +232,11 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       backgroundColor: Colors.white,
-                      child: SvgPicture.asset('assets/icons/facebook.svg',
-                          width: 30),
-                      onPressed: () => _signInFacebook(),
+                      onPressed: _signInFacebook,
+                      child: SvgPicture.asset(
+                        'assets/icons/facebook.svg',
+                        width: 30,
+                      ),
                     ),
                   ),
                   Padding(
@@ -243,9 +248,11 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: SvgPicture.asset('assets/icons/google.svg',
-                          width: 30),
-                      onPressed: () => _signInGoogle(),
+                      onPressed: _signInGoogle,
+                      child: SvgPicture.asset(
+                        'assets/icons/google.svg',
+                        width: 30,
+                      ),
                     ),
                   ),
                   Padding(
@@ -257,9 +264,11 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child:
-                          SvgPicture.asset('assets/icons/apple.svg', width: 30),
-                      onPressed: () => _signInApple(),
+                      onPressed: _signInApple,
+                      child: SvgPicture.asset(
+                        'assets/icons/apple.svg',
+                        width: 30,
+                      ),
                     ),
                   ),
                 ],

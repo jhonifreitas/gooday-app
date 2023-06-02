@@ -30,7 +30,6 @@ class BaseModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'createdAt': createdAt ?? DateTime.now(),
       'updatedAt': updatedAt ?? (createdAt != null ? DateTime.now() : null),
       'deletedAt': deletedAt

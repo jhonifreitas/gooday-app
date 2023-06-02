@@ -34,9 +34,9 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> update(Map<String, dynamic> data) async {
-    if (_data != null) {
+    if (_data?.id != null) {
       final query = _ref.doc(_data!.id);
-      data['updatedAt'] = DateTime.now();
+      data.addAll({'updatedAt': DateTime.now()});
       await query.update(data);
 
       final doc = await query.get();
@@ -48,7 +48,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> uploadImage(File file) async {
-    if (_data != null) {
+    if (_data?.id != null) {
       final ref =
           FirebaseStorage.instance.refFromURL('users/${_data!.id}/image.png');
       final snapshot = await ref.putFile(file);
@@ -60,13 +60,13 @@ class UserProvider extends ChangeNotifier {
     final fbUser = FirebaseAuth.instance.currentUser;
 
     if (fbUser != null) {
-      if (_data?.name != null) {
+      if (_data?.name != null && _data!.email!.isNotEmpty) {
         await fbUser.updateDisplayName(_data!.name!);
       }
-      if (_data?.email != null) {
+      if (_data?.email != null && _data!.email!.isNotEmpty) {
         await fbUser.updateEmail(_data!.email!);
       }
-      if (_data?.image != null) {
+      if (_data?.image != null && _data!.email!.isNotEmpty) {
         await fbUser.updatePhotoURL(_data!.image!);
       }
     }

@@ -21,7 +21,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
-      final data = _userCtrl.onSerialize();
+      final data = _userCtrl.toSerialize();
 
       if (!mounted) return;
 

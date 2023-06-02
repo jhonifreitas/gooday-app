@@ -115,11 +115,7 @@ class FormFieldCustom extends StatelessWidget {
     TextInputMask? inputMask;
 
     if (masks != null) {
-      inputMask = TextInputMask(
-        mask: masks,
-        reverse: maskReverse,
-        maxLength: masks![masks!.length - 1].length,
-      );
+      inputMask = TextInputMask(mask: masks, reverse: maskReverse);
       if (controller.text.isNotEmpty) {
         controller.text = inputMask.magicMask.getMaskedString(controller.text);
       }
