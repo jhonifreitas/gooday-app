@@ -1,5 +1,6 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
@@ -24,7 +25,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   void _goToMealForm() {
-    Navigator.pushNamed(context, '/refeicao');
+    context.push('/refeicao');
   }
 
   @override

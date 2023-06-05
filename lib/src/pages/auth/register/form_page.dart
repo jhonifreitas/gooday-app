@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -41,8 +42,8 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     final user = await _authCtrl.signInFacebook();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+      context.pop();
+      context.push('/auth/cadastrar/anamnese');
     }
   }
 
@@ -51,8 +52,8 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     final user = await _authCtrl.signInGoogle();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+      context.pop();
+      context.push('/auth/cadastrar/anamnese');
     }
   }
 
@@ -61,8 +62,8 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     final user = await _authCtrl.signInApple();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+      context.pop();
+      context.push('/auth/cadastrar/anamnese');
     }
   }
 
@@ -78,7 +79,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
           _image = File(pickedFile.path);
         });
 
-        if (context.mounted) Navigator.of(context).pop();
+        if (context.mounted) context.pop();
       }
     }
   }
@@ -105,11 +106,11 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
           if (_image != null) await userProvider.uploadImage(_image!);
 
           if (!mounted) return;
-          Navigator.of(context).pop();
-          Navigator.pushNamed(context, '/auth/cadastrar/anamnese');
+          context.pop();
+          context.push('/auth/cadastrar/anamnese');
         }
       } on FirebaseAuthException catch (e) {
-        Navigator.of(context).pop();
+        context.pop();
         String msg = 'Não foi possível realizar o cadastro!';
         if (e.code == 'email-already-in-use') msg = 'Usuário já cadastrado!';
         UtilService(context).message(msg);
@@ -119,12 +120,8 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     }
   }
 
-  void _goToRegister() {
-    Navigator.pushNamed(context, '/auth/cadastrar');
-  }
-
   void _goToBack() {
-    Navigator.pop(context);
+    context.pop();
   }
 
   @override
@@ -202,7 +199,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                   ),
                   const SizedBox(height: 10),
                   FilledButton.tonal(
-                    onPressed: () => _goToRegister(),
+                    onPressed: () => _goToBack(),
                     child: const Text('Acessar'),
                   )
                 ],

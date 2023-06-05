@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AppBarCustom extends StatelessWidget {
   const AppBarCustom({
@@ -19,11 +20,11 @@ class AppBarCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget? backButton;
-    if (prefix == null && Navigator.canPop(context)) {
+    if (prefix == null && context.canPop()) {
       backButton = IconButton(
         tooltip: 'Voltar',
         icon: Icon(Icons.keyboard_backspace, color: iconBackColor),
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: () => context.pop(),
       );
     }
 

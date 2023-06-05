@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/controllers/auth_controller.dart';
 
@@ -23,10 +24,9 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     if (user != null) {
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      context.go('/');
     } else {
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/auth/entrar', (route) => false);
+      context.go('/auth/entrar');
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
@@ -33,8 +34,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
+      context.pop();
+      context.pop();
       UtilService(context).message('Senha redefinida!');
     } else {
       UtilService(context).message('Verifique os campos destacados!');

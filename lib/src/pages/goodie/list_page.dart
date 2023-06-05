@@ -5,14 +5,14 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
 
-class GoodiesListPage extends StatefulWidget {
-  const GoodiesListPage({super.key});
+class GoodieListPage extends StatefulWidget {
+  const GoodieListPage({super.key});
 
   @override
-  State<GoodiesListPage> createState() => _GoodiesListPageState();
+  State<GoodieListPage> createState() => _GoodieListPageState();
 }
 
-class _GoodiesListPageState extends State<GoodiesListPage> {
+class _GoodieListPageState extends State<GoodieListPage> {
   final int _total = 0;
 
   @override

@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
@@ -30,8 +31,8 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
 
     //   if (!mounted) return;
 
-    //   Navigator.of(context).pop();
-    //   Navigator.of(context).pop();
+    //   context.pop();
+    //   context.pop();
     // } else {
     //   UtilService(context).message('Verifique os campos destacados!');
     // }
@@ -343,7 +344,7 @@ class _InsulinParamState extends State<_InsulinParam> {
   void _onSubmit() {
     const item = Item(id: '123', name: 'asd');
     widget.onSubmit(item);
-    Navigator.of(context).pop();
+    context.pop();
   }
 
   @override

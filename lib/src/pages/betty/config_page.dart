@@ -1,5 +1,6 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
@@ -21,19 +22,19 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
   }
 
   void _goToFood() {
-    Navigator.pushNamed(context, '/betty/config/alimentacao');
+    context.push('/config/betty/alimentacao');
   }
 
   void _goToFitness() {
-    Navigator.pushNamed(context, '/betty/config/exercicio');
+    context.push('/config/betty/exercicio');
   }
 
   void _goToHealth() {
-    Navigator.pushNamed(context, '/betty/config/saude');
+    context.push('/config/betty/saude');
   }
 
   void _goToEducation() {
-    Navigator.pushNamed(context, '/betty/config/educacao');
+    context.push('/config/betty/educacao');
   }
 
   @override

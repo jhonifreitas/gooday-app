@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
@@ -25,9 +26,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
-      Navigator.of(context).pushNamed('/insulina/config');
+      context.pop();
+      context.pop();
+      context.push('/config/insulina');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }

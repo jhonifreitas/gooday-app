@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
@@ -23,8 +23,8 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
 
     //   if (!mounted) return;
 
-    //   Navigator.of(context).pop();
-    //   Navigator.of(context).pop();
+    //   context.pop();
+    //   context.pop();
     // } else {
     //   UtilService(context).message('Verifique os campos destacados!');
     // }
@@ -64,7 +64,7 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
                   ),
                 ),
                 FormFieldCustom(
-                  label: 'Kilometros',
+                  label: 'Quilometros',
                   controller: _userCtrl.nameCtrl,
                   inputType: TextInputType.number,
                   prefixIcon: SvgPicture.asset(

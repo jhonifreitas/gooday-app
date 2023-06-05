@@ -1,5 +1,6 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/widgets/button.dart';
@@ -40,8 +41,8 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
     final user = await _authCtrl.signInFacebook();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      context.pop();
+      context.go('/');
     }
   }
 
@@ -50,8 +51,8 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
     final user = await _authCtrl.signInGoogle();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      context.pop();
+      context.go('/');
     }
   }
 
@@ -60,8 +61,8 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
     final user = await _authCtrl.signInApple();
 
     if (user != null && mounted) {
-      Navigator.of(context).pop();
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      context.pop();
+      context.go('/');
     }
   }
 
@@ -74,11 +75,11 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
             await _authCtrl.signInEmail(_emailCtrl.text, _passwordCtrl.text);
 
         if (user != null && mounted) {
-          Navigator.of(context).pop();
-          Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+          context.pop();
+          context.go('/');
         }
       } on FirebaseAuthException {
-        Navigator.of(context).pop();
+        context.pop();
         UtilService(context).message('E-mail ou senha inválido!');
       }
     } else {
@@ -87,11 +88,11 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
   }
 
   void _goToRegister() {
-    Navigator.pushNamed(context, '/auth/cadastrar');
+    context.push('/auth/cadastrar');
   }
 
   void _goToForgotPass() {
-    Navigator.pushNamed(context, '/auth/esqueci-senha');
+    context.push('/auth/esqueci-senha');
   }
 
   @override

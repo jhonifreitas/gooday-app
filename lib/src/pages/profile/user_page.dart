@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
@@ -10,7 +11,7 @@ import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
-import 'package:gooday/src/pages/goodies/congratulation_page.dart';
+import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -59,19 +60,19 @@ class _UserPageState extends State<UserPage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
+      context.pop();
+      context.pop();
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
   }
 
-  void _openGoodiesCongratulation() {
+  void _openGoodieCongratulation() {
     showDialog(
       context: context,
       builder: (context) {
         return const AlertDialog(
-          content: GoodiesCongratulationPage(value: 50),
+          content: GoodieCongratulationPage(value: 50),
         );
       },
     );

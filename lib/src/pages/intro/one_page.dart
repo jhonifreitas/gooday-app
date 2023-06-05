@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/providers/user_provider.dart';
@@ -34,7 +35,7 @@ class _IntroOnePageState extends State<IntroOnePage> {
     );
 
     if (_currentPage == 1) {
-      Navigator.pushNamed(context, '/introducao/2');
+      context.push('/introducao/2');
     }
   }
 

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
 
-class GoodiesCongratulationPage extends StatelessWidget {
-  const GoodiesCongratulationPage({required this.value, super.key});
+class GoodieCongratulationPage extends StatelessWidget {
+  const GoodieCongratulationPage({required this.value, super.key});
 
   final int value;
 

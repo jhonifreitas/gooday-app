@@ -10,7 +10,9 @@ class UserModel extends BaseModel {
   final String? image;
   final String? genre;
   final DateTime? dateBirth;
+  final int goodies;
   final UserAnamnese? anamnese;
+  final UserConfig? config;
 
   UserModel({
     this.authId = '',
@@ -19,8 +21,10 @@ class UserModel extends BaseModel {
     this.phone,
     this.image,
     this.genre,
+    this.goodies = 0,
     this.dateBirth,
     this.anamnese,
+    this.config,
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -43,10 +47,12 @@ class UserModel extends BaseModel {
       phone: json['phone'],
       image: json['image'],
       genre: json['genre'],
+      goodies: json['goodies'],
       dateBirth: dateBirth != null && dateBirth != ''
           ? (dateBirth as Timestamp).toDate()
           : null,
       anamnese: UserAnamnese.fromJson(json['anamnese'] ?? {}),
+      config: UserConfig.fromJson(json['config'] ?? {}),
       id: base.id,
       createdAt: base.createdAt,
       updatedAt: base.updatedAt,
@@ -64,7 +70,9 @@ class UserModel extends BaseModel {
     json['image'] = image;
     json['genre'] = genre;
     json['dateBirth'] = dateBirth;
+    json['goodies'] = goodies;
     json['anamnese'] = anamnese;
+    json['config'] = config;
     return json;
   }
 }
@@ -108,6 +116,146 @@ class UserAnamnese {
       'insulinSlow': insulinSlow,
       'insulinFast': insulinFast,
       'drug': drug,
+    };
+  }
+}
+
+class UserConfig {
+  UserConfigGoal? goal;
+  UserConfigGlycemia? glycemia;
+  UserConfigBetty? betty;
+
+  UserConfig({
+    this.goal,
+    this.glycemia,
+    this.betty,
+  });
+
+  UserConfig.fromJson(Map<String, dynamic> json)
+      : this(
+          goal: UserConfigGoal.fromJson(json['goal']),
+          glycemia: UserConfigGlycemia.fromJson(json['glycemia']),
+          betty: UserConfigBetty.fromJson(json['betty']),
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'goal': goal,
+      'glycemia': glycemia,
+      'betty': betty,
+    };
+  }
+}
+
+class UserConfigGoal {
+  int steps;
+  int distance;
+  int calories;
+  int activeMinutes;
+
+  UserConfigGoal({
+    this.steps = 0,
+    this.distance = 0,
+    this.calories = 0,
+    this.activeMinutes = 0,
+  });
+
+  UserConfigGoal.fromJson(Map<String, dynamic> json)
+      : this(
+          steps: json['steps'],
+          distance: json['distance'],
+          calories: json['calories'],
+          activeMinutes: json['activeMinutes'],
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'steps': steps,
+      'distance': distance,
+      'calories': calories,
+      'activeMinutes': activeMinutes,
+    };
+  }
+}
+
+class UserConfigGlycemia {
+  int beforeMealMin;
+  int beforeMealNormal;
+  int beforeMealMax;
+  int afterMealMin;
+  int afterMealNormal;
+  int afterMealMax;
+  int beforeSleepMin;
+  int beforeSleepNormal;
+  int beforeSleepMax;
+
+  UserConfigGlycemia({
+    this.beforeMealMin = 0,
+    this.beforeMealNormal = 0,
+    this.beforeMealMax = 0,
+    this.afterMealMin = 0,
+    this.afterMealNormal = 0,
+    this.afterMealMax = 0,
+    this.beforeSleepMin = 0,
+    this.beforeSleepNormal = 0,
+    this.beforeSleepMax = 0,
+  });
+
+  UserConfigGlycemia.fromJson(Map<String, dynamic> json)
+      : this(
+          beforeMealMin: json['beforeMealMin'],
+          beforeMealNormal: json['beforeMealNormal'],
+          beforeMealMax: json['beforeMealMax'],
+          afterMealMin: json['afterMealMin'],
+          afterMealNormal: json['afterMealNormal'],
+          afterMealMax: json['afterMealMax'],
+          beforeSleepMin: json['beforeSleepMin'],
+          beforeSleepNormal: json['beforeSleepNormal'],
+          beforeSleepMax: json['beforeSleepMax'],
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'beforeMealMin': beforeMealMin,
+      'beforeMealNormal': beforeMealNormal,
+      'beforeMealMax': beforeMealMax,
+      'afterMealMin': afterMealMin,
+      'afterMealNormal': afterMealNormal,
+      'afterMealMax': afterMealMax,
+      'beforeSleepMin': beforeSleepMin,
+      'beforeSleepNormal': beforeSleepNormal,
+      'beforeSleepMax': beforeSleepMax,
+    };
+  }
+}
+
+class UserConfigBetty {
+  int steps;
+  int distance;
+  int calories;
+  int activeMinutes;
+
+  UserConfigBetty({
+    this.steps = 0,
+    this.distance = 0,
+    this.calories = 0,
+    this.activeMinutes = 0,
+  });
+
+  UserConfigBetty.fromJson(Map<String, dynamic> json)
+      : this(
+          steps: json['steps'],
+          distance: json['distance'],
+          calories: json['calories'],
+          activeMinutes: json['activeMinutes'],
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'steps': steps,
+      'distance': distance,
+      'calories': calories,
+      'activeMinutes': activeMinutes,
     };
   }
 }

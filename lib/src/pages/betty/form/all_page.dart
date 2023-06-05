@@ -1,5 +1,6 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/pages/betty/form/food_page.dart';
@@ -19,7 +20,7 @@ class _BettyFormAllPageState extends State<BettyFormAllPage> {
   int _currentPage = 0;
 
   void _onSubmit() {
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    context.go('/');
   }
 
   void _onPageChanged(int index) {

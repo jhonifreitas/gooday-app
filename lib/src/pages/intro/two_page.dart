@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 
@@ -11,7 +12,7 @@ class IntroTwoPage extends StatefulWidget {
 
 class _IntroTwoPageState extends State<IntroTwoPage> {
   void _goToNext() {
-    Navigator.pushNamed(context, '/introducao/3');
+    context.push('/introducao/3');
   }
 
   @override

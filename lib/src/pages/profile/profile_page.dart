@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:gooday/src/common/theme.dart';
@@ -23,27 +24,27 @@ class _ProfilePageState extends State<ProfilePage> {
   final int _coins = 0;
 
   void _goToGoodies() {
-    Navigator.pushNamed(context, '/goodies');
+    context.push('/goodies');
   }
 
   void _goToUser() {
-    Navigator.pushNamed(context, '/user');
+    context.push('/user');
   }
 
   void _goToGlycemia() {
-    Navigator.pushNamed(context, '/glicemia/config');
+    context.push('/config/glicemia');
   }
 
   void _goToGoalConfig() {
-    Navigator.pushNamed(context, '/metas/config');
+    context.push('/config/metas');
   }
 
   void _goToPasswordReset() {
-    Navigator.pushNamed(context, '/user/redefinir-senha');
+    context.push('/user/redefinir-senha');
   }
 
   void _goToBetty() {
-    Navigator.pushNamed(context, '/betty/config');
+    context.push('/config/betty');
   }
 
   Future<bool> _openConfirmSignOut() async {
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               child: const Text('Não'),
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => context.pop(false),
             ),
             TextButton(
               style: ButtonStyle(
@@ -65,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
               ),
               child: const Text('Sim'),
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => context.pop(true),
             ),
           ],
         );
@@ -87,9 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop();
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/auth/entrar', (route) => false);
+      context.pop();
+      context.go('/auth/entrar');
     }
   }
 
@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
         UtilService(context).loading('Carregando...');
         final file = File(pickedFile.path);
         await context.read<UserProvider>().uploadImage(file);
-        if (context.mounted) Navigator.of(context).pop();
+        if (context.mounted) context.pop();
       }
     }
   }

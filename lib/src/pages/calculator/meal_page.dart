@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
@@ -485,7 +486,7 @@ class _MealEditState extends State<_MealEdit> {
   final _quantityCtrl = TextEditingController();
 
   void _onSubmit() {
-    Navigator.of(context).pop();
+    context.pop();
   }
 
   @override

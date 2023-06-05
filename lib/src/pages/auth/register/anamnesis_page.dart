@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/form_field.dart';
@@ -46,8 +47,8 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/introducao/1');
+      context.pop();
+      context.push('/introducao/1');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
@@ -192,7 +193,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
   final UserController userCtrl;
   final VoidCallback onDateBirth;
 
-  void _openGoodies(BuildContext context) {
+  void _openGoodie(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -290,7 +291,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 Text('Preencha seus dados e ganhe 10 Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
-                  onPressed: () => _openGoodies(context),
+                  onPressed: () => _openGoodie(context),
                   icon: const Icon(Icons.info_outline, color: primaryColor),
                 )
               ],

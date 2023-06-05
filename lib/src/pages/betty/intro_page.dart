@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class BettyIntroPage extends StatelessWidget {
   const BettyIntroPage({super.key});
@@ -7,7 +8,7 @@ class BettyIntroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/betty/config/todos'),
+        onTap: () => context.push('/config/betty/todos'),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 40),

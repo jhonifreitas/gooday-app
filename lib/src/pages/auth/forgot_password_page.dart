@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
@@ -28,15 +29,15 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
       UtilService(context)
           .message('Verifique a caixa de entrada de seu e-mail!');
 
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, '/auth/entrar');
+      context.pop(context);
+      context.go('/auth/entrar');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
   }
 
   void _goToBack() {
-    Navigator.pop(context);
+    context.pop();
   }
 
   @override

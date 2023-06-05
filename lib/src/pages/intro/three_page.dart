@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -39,15 +40,15 @@ class _IntroThreePageState extends State<IntroThreePage> {
   }
 
   void _goToBack() {
-    Navigator.pop(context);
+    context.pop();
   }
 
   void _goToHome() {
-    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    context.go('/');
   }
 
   void _goToBetty() {
-    Navigator.pushNamed(context, '/betty/introducao');
+    context.push('/betty/introducao');
   }
 
   @override
