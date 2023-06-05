@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +11,7 @@ import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/widgets/profile_image.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class AuthRegisterPage extends StatefulWidget {
@@ -95,7 +95,11 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
 
         if (user != null) {
           final userProvider = context.read<UserProvider>();
-          final data = _userCtrl.toSerialize();
+          final Map<String, dynamic> data = {
+            'name': _userCtrl.nameCtrl.text,
+            'email': _userCtrl.emailCtrl.text,
+            'phone': _userCtrl.clearPhone(),
+          };
 
           await userProvider.update(data);
           if (_image != null) await userProvider.uploadImage(_image!);

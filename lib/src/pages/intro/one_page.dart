@@ -135,6 +135,7 @@ class _IntroOnePageState extends State<IntroOnePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Antes de qualquer coisa, quero lhe apresentar o Gooday.',

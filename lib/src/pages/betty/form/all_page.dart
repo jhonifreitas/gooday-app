@@ -2,10 +2,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
-import 'package:gooday/src/pages/betty/form/food.dart';
-import 'package:gooday/src/pages/betty/form/health.dart';
-import 'package:gooday/src/pages/betty/form/fitness.dart';
-import 'package:gooday/src/pages/betty/form/education.dart';
+import 'package:gooday/src/pages/betty/form/food_page.dart';
+import 'package:gooday/src/pages/betty/form/health_page.dart';
+import 'package:gooday/src/pages/betty/form/fitness_page.dart';
+import 'package:gooday/src/pages/betty/form/education_page.dart';
 
 class BettyFormAllPage extends StatefulWidget {
   const BettyFormAllPage({super.key});

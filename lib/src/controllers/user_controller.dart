@@ -44,7 +44,7 @@ class UserController {
     Item(id: 'Fiasp', name: 'Fiasp'),
   ];
   final List<Item> drugList = const [
-    Item(id: 'drug-3', name: 'Medicamento 1'),
+    Item(id: 'drug-1', name: 'Medicamento 1'),
     Item(id: 'drug-2', name: 'Medicamento 2'),
     Item(id: 'drug-3', name: 'Medicamento 3'),
   ];
@@ -90,42 +90,33 @@ class UserController {
     }
   }
 
-  Map<String, dynamic> toSerialize() {
-    String? phone;
-    DateTime? dateBirth;
-    double? height;
-    double? weight;
-
+  String? clearPhone() {
     if (phoneCtrl.text.isNotEmpty) {
-      phone = phoneCtrl.text.replaceAll(RegExp('[^0-9]'), '');
+      return phoneCtrl.text.replaceAll(RegExp('[^0-9]'), '');
     }
+    return phoneCtrl.text;
+  }
+
+  DateTime? clearDateBirth() {
     if (dateBirthCtrl.text.isNotEmpty) {
-      dateBirth = DateFormat('dd/MM/yyyy').parse(dateBirthCtrl.text);
+      return DateFormat('dd/MM/yyyy').parse(dateBirthCtrl.text);
     }
+    return null;
+  }
+
+  double? clearHeight() {
     if (heightCtrl.text.isNotEmpty) {
-      height = double.parse(heightCtrl.text.replaceAll(RegExp(r','), '.'));
+      return double.parse(heightCtrl.text.replaceAll(RegExp(r','), '.'));
     }
+    return null;
+  }
+
+  double? clearWeight() {
     if (weightCtrl.text.isNotEmpty) {
       String value = weightCtrl.text.replaceAll(RegExp(r','), '.');
       if (!value.contains('.')) value += '.0';
-      weight = double.parse(value);
+      return double.parse(value);
     }
-
-    return {
-      'name': nameCtrl.text,
-      'email': emailCtrl.text,
-      'phone': phone,
-      'genre': genreCtrl.text,
-      'dateBirth': dateBirth,
-      'anamnese': {
-        'height': height,
-        'weight': weight,
-        'insulinSlow': insulinSlowCtrl.text,
-        'insulinFast': insulinFastCtrl.text,
-        'drug': drugCtrl.text,
-        'diabeteType': diabeteTypeCtrl.text,
-        'insulin': insulinCtrl,
-      }
-    };
+    return null;
   }
 }

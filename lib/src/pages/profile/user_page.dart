@@ -39,7 +39,22 @@ class _UserPageState extends State<UserPage> {
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
-      final data = _userCtrl.toSerialize();
+      final Map<String, dynamic> data = {
+        'name': _userCtrl.nameCtrl.text,
+        'email': _userCtrl.emailCtrl.text,
+        'phone': _userCtrl.clearPhone(),
+        'dateBirth': _userCtrl.clearDateBirth(),
+        'genre': _userCtrl.genreCtrl.text,
+        'anamnese': {
+          'height': _userCtrl.clearHeight(),
+          'weight': _userCtrl.clearWeight(),
+          'diabeteType': _userCtrl.diabeteTypeCtrl.text,
+          'insulin': _userCtrl.insulinCtrl,
+          'insulinSlow': _userCtrl.insulinSlowCtrl.text,
+          'insulinFast': _userCtrl.insulinFastCtrl.text,
+          'drug': _userCtrl.drugCtrl.text,
+        }
+      };
       await _userProvider.update(data);
 
       if (!mounted) return;

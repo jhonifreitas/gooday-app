@@ -19,7 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   int _currentPage = 0;
-  double circleNotchRadius = 25;
+  double _bottomBarSpace = 20;
+  double _circleNotchRadius = 25;
   final _pageCtrl = PageController();
 
   final btnCalculateKey = GlobalKey();
@@ -30,7 +31,8 @@ class _HomePageState extends State<HomePage>
     duration: const Duration(milliseconds: 300),
   )..addListener(() => setState(() {}));
   late Animation<double> _positionAnimation =
-      Tween(begin: 0.0, end: circleNotchRadius + 15).animate(_positionCtrl);
+      Tween(begin: 0.0, end: _circleNotchRadius + _bottomBarSpace)
+          .animate(_positionCtrl);
 
   @override
   void initState() {
@@ -53,7 +55,6 @@ class _HomePageState extends State<HomePage>
   }
 
   void setPosition() {
-    double space = 20;
     final size = MediaQuery.of(context).size;
     RenderBox btnCalculateBox =
         btnCalculateKey.currentContext!.findRenderObject() as RenderBox;
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage>
     Offset btnNotificationPosition =
         btnNotificationBox.localToGlobal(Offset.zero);
 
-    double position = circleNotchRadius + space;
+    double position = _circleNotchRadius + _bottomBarSpace;
 
     if (_currentPage == 1) {
       position = btnCalculatePosition.dx + 25;
@@ -72,7 +73,7 @@ class _HomePageState extends State<HomePage>
     } else if (_currentPage == 3) {
       position = btnNotificationPosition.dx + 25;
     } else if (_currentPage == 4) {
-      position = size.width - circleNotchRadius - space;
+      position = size.width - _circleNotchRadius - _bottomBarSpace;
     }
 
     _positionAnimation = Tween(begin: _positionAnimation.value, end: position)
@@ -109,7 +110,7 @@ class _HomePageState extends State<HomePage>
         painter: CircleNotch(
           bgColor: Colors.white,
           position: _positionAnimation.value,
-          circleRadius: circleNotchRadius,
+          circleRadius: _circleNotchRadius,
           circleColor: primaryColor,
         ),
         child: Padding(

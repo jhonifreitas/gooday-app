@@ -48,6 +48,7 @@ dependencies:
   provider: ^6.0.5
   easy_mask: ^2.0.1
   image_picker: ^0.8.7+5
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -101,3 +102,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_launcher_icons:
+  image_path: "assets/icons/logo.png"
+  android: true
+  min_sdk_android: 21
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true

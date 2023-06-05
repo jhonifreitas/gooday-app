@@ -117,12 +117,12 @@ class _WelcomeNotificationList extends StatelessWidget {
             width: 270,
             child: Card(
               elevation: 5,
-              color: primaryColor,
               clipBehavior: Clip.hardEdge,
               margin: const EdgeInsets.all(8),
+              color: const Color(0xFF056799),
               child: InkWell(
                 onTap: _openNotification,
-                splashColor: Colors.blue.withAlpha(30),
+                splashColor: Colors.white.withAlpha(10),
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 20),

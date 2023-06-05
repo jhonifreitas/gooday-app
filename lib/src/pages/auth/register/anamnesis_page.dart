@@ -29,7 +29,19 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 
-      final data = _userCtrl.toSerialize();
+      final Map<String, dynamic> data = {
+        'dateBirth': _userCtrl.clearDateBirth(),
+        'genre': _userCtrl.genreCtrl.text,
+        'anamnese': {
+          'height': _userCtrl.clearHeight(),
+          'weight': _userCtrl.clearWeight(),
+          'diabeteType': _userCtrl.diabeteTypeCtrl.text,
+          'insulin': _userCtrl.insulinCtrl,
+          'insulinSlow': _userCtrl.insulinSlowCtrl.text,
+          'insulinFast': _userCtrl.insulinFastCtrl.text,
+          'drug': _userCtrl.drugCtrl.text,
+        }
+      };
       await context.read<UserProvider>().update(data);
 
       if (!mounted) return;

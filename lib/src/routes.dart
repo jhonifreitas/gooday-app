@@ -1,26 +1,26 @@
 import 'package:gooday/src/pages/home_page.dart';
-import 'package:gooday/src/pages/auth/login.dart';
 import 'package:gooday/src/pages/splash_page.dart';
-import 'package:gooday/src/pages/betty/intro.dart';
-import 'package:gooday/src/pages/betty/config.dart';
 import 'package:gooday/src/pages/intro/one_page.dart';
 import 'package:gooday/src/pages/intro/two_page.dart';
-import 'package:gooday/src/pages/betty/form/all.dart';
-import 'package:gooday/src/pages/betty/form/food.dart';
+import 'package:gooday/src/pages/auth/login_page.dart';
 import 'package:gooday/src/pages/intro/three_page.dart';
-import 'package:gooday/src/pages/betty/form/health.dart';
+import 'package:gooday/src/pages/betty/intro_page.dart';
+import 'package:gooday/src/pages/betty/config_page.dart';
 import 'package:gooday/src/pages/profile/goal_page.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
 import 'package:gooday/src/pages/goodies/list_page.dart';
-import 'package:gooday/src/pages/auth/register/form.dart';
-import 'package:gooday/src/pages/betty/form/fitness.dart';
+import 'package:gooday/src/pages/betty/form/all_page.dart';
+import 'package:gooday/src/pages/betty/form/food_page.dart';
 import 'package:gooday/src/pages/calculator/meal_page.dart';
-import 'package:gooday/src/pages/betty/form/education.dart';
-import 'package:gooday/src/pages/auth/forgot_password.dart';
 import 'package:gooday/src/pages/profile/insulin_page.dart';
 import 'package:gooday/src/pages/profile/glycemia_page.dart';
-import 'package:gooday/src/pages/auth/register/anamnesis.dart';
+import 'package:gooday/src/pages/betty/form/health_page.dart';
+import 'package:gooday/src/pages/auth/register/form_page.dart';
+import 'package:gooday/src/pages/betty/form/fitness_page.dart';
+import 'package:gooday/src/pages/betty/form/education_page.dart';
+import 'package:gooday/src/pages/auth/forgot_password_page.dart';
 import 'package:gooday/src/pages/profile/reset_password_page.dart';
+import 'package:gooday/src/pages/auth/register/anamnesis_page.dart';
 
 class Routes {
   static const initalRoute = '/splash';
