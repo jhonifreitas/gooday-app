@@ -77,7 +77,8 @@ class _WelcomePageState extends State<WelcomePage> {
                 text: 'Bom dia, ',
                 children: [
                   TextSpan(
-                    text: '${context.watch<UserProvider>().data?.name}!',
+                    text:
+                        '${context.watch<UserProvider>().data?.name?.split(' ')[0]}!',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
@@ -163,7 +164,7 @@ class _WelcomeNotificationList extends StatelessWidget {
                             Row(
                               children: [
                                 SvgPicture.asset(
-                                  width: 25,
+                                  width: 20,
                                   'assets/icons/bell.svg',
                                   colorFilter: const ColorFilter.mode(
                                       Colors.white, BlendMode.srcIn),

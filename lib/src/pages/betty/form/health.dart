@@ -47,6 +47,7 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
         child: Column(
           children: [
             AppBarCustom(
+              iconBackColor: primaryColor,
               title: Image.asset(width: 80, 'assets/images/logo.png'),
             ),
             const BettyRecommendDayli(

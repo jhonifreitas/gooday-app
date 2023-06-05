@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +39,9 @@ class _MealFormPageState extends State<MealFormPage> {
 
   String get _getDateFullLabel {
     final week = DateFormat('EEE', 'pt_BR').format(_dateCtrl);
-    final month = DateFormat('MMMM', 'pt_BR').format(_dateCtrl);
-    return "$week, ${_dateCtrl.day} de $month".toUpperCase();
+    final month = DateFormat('MMM', 'pt_BR').format(_dateCtrl);
+    final time = DateFormat('HH:mm').format(_dateCtrl);
+    return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
   }
 
   void _onSubmit() {}
@@ -48,6 +50,7 @@ class _MealFormPageState extends State<MealFormPage> {
     UtilService(context).dateTimePicker(
       initialDateTime: _dateCtrl,
       maximumDate: DateTime.now(),
+      mode: CupertinoDatePickerMode.dateAndTime,
       onChange: (dateTime) => setState(() => _dateCtrl = dateTime),
     );
   }
@@ -77,7 +80,10 @@ class _MealFormPageState extends State<MealFormPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return _MealEdit(item: item, onSubmit: _onMealEdit);
+        return SizedBox(
+          height: 320,
+          child: _MealEdit(item: item, onSubmit: _onMealEdit),
+        );
       },
     );
   }
@@ -179,7 +185,8 @@ class _MealFormPageState extends State<MealFormPage> {
                                         child: Column(
                                           children: [
                                             Ink(
-                                              padding: const EdgeInsets.all(5),
+                                              height: 55,
+                                              padding: const EdgeInsets.all(10),
                                               decoration: BoxDecoration(
                                                 color: Colors.grey.shade300,
                                                 gradient: _typeCtrl == item.id
@@ -200,7 +207,7 @@ class _MealFormPageState extends State<MealFormPage> {
                                               ),
                                               child: SvgPicture.asset(
                                                 item.image!,
-                                                width: 50,
+                                                width: 40,
                                                 colorFilter: _typeCtrl ==
                                                         item.id
                                                     ? const ColorFilter.mode(

@@ -95,6 +95,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
         child: Column(
           children: [
             AppBarCustom(
+              iconBackColor: primaryColor,
               title: Image.asset(width: 80, 'assets/images/logo.png'),
             ),
             const BettyRecommendDayli(

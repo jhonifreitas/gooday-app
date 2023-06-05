@@ -229,7 +229,7 @@ class _GoalCard extends StatelessWidget {
             Container(
               width: 40,
               height: 40,
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50),

@@ -33,7 +33,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppBarCustom(
-          prefix: const Icon(Icons.calculate_outlined),
+          prefix: SvgPicture.asset('assets/icons/calculator.svg'),
           title: const Text('Calculadora'),
           suffix: SvgPicture.asset(width: 20, 'assets/icons/coin.svg'),
         ),
@@ -43,44 +43,60 @@ class _CalculatorPageState extends State<CalculatorPage> {
             children: [
               Expanded(
                 child: Material(
+                  elevation: 10,
                   clipBehavior: Clip.hardEdge,
-                  color: primaryColor,
                   borderRadius: BorderRadius.circular(10),
-                  child: InkWell(
-                    onTap: _goToMealForm,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 15),
-                          child: Image.asset('assets/images/betty-intro.png',
-                              width: 70),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: const [
-                              // SvgPicture.asset('assets/icons/blood.svg'),
-                              Text(
-                                'Calcular',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                'Refeição',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            ],
+                  child: Ink(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment(0.8, 1),
+                        colors: [tertiaryColor, primaryColor],
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: _goToMealForm,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Image.asset('assets/images/betty-intro.png',
+                                width: 70),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/meal.svg',
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                const Text(
+                                  'Calcular',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const Text(
+                                  'Refeição',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -95,16 +111,23 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
-                      children: const [
-                        // SvgPicture.asset('assets/icons/meal.svg'),
-                        Text(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/water-plus.svg',
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
                           'Registrar',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'Glicemia',
                           style: TextStyle(
                             color: Colors.white,
@@ -151,9 +174,16 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   ),
                 ),
                 prefix: Column(
-                  children: const [
-                    Icon(Icons.lunch_dining_outlined, color: primaryColor),
-                    Text(
+                  children: [
+                    SvgPicture.asset(
+                      height: 30,
+                      'assets/icons/water.svg',
+                      colorFilter: const ColorFilter.mode(
+                        primaryColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const Text(
                       '8:00',
                       style: TextStyle(
                         fontSize: 12,

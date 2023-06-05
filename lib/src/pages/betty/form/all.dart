@@ -108,7 +108,14 @@ class BettyRecommendDayli extends StatelessWidget {
                         WidgetSpan(
                           child: Align(
                             alignment: Alignment.bottomCenter,
-                            child: SvgPicture.asset(iconAssets, width: 40),
+                            child: SvgPicture.asset(
+                              iconAssets,
+                              width: 30,
+                              colorFilter: const ColorFilter.mode(
+                                primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
                           ),
                         ),
                         const WidgetSpan(child: SizedBox(width: 5)),
@@ -126,7 +133,7 @@ class BettyRecommendDayli extends StatelessWidget {
                   )
                 ],
               ),
-              Image.asset('assets/images/betty-avatar.png', width: 100)
+              Image.asset('assets/images/betty-avatar.png', width: 90)
             ],
           ),
           Visibility(

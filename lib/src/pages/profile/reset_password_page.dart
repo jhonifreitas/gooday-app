@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
-import 'package:gooday/src/controllers/auth_controller.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/controllers/auth_controller.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -63,6 +63,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppBarCustom(
+              iconBackColor: primaryColor,
               title: Image.asset('assets/images/logo.png', width: 80),
             ),
             Padding(

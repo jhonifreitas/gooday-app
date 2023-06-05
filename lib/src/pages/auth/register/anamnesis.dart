@@ -218,7 +218,8 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Olá, ${context.watch<UserProvider>().data?.name}?',
+            Text(
+                'Olá, ${context.watch<UserProvider>().data?.name?.split(' ')[0]}?',
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
             const Text('Para finalizar seu cadastro, '

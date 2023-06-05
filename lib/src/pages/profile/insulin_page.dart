@@ -76,6 +76,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
         child: Column(
           children: [
             AppBarCustom(
+              iconBackColor: primaryColor,
               title: Image.asset('assets/images/logo.png', width: 80),
             ),
             Padding(

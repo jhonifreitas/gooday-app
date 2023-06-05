@@ -114,6 +114,7 @@ class _UserPageState extends State<UserPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppBarCustom(
+                iconBackColor: primaryColor,
                 title: Image.asset('assets/images/logo.png', width: 80),
               ),
               const SizedBox(height: 40),

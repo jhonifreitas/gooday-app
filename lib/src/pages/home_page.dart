@@ -1,3 +1,4 @@
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
@@ -15,19 +16,32 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _currentPage = 0;
-  late Offset _positionPage;
-  double circleNotchRadius = 30;
+  double circleNotchRadius = 25;
   final _pageCtrl = PageController();
 
   final btnCalculateKey = GlobalKey();
   final btnNotificationKey = GlobalKey();
 
+  late final AnimationController _positionCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  )..addListener(() => setState(() {}));
+  late Animation<double> _positionAnimation =
+      Tween(begin: 0.0, end: circleNotchRadius + 15).animate(_positionCtrl);
+
   @override
   void initState() {
-    _positionPage = Offset(circleNotchRadius + 15, 0);
     super.initState();
+    _positionCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _positionCtrl.dispose();
+    super.dispose();
   }
 
   void _onPageChanged(int index) {
@@ -39,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void setPosition() {
-    double space = 15;
+    double space = 20;
     final size = MediaQuery.of(context).size;
     RenderBox btnCalculateBox =
         btnCalculateKey.currentContext!.findRenderObject() as RenderBox;
@@ -49,19 +63,23 @@ class _HomePageState extends State<HomePage> {
     Offset btnNotificationPosition =
         btnNotificationBox.localToGlobal(Offset.zero);
 
-    setState(() {
-      if (_currentPage == 0) {
-        _positionPage = Offset(circleNotchRadius + space, 0);
-      } else if (_currentPage == 1) {
-        _positionPage = Offset(btnCalculatePosition.dx + 25, 0);
-      } else if (_currentPage == 2) {
-        _positionPage = Offset(size.width / 2, 0);
-      } else if (_currentPage == 3) {
-        _positionPage = Offset(btnNotificationPosition.dx + 25, 0);
-      } else if (_currentPage == 4) {
-        _positionPage = Offset(size.width - circleNotchRadius - space, 0);
-      }
-    });
+    double position = circleNotchRadius + space;
+
+    if (_currentPage == 1) {
+      position = btnCalculatePosition.dx + 25;
+    } else if (_currentPage == 2) {
+      position = size.width / 2;
+    } else if (_currentPage == 3) {
+      position = btnNotificationPosition.dx + 25;
+    } else if (_currentPage == 4) {
+      position = size.width - circleNotchRadius - space;
+    }
+
+    _positionAnimation = Tween(begin: _positionAnimation.value, end: position)
+        .animate(_positionCtrl);
+
+    _positionCtrl.reset();
+    _positionCtrl.forward();
   }
 
   void _goToPage(int index) {
@@ -90,8 +108,8 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: CustomPaint(
         painter: CircleNotch(
           bgColor: Colors.white,
-          position: _positionPage,
-          radius: circleNotchRadius,
+          position: _positionAnimation.value,
+          circleRadius: circleNotchRadius,
           circleColor: primaryColor,
         ),
         child: Padding(
@@ -100,29 +118,29 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _HomeBottomButton(
-                icon: Icons.home_outlined,
+                icon: 'assets/icons/home.svg',
                 active: _currentPage == 0,
                 onPressed: () => _goToPage(0),
               ),
               _HomeBottomButton(
                 key: btnCalculateKey,
-                icon: Icons.calculate_outlined,
+                icon: 'assets/icons/calculator.svg',
                 active: _currentPage == 1,
                 onPressed: () => _goToPage(1),
               ),
               _HomeBottomButton(
-                icon: Icons.favorite_border_outlined,
+                icon: 'assets/icons/heart.svg',
                 active: _currentPage == 2,
                 onPressed: () => _goToPage(2),
               ),
               _HomeBottomButton(
                 key: btnNotificationKey,
-                icon: Icons.notifications_outlined,
+                icon: 'assets/icons/bell.svg',
                 active: _currentPage == 3,
                 onPressed: () => _goToPage(3),
               ),
               _HomeBottomButton(
-                icon: Icons.person_outlined,
+                icon: 'assets/icons/user.svg',
                 active: _currentPage == 4,
                 onPressed: () => _goToPage(4),
               ),
@@ -143,7 +161,7 @@ class _HomeBottomButton extends StatelessWidget {
   });
 
   final bool active;
-  final IconData icon;
+  final String icon;
   final VoidCallback onPressed;
 
   @override
@@ -151,14 +169,14 @@ class _HomeBottomButton extends StatelessWidget {
     return SizedBox(
       width: 50,
       height: 50,
-      child: AnimatedAlign(
-        duration: const Duration(milliseconds: 300),
-        alignment: active ? const Alignment(0, -5) : Alignment.center,
-        child: IconButton(
-          onPressed: onPressed,
-          icon: Icon(
-            icon,
-            color: active ? Colors.white : primaryColor,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: SvgPicture.asset(
+          icon,
+          height: 25,
+          colorFilter: ColorFilter.mode(
+            active ? Colors.white : primaryColor,
+            BlendMode.srcIn,
           ),
         ),
       ),

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:gooday/src/common/theme.dart';
-
 class AppBarCustom extends StatelessWidget {
   const AppBarCustom({
     super.key,
     required this.title,
     this.titleCenter = true,
+    this.iconBackColor = Colors.black,
     this.prefix,
     this.suffix,
   });
 
   final Widget title;
+  final Color iconBackColor;
   final bool titleCenter;
   final Widget? prefix;
   final Widget? suffix;
@@ -22,7 +22,7 @@ class AppBarCustom extends StatelessWidget {
     if (prefix == null && Navigator.canPop(context)) {
       backButton = IconButton(
         tooltip: 'Voltar',
-        icon: const Icon(Icons.keyboard_backspace, color: primaryColor),
+        icon: Icon(Icons.keyboard_backspace, color: iconBackColor),
         onPressed: () => Navigator.of(context).pop(),
       );
     }

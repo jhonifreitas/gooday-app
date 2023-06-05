@@ -6,25 +6,28 @@ class CircleNotch extends CustomPainter {
   const CircleNotch({
     required this.bgColor,
     required this.circleColor,
-    required this.radius,
+    required this.circleRadius,
     required this.position,
+    this.topRadius = 20,
     this.margin = 5,
   });
 
   final Color bgColor;
   final Color circleColor;
-  final Offset position;
-  final double radius;
+  final double position;
+  final double circleRadius;
+  final double topRadius;
   final double margin;
 
   @override
   void paint(Canvas canvas, Size size) {
     final shapeBounds = Rect.fromLTRB(0, 0, size.width, size.height);
-    final circleBounds =
-        Rect.fromCircle(center: position, radius: radius).inflate(margin);
+    final circleBounds = Rect.fromCircle(
+            center: Offset(position, circleRadius), radius: circleRadius)
+        .inflate(margin);
 
     _drawBackground(canvas, shapeBounds, circleBounds);
-    _drawCircle(canvas, position);
+    _drawCircle(canvas);
   }
 
   @override
@@ -34,21 +37,33 @@ class CircleNotch extends CustomPainter {
 
   void _drawBackground(Canvas canvas, Rect shapeBounds, Rect circleBounds) {
     final paint = Paint()..color = bgColor;
+    const deg = pi / 3;
 
     final path = Path()
       ..moveTo(shapeBounds.bottomLeft.dx, shapeBounds.bottomLeft.dy)
-      ..lineTo(shapeBounds.topLeft.dx, shapeBounds.topLeft.dy)
-      ..arcTo(circleBounds, pi, -pi, false)
-      ..lineTo(shapeBounds.topRight.dx, shapeBounds.topRight.dy)
+      ..lineTo(shapeBounds.topLeft.dx, shapeBounds.topLeft.dy + topRadius)
+      ..relativeArcToPoint(
+        Offset(topRadius, -topRadius),
+        radius: Radius.circular(topRadius),
+      )
+      ..lineTo(shapeBounds.topLeft.dx + topRadius, shapeBounds.topLeft.dy)
+      ..arcTo(circleBounds, -2 * deg, -5 * deg, false)
+      ..lineTo(shapeBounds.topRight.dx - topRadius, shapeBounds.topRight.dy)
+      ..relativeArcToPoint(
+        Offset(topRadius, topRadius),
+        radius: Radius.circular(topRadius),
+      )
       ..lineTo(shapeBounds.bottomRight.dx, shapeBounds.bottomRight.dy)
       ..close();
 
+    canvas.drawShadow(path, Colors.grey, 20, true);
     canvas.drawPath(path, paint);
-    canvas.drawShadow(path, Colors.grey.withAlpha(50), 1.5, false);
   }
 
-  void _drawCircle(Canvas canvas, Offset position) {
+  void _drawCircle(Canvas canvas) {
     final paint = Paint()..color = circleColor;
-    canvas.drawCircle(position, radius, paint);
+    final circlePosition = Offset(position, circleRadius);
+
+    canvas.drawCircle(circlePosition, circleRadius, paint);
   }
 }

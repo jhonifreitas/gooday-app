@@ -24,11 +24,12 @@ class _BettyFormEducationPageState extends State<BettyFormEducationPage> {
         child: Column(
           children: [
             AppBarCustom(
+              iconBackColor: primaryColor,
               title: Image.asset(width: 80, 'assets/images/logo.png'),
             ),
             const BettyRecommendDayli(
               title: 'Suas\nDúvidas',
-              iconAssets: 'assets/icons/meditation.svg',
+              iconAssets: 'assets/icons/book.svg',
               description: 'Todos os dias vou te enviar algumas sugestões de '
                   'leitura para lhe ajudar a entender melhor a diabetes. Confira '
                   'algumas delas abaixo:',

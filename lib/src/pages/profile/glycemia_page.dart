@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
@@ -46,6 +47,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppBarCustom(
+                iconBackColor: primaryColor,
                 title: Image.asset('assets/images/logo.png', width: 80),
               ),
               Padding(

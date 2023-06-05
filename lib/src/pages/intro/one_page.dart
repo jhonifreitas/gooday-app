@@ -105,7 +105,7 @@ class _IntroOnePageState extends State<IntroOnePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Olá, ${context.watch<UserProvider>().data?.name}!',
+                                'Olá, ${context.watch<UserProvider>().data?.name?.split(' ')[0]}!',
                                 style: const TextStyle(
                                     color: primaryColor, fontSize: 20),
                               ),

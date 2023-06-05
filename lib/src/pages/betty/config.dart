@@ -81,7 +81,7 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                         child: ListTile(
                           onTap: _hint ? _goToFood : null,
                           leading: SvgPicture.asset(
-                            height: 40,
+                            width: 40,
                             'assets/icons/fruits.svg',
                           ),
                           title: const Text(
@@ -110,7 +110,7 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                         child: ListTile(
                           onTap: _hint ? _goToFitness : null,
                           leading: SvgPicture.asset(
-                            height: 40,
+                            width: 40,
                             'assets/icons/fitness.svg',
                           ),
                           title: const Text(
@@ -139,7 +139,7 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                         child: ListTile(
                           onTap: _hint ? _goToHealth : null,
                           leading: SvgPicture.asset(
-                            height: 40,
+                            width: 40,
                             'assets/icons/meditation.svg',
                           ),
                           title: const Text(
@@ -168,8 +168,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
                         child: ListTile(
                           onTap: _hint ? _goToEducation : null,
                           leading: SvgPicture.asset(
-                            height: 40,
-                            'assets/icons/fruits.svg',
+                            width: 40,
+                            'assets/icons/book.svg',
                           ),
                           title: const Text(
                             'Educação',
