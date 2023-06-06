@@ -84,7 +84,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     }
   }
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       try {
         UtilService(context).loading('Cadastrando...');

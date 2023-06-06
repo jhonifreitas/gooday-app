@@ -10,6 +10,7 @@ import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
+import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
 class AuthRegisterAnamnesisPage extends StatefulWidget {
   const AuthRegisterAnamnesisPage({super.key});
@@ -22,6 +23,7 @@ class AuthRegisterAnamnesisPage extends StatefulWidget {
 class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final _goodies = 50;
   int _currentPage = 0;
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
@@ -43,15 +45,41 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           'drug': _userCtrl.drugCtrl.text,
         }
       };
-      await context.read<UserProvider>().update(data);
+      final userProvider = context.read<UserProvider>();
+      final isComplete = data['name'].isNotEmpty &&
+          data['name'].isNotEmpty &&
+          data['email'].isNotEmpty &&
+          data['phone'].isNotEmpty &&
+          data['dateBirth'] != null &&
+          data['genre'].isNotEmpty &&
+          data['anamnese']['height'] != null &&
+          data['anamnese']['weight'] != null &&
+          data['anamnese']['diabeteType'].isNotEmpty;
+      if (isComplete) {
+        data['goodies'] += userProvider.data!.goodies + _goodies;
+      }
 
-      if (!mounted) return;
+      await userProvider.update(data);
 
-      context.pop();
-      context.push('/introducao/1');
+      if (mounted) context.pop();
+
+      if (isComplete) await _openGoodieCongratulation(_goodies);
+
+      if (mounted) context.push('/introducao/1');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
+  }
+
+  Future<void> _openGoodieCongratulation(int value) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: GoodieCongratulationPage(value: value),
+        );
+      },
+    );
   }
 
   void _onDateBirth() {

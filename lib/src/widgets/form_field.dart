@@ -105,7 +105,15 @@ class FormFieldCustom extends StatelessWidget {
           )
       ],
       focusColor: Colors.white,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        labelText: label,
+        icon: prefixIcon,
+        helperText: helper,
+        hintText: placeholder,
+        suffixIcon: suffixIcon,
+        counterText: showCounter ? null : '',
+        hintStyle: const TextStyle(fontWeight: FontWeight.normal),
+      ),
       validator: _valiation,
       onChanged: _onChanged,
     );

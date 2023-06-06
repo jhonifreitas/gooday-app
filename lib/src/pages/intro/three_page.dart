@@ -48,7 +48,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
   }
 
   void _goToBetty() {
-    context.push('/betty/introducao');
+    context.push('/config/betty/introducao');
   }
 
   @override

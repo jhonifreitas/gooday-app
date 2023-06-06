@@ -1,26 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFitnessPage extends StatefulWidget {
-  const BettyFormFitnessPage({this.onSubmit, super.key});
+  const BettyFormFitnessPage({this.bettyCtrl, super.key});
 
-  final VoidCallback? onSubmit;
+  final BettyController? bettyCtrl;
 
   @override
   State<BettyFormFitnessPage> createState() => _BettyFormFitnessPageState();
 }
 
 class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
-  final _bettyCtrl = BettyController();
+  late final UserProvider _userProvider;
+  late final _bettyCtrl = widget.bettyCtrl ?? BettyController();
+
   bool? _help;
 
-  void _onSubmit() {}
+  @override
+  void initState() {
+    super.initState();
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = _userProvider.data;
+    if (user?.config?.betty != null) _bettyCtrl.initData(user!.config!.betty!);
+  }
+
+  Future<void> _onSubmit() async {
+    UtilService(context).loading('Salvando...');
+
+    final Map<String, dynamic> data = {
+      'doExercise': _bettyCtrl.doExerciseCtrl,
+      'exerciseHelps': _bettyCtrl.exerciseHelpsCtrl,
+      'exercises': _bettyCtrl.exercisesCtrl,
+    };
+
+    final config = _userProvider.data!.config!.toJson();
+    config['betty'] = data;
+
+    await _userProvider.update({'config': config});
+
+    if (!mounted) return;
+
+    context.pop();
+    context.pop();
+  }
 
   void _onDoExercise(bool? value) {
     setState(() {
@@ -34,22 +67,22 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
     });
   }
 
-  void _onHelpList(String id, bool? selected) {
+  void _onExerciseHelps(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.helpExerciseCtrl.add(id);
+        _bettyCtrl.exerciseHelpsCtrl.add(id);
       } else {
-        _bettyCtrl.helpExerciseCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.exerciseHelpsCtrl.removeWhere((item) => item == id);
       }
     });
   }
 
-  void _onExerciseList(String id, bool? selected) {
+  void _onExercises(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.exerciseListCtrl.add(id);
+        _bettyCtrl.exercisesCtrl.add(id);
       } else {
-        _bettyCtrl.exerciseListCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.exercisesCtrl.removeWhere((item) => item == id);
       }
     });
   }
@@ -155,9 +188,9 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                     const SizedBox(height: 10),
                     Column(
                       children: [
-                        for (var item in _bettyCtrl.helpExerciseList)
+                        for (var item in _bettyCtrl.exerciseHelpList)
                           CheckboxListTile(
-                            value: _bettyCtrl.helpExerciseCtrl
+                            value: _bettyCtrl.exerciseHelpsCtrl
                                 .any((id) => id == item.id),
                             title: Text(
                               item.name,
@@ -170,7 +203,8 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 35),
                             controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (value) => _onHelpList(item.id, value),
+                            onChanged: (value) =>
+                                _onExerciseHelps(item.id, value),
                           )
                       ],
                     )
@@ -186,8 +220,8 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Text(
-                        'Quais hábitos abaixo estão presentes ou são possíveis de '
-                        'serem inseridas a sua rotina?'),
+                        'Quais hábitos abaixo estão presentes ou são possíveis '
+                        'de serem inseridas a sua rotina?'),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -203,10 +237,9 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,
-                            selected: _bettyCtrl.exerciseListCtrl
+                            selected: _bettyCtrl.exercisesCtrl
                                 .any((id) => id == item.id),
-                            onSelected: (value) =>
-                                _onExerciseList(item.id, value),
+                            onSelected: (value) => _onExercises(item.id, value),
                           ),
                       ],
                     ),
@@ -218,7 +251,7 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: widget.onSubmit == null,
+        visible: widget.bettyCtrl == null,
         child: SizedBox(
           width: 70,
           height: 70,

@@ -1,10 +1,15 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
+import 'package:gooday/src/models/user_model.dart';
+import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/pages/betty/form/food_page.dart';
 import 'package:gooday/src/pages/betty/form/health_page.dart';
+import 'package:gooday/src/controllers/betty_controller.dart';
 import 'package:gooday/src/pages/betty/form/fitness_page.dart';
 import 'package:gooday/src/pages/betty/form/education_page.dart';
 
@@ -16,10 +21,37 @@ class BettyFormAllPage extends StatefulWidget {
 }
 
 class _BettyFormAllPageState extends State<BettyFormAllPage> {
+  final _bettyCtrl = BettyController();
   final _pageCtrl = PageController();
+
   int _currentPage = 0;
 
-  void _onSubmit() {
+  Future<void> _onSubmit() async {
+    UtilService(context).loading('Salvando...');
+
+    final userProvider = context.read<UserProvider>();
+    final config = userProvider.data!.config!.toJson();
+
+    Map<String, dynamic> data = {
+      'lostWeight': _bettyCtrl.lostWeightFoodCtrl,
+      'adequateFood': _bettyCtrl.adequateFoodCtrl,
+      'foodHelps': _bettyCtrl.foodHelpsCtrl,
+      'foodLikes': _bettyCtrl.foodLikesCtrl,
+      'foodNoLikes': _bettyCtrl.foodNoLikesCtrl,
+      'foodLimits': _bettyCtrl.foodLimitsCtrl,
+      'doExercise': _bettyCtrl.doExerciseCtrl,
+      'exerciseHelps': _bettyCtrl.exerciseHelpsCtrl,
+      'exercises': _bettyCtrl.exercisesCtrl,
+      'timeExercise': _bettyCtrl.timeExerciseCtrl,
+      'frequencyExercise': _bettyCtrl.frequencyExerciseCtrl,
+    };
+
+    config['betty'] = data;
+    await userProvider.update({'config': config});
+
+    if (!mounted) return;
+
+    context.pop();
     context.go('/');
   }
 
@@ -52,10 +84,10 @@ class _BettyFormAllPageState extends State<BettyFormAllPage> {
             controller: _pageCtrl,
             onPageChanged: _onPageChanged,
             children: [
-              BettyFormFoodPage(onSubmit: _onSubmit),
-              BettyFormFitnessPage(onSubmit: _onSubmit),
-              BettyFormHealthPage(onSubmit: _onSubmit),
-              BettyFormEducationPage(onSubmit: _onSubmit),
+              BettyFormFoodPage(bettyCtrl: _bettyCtrl),
+              BettyFormFitnessPage(bettyCtrl: _bettyCtrl),
+              BettyFormHealthPage(bettyCtrl: _bettyCtrl),
+              BettyFormEducationPage(bettyCtrl: _bettyCtrl),
             ],
           ),
           Positioned(

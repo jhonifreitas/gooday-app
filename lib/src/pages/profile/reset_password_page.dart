@@ -22,7 +22,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   bool _togglePass = true;
   bool _togglePassConfirm = true;
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordCtrl.text != _passwordConfirmCtrl.text) {
         return UtilService(context).message('As senhas devem ser iguais!');

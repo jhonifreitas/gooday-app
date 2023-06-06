@@ -24,7 +24,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
 
   final List<Item> _paramList = [];
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     // if () {
     //   UtilService(context).loading('Salvando...');
     //   final data = _userCtrl.onSerialize();

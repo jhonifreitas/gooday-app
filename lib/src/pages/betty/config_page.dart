@@ -2,8 +2,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:provider/provider.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 
 class BettyConfigPage extends StatefulWidget {
   const BettyConfigPage({super.key});
@@ -14,6 +16,27 @@ class BettyConfigPage extends StatefulWidget {
 
 class _BettyConfigPageState extends State<BettyConfigPage> {
   bool _hint = false;
+
+  @override
+  void initState() {
+    final bettyConfig = context.read<UserProvider>().data?.config?.betty;
+    final hasConfig = bettyConfig != null &&
+        (bettyConfig.lostWeight != null ||
+            bettyConfig.adequateFood != null ||
+            bettyConfig.foodHelps.isNotEmpty ||
+            bettyConfig.foodLikes.isNotEmpty ||
+            bettyConfig.foodNoLikes.isNotEmpty ||
+            bettyConfig.foodLimits.isNotEmpty ||
+            bettyConfig.doExercise != null ||
+            bettyConfig.exerciseHelps.isNotEmpty ||
+            bettyConfig.exercises.isNotEmpty ||
+            bettyConfig.timeExercise.isNotEmpty ||
+            bettyConfig.frequencyExercise != null);
+
+    if (hasConfig) _onHint(true);
+
+    super.initState();
+  }
 
   void _onHint(bool value) {
     setState(() {

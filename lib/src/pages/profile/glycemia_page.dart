@@ -20,7 +20,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
 
   final _userCtrl = UserController();
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 

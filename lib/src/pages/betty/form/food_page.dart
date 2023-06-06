@@ -1,27 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFoodPage extends StatefulWidget {
-  const BettyFormFoodPage({this.onSubmit, super.key});
+  const BettyFormFoodPage({this.bettyCtrl, super.key});
 
-  final VoidCallback? onSubmit;
+  final BettyController? bettyCtrl;
 
   @override
   State<BettyFormFoodPage> createState() => _BettyFormFoodPageState();
 }
 
 class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
-  final _bettyCtrl = BettyController();
+  late final UserProvider _userProvider;
+  late final _bettyCtrl = widget.bettyCtrl ?? BettyController();
+
   bool? _limit;
   bool? _help;
 
-  void _onSubmit() {}
+  @override
+  void initState() {
+    super.initState();
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = _userProvider.data;
+    if (user?.config?.betty != null) {
+      _bettyCtrl.initData(user!.config!.betty!);
+
+      if (user.config!.betty!.foodHelps.isNotEmpty) _onHelp(true);
+      if (user.config!.betty!.foodLimits.isNotEmpty) _onLimit(true);
+    }
+  }
+
+  Future<void> _onSubmit() async {
+    UtilService(context).loading('Salvando...');
+
+    final Map<String, dynamic> data = {
+      'lostWeight': _bettyCtrl.lostWeightFoodCtrl,
+      'adequateFood': _bettyCtrl.adequateFoodCtrl,
+      'foodHelps': _bettyCtrl.foodHelpsCtrl,
+      'foodLikes': _bettyCtrl.foodLikesCtrl,
+      'foodNoLikes': _bettyCtrl.foodNoLikesCtrl,
+      'foodLimits': _bettyCtrl.foodLimitsCtrl,
+    };
+
+    final config = _userProvider.data!.config!.toJson();
+    config['betty'] = data;
+
+    await _userProvider.update({'config': config});
+
+    if (!mounted) return;
+
+    context.pop();
+    context.pop();
+  }
 
   void _onLostWeight(bool? value) {
     setState(() {
@@ -29,9 +70,9 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
     });
   }
 
-  void _onBelieve(bool? value) {
+  void _onAdequateFood(bool? value) {
     setState(() {
-      _bettyCtrl.believeFoodCtrl = value;
+      _bettyCtrl.adequateFoodCtrl = value;
     });
   }
 
@@ -41,12 +82,12 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
     });
   }
 
-  void _onHelpList(String id, bool? selected) {
+  void _onFoodHelps(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.helpFoodCtrl.add(id);
+        _bettyCtrl.foodHelpsCtrl.add(id);
       } else {
-        _bettyCtrl.helpFoodCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.foodHelpsCtrl.removeWhere((item) => item == id);
       }
     });
   }
@@ -57,32 +98,32 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
     });
   }
 
-  void _onLimitList(String id, bool? selected) {
+  void _onFoodLikes(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.limitFoodCtrl.add(id);
+        _bettyCtrl.foodLikesCtrl.add(id);
       } else {
-        _bettyCtrl.limitFoodCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.foodLikesCtrl.removeWhere((item) => item == id);
       }
     });
   }
 
-  void _onFoodList(String id, bool? selected) {
+  void _onFoodNoLikes(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.foodListCtrl.add(id);
+        _bettyCtrl.foodNoLikesCtrl.add(id);
       } else {
-        _bettyCtrl.foodListCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.foodNoLikesCtrl.removeWhere((item) => item == id);
       }
     });
   }
 
-  void _onNoFoodList(String id, bool? selected) {
+  void _onFoodLimits(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.noFoodListCtrl.add(id);
+        _bettyCtrl.foodLimitsCtrl.add(id);
       } else {
-        _bettyCtrl.noFoodListCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.foodLimitsCtrl.removeWhere((item) => item == id);
       }
     });
   }
@@ -116,7 +157,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Você que perder peso?'),
+                  const Text('Você quer perder peso?'),
                   const SizedBox(height: 10),
                   Row(
                     children: [
@@ -155,16 +196,16 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     children: [
                       ChipCustom(
                         text: 'Sim',
-                        selected: _bettyCtrl.believeFoodCtrl == true,
+                        selected: _bettyCtrl.adequateFoodCtrl == true,
                         onSelected: (value) =>
-                            _onBelieve(value == true ? true : null),
+                            _onAdequateFood(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
                       ChipCustom(
                         text: 'Não',
-                        selected: _bettyCtrl.believeFoodCtrl == false,
+                        selected: _bettyCtrl.adequateFoodCtrl == false,
                         onSelected: (value) =>
-                            _onBelieve(value == true ? false : null),
+                            _onAdequateFood(value == true ? false : null),
                       ),
                     ],
                   )
@@ -222,9 +263,9 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     const SizedBox(height: 10),
                     Column(
                       children: [
-                        for (var item in _bettyCtrl.helpFoodList)
+                        for (var item in _bettyCtrl.foodHelpList)
                           CheckboxListTile(
-                            value: _bettyCtrl.helpFoodCtrl
+                            value: _bettyCtrl.foodHelpsCtrl
                                 .any((id) => id == item.id),
                             title: Text(
                               item.name,
@@ -237,7 +278,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 35),
                             controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (value) => _onHelpList(item.id, value),
+                            onChanged: (value) => _onFoodHelps(item.id, value),
                           )
                       ],
                     )
@@ -275,9 +316,9 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,
-                            selected: _bettyCtrl.foodListCtrl
+                            selected: _bettyCtrl.foodLikesCtrl
                                 .any((id) => id == item.id),
-                            onSelected: (value) => _onFoodList(item.id, value),
+                            onSelected: (value) => _onFoodLikes(item.id, value),
                           ),
                       ],
                     ),
@@ -327,10 +368,10 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,
-                            selected: _bettyCtrl.noFoodListCtrl
+                            selected: _bettyCtrl.foodNoLikesCtrl
                                 .any((id) => id == item.id),
                             onSelected: (value) =>
-                                _onNoFoodList(item.id, value),
+                                _onFoodNoLikes(item.id, value),
                           ),
                       ],
                     ),
@@ -379,9 +420,9 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                         crossAxisCount: 2,
                         childAspectRatio: 3.5,
                         children: [
-                          for (var item in _bettyCtrl.limitFoodList)
+                          for (var item in _bettyCtrl.foodLimitList)
                             CheckboxListTile(
-                              value: _bettyCtrl.limitFoodCtrl
+                              value: _bettyCtrl.foodLimitsCtrl
                                   .any((id) => id == item.id),
                               title: Text(
                                 item.name,
@@ -395,7 +436,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                                   const EdgeInsets.symmetric(horizontal: 5),
                               controlAffinity: ListTileControlAffinity.leading,
                               onChanged: (value) =>
-                                  _onLimitList(item.id, value),
+                                  _onFoodLimits(item.id, value),
                             )
                         ],
                       ),
@@ -408,7 +449,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: widget.onSubmit == null,
+        visible: widget.bettyCtrl == null,
         child: SizedBox(
           width: 70,
           height: 70,

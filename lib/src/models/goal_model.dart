@@ -4,12 +4,12 @@ class GoalModel extends BaseModel {
   final int steps;
   final int distance;
   final int calories;
-  final int minutes;
+  final int activeMinutes;
 
   GoalModel({
     this.steps = 0,
     this.distance = 0,
     this.calories = 0,
-    this.minutes = 0,
+    this.activeMinutes = 0,
   });
 }

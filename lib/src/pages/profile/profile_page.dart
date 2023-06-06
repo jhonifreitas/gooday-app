@@ -35,12 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
     context.push('/config/glicemia');
   }
 
-  void _goToGoalConfig() {
-    context.push('/config/metas');
-  }
-
   void _goToPasswordReset() {
     context.push('/user/redefinir-senha');
+  }
+
+  void _goToIntrodution() {
+    context.push('/introducao/2');
   }
 
   void _goToBetty() {
@@ -207,15 +207,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: _goToGlycemia,
                   ),
                   _ProfileListTile(
-                    text: 'Configurar Metas',
-                    icon: const Icon(Icons.favorite,
-                        size: 15, color: Colors.white),
-                    onTap: _goToGoalConfig,
-                  ),
-                  _ProfileListTile(
                     text: 'Segurança',
                     icon: const Icon(Icons.lock, size: 15, color: Colors.white),
                     onTap: _goToPasswordReset,
+                  ),
+                  _ProfileListTile(
+                    text: 'Sobre',
+                    icon: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: SvgPicture.asset(
+                        'assets/icons/logo-white.svg',
+                        colorFilter: const ColorFilter.mode(
+                            Colors.white, BlendMode.srcIn),
+                      ),
+                    ),
+                    onTap: _goToIntrodution,
                   ),
                 ],
               ),

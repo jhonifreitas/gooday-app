@@ -24,6 +24,7 @@ class _UserPageState extends State<UserPage> {
   late final UserProvider _userProvider;
   final _formKey = GlobalKey<FormState>();
 
+  final _goodies = 50;
   int _currentPage = 0;
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
@@ -37,7 +38,7 @@ class _UserPageState extends State<UserPage> {
     if (user != null) _userCtrl.initData(user);
   }
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
       final Map<String, dynamic> data = {
@@ -56,23 +57,38 @@ class _UserPageState extends State<UserPage> {
           'drug': _userCtrl.drugCtrl.text,
         }
       };
+
+      final isComplete = data['name'].isNotEmpty &&
+          data['name'].isNotEmpty &&
+          data['email'].isNotEmpty &&
+          data['phone'].isNotEmpty &&
+          data['dateBirth'] != null &&
+          data['genre'].isNotEmpty &&
+          data['anamnese']['height'] != null &&
+          data['anamnese']['weight'] != null &&
+          data['anamnese']['diabeteType'].isNotEmpty;
+      if (isComplete) {
+        data['goodies'] += _userProvider.data!.goodies + _goodies;
+      }
+
       await _userProvider.update(data);
 
-      if (!mounted) return;
+      if (mounted) context.pop();
 
-      context.pop();
-      context.pop();
+      if (isComplete) await _openGoodieCongratulation(_goodies);
+
+      if (mounted) context.pop();
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
   }
 
-  void _openGoodieCongratulation() {
-    showDialog(
+  Future<void> _openGoodieCongratulation(int value) {
+    return showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
-          content: GoodieCongratulationPage(value: 50),
+        return AlertDialog(
+          content: GoodieCongratulationPage(value: value),
         );
       },
     );
@@ -506,7 +522,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                                           'type-1' &&
                                       widget.userCtrl.insulinCtrl == true
                                   ? 'Insulina'
-                                  : 'Boulos (Rápida)',
+                                  : 'Bolus (Rápida)',
                               controller: widget.userCtrl.insulinFastCtrl,
                               isDropdown: true,
                               options: widget.userCtrl.insulinFastList,

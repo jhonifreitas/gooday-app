@@ -72,7 +72,7 @@ class UserModel extends BaseModel {
     json['dateBirth'] = dateBirth;
     json['goodies'] = goodies;
     json['anamnese'] = anamnese;
-    json['config'] = config;
+    json['config'] = config?.toJson();
     return json;
   }
 }
@@ -133,25 +133,25 @@ class UserConfig {
 
   UserConfig.fromJson(Map<String, dynamic> json)
       : this(
-          goal: UserConfigGoal.fromJson(json['goal']),
-          glycemia: UserConfigGlycemia.fromJson(json['glycemia']),
-          betty: UserConfigBetty.fromJson(json['betty']),
+          goal: UserConfigGoal.fromJson(json['goal'] ?? {}),
+          glycemia: UserConfigGlycemia.fromJson(json['glycemia'] ?? {}),
+          betty: UserConfigBetty.fromJson(json['betty'] ?? {}),
         );
 
   Map<String, dynamic> toJson() {
     return {
-      'goal': goal,
-      'glycemia': glycemia,
-      'betty': betty,
+      'goal': goal?.toJson(),
+      'glycemia': glycemia?.toJson(),
+      'betty': betty?.toJson(),
     };
   }
 }
 
 class UserConfigGoal {
-  int steps;
-  int distance;
-  int calories;
-  int activeMinutes;
+  int? steps;
+  int? distance;
+  int? calories;
+  int? activeMinutes;
 
   UserConfigGoal({
     this.steps = 0,
@@ -179,15 +179,15 @@ class UserConfigGoal {
 }
 
 class UserConfigGlycemia {
-  int beforeMealMin;
-  int beforeMealNormal;
-  int beforeMealMax;
-  int afterMealMin;
-  int afterMealNormal;
-  int afterMealMax;
-  int beforeSleepMin;
-  int beforeSleepNormal;
-  int beforeSleepMax;
+  int? beforeMealMin;
+  int? beforeMealNormal;
+  int? beforeMealMax;
+  int? afterMealMin;
+  int? afterMealNormal;
+  int? afterMealMax;
+  int? beforeSleepMin;
+  int? beforeSleepNormal;
+  int? beforeSleepMax;
 
   UserConfigGlycemia({
     this.beforeMealMin = 0,
@@ -230,32 +230,61 @@ class UserConfigGlycemia {
 }
 
 class UserConfigBetty {
-  int steps;
-  int distance;
-  int calories;
-  int activeMinutes;
+  bool? lostWeight;
+  bool? adequateFood;
+  List<String> foodHelps;
+  List<String> foodLikes;
+  List<String> foodNoLikes;
+  List<String> foodLimits;
+
+  bool? doExercise;
+  List<String> exerciseHelps;
+  List<String> exercises;
+  List<String> timeExercise;
+  int? frequencyExercise;
 
   UserConfigBetty({
-    this.steps = 0,
-    this.distance = 0,
-    this.calories = 0,
-    this.activeMinutes = 0,
+    this.lostWeight,
+    this.adequateFood,
+    this.foodHelps = const [],
+    this.foodLikes = const [],
+    this.foodNoLikes = const [],
+    this.foodLimits = const [],
+    this.doExercise,
+    this.exerciseHelps = const [],
+    this.exercises = const [],
+    this.timeExercise = const [],
+    this.frequencyExercise,
   });
 
   UserConfigBetty.fromJson(Map<String, dynamic> json)
       : this(
-          steps: json['steps'],
-          distance: json['distance'],
-          calories: json['calories'],
-          activeMinutes: json['activeMinutes'],
+          lostWeight: json['lostWeight'],
+          adequateFood: json['adequateFood'],
+          foodHelps: (json['foodHelps'] as List<dynamic>).cast(),
+          foodLikes: (json['foodLikes'] as List<dynamic>).cast(),
+          foodNoLikes: (json['foodNoLikes'] as List<dynamic>).cast(),
+          foodLimits: (json['foodLimits'] as List<dynamic>).cast(),
+          doExercise: json['doExercise'],
+          exerciseHelps: (json['exerciseHelps'] as List<dynamic>).cast(),
+          exercises: (json['exercises'] as List<dynamic>).cast(),
+          timeExercise: (json['timeExercise'] as List<dynamic>).cast(),
+          frequencyExercise: json['frequencyExercise'],
         );
 
   Map<String, dynamic> toJson() {
     return {
-      'steps': steps,
-      'distance': distance,
-      'calories': calories,
-      'activeMinutes': activeMinutes,
+      'lostWeight': lostWeight,
+      'adequateFood': adequateFood,
+      'foodHelps': foodHelps,
+      'foodLikes': foodLikes,
+      'foodNoLikes': foodNoLikes,
+      'foodLimits': foodLimits,
+      'doExercise': doExercise,
+      'exerciseHelps': exerciseHelps,
+      'exercises': exercises,
+      'timeExercise': timeExercise,
+      'frequencyExercise': frequencyExercise,
     };
   }
 }

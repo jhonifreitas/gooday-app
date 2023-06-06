@@ -45,7 +45,7 @@ class _MealFormPageState extends State<MealFormPage> {
     return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
   }
 
-  void _onSubmit() {}
+  Future<void> _onSubmit() async {}
 
   void _onDateTime() {
     UtilService(context).dateTimePicker(
@@ -485,7 +485,7 @@ class _MealEdit extends StatefulWidget {
 class _MealEditState extends State<_MealEdit> {
   final _quantityCtrl = TextEditingController();
 
-  void _onSubmit() {
+  Future<void> _onSubmit() async {
     context.pop();
   }
 

@@ -25,7 +25,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
     Item(id: 'sleep', name: 'Ao dormir/Madrugada'),
   ];
 
-  void _onSubmit() {}
+  Future<void> _onSubmit() async {}
 
   void _onType(String id, bool? selected) {
     setState(() {

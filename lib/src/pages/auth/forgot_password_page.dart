@@ -18,7 +18,7 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
 
   final _emailCtrl = TextEditingController();
 
-  void _onSubmit() async {
+  Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Enviado...');
 

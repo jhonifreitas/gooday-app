@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
+import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormEducationPage extends StatefulWidget {
-  const BettyFormEducationPage({this.onSubmit, super.key});
+  const BettyFormEducationPage({this.bettyCtrl, super.key});
 
-  final VoidCallback? onSubmit;
+  final BettyController? bettyCtrl;
 
   @override
   State<BettyFormEducationPage> createState() => _BettyFormEducationPageState();
 }
 
 class _BettyFormEducationPageState extends State<BettyFormEducationPage> {
-  void _onSubmit() {}
+  void _onSubmit() {
+    context.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +113,7 @@ class _BettyFormEducationPageState extends State<BettyFormEducationPage> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: widget.onSubmit == null,
+        visible: widget.bettyCtrl == null,
         child: SizedBox(
           width: 70,
           height: 70,

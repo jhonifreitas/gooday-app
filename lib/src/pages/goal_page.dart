@@ -4,10 +4,13 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/models/goal_model.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({super.key});
@@ -19,6 +22,7 @@ class GoalPage extends StatefulWidget {
 class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   DateTime _date = DateTime.now();
   DateTime _lastUpdate = DateTime.now();
+  late final _userProvider = context.watch<UserProvider>();
 
   final _data = GoalModel();
 
@@ -54,7 +58,43 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   String get _getMinuteLabel {
-    return NumberFormat().format(_data.minutes);
+    return NumberFormat().format(_data.activeMinutes);
+  }
+
+  double get _getStepPercent {
+    final total = _userProvider.data!.config!.goal!.steps;
+    if (total != null && total > 0) {
+      if (_data.steps >= total) return 1;
+      return _data.steps / total;
+    }
+    return 0;
+  }
+
+  double get _getDistancePercent {
+    final total = _userProvider.data!.config!.goal!.distance;
+    if (total != null && total > 0) {
+      if (_data.distance >= total) return 1;
+      return _data.distance / total;
+    }
+    return 0;
+  }
+
+  double get _getCaloriePercent {
+    final total = _userProvider.data!.config!.goal!.calories;
+    if (total != null && total > 0) {
+      if (_data.calories >= total) return 1;
+      return _data.calories / total;
+    }
+    return 0;
+  }
+
+  double get _getMinutePercent {
+    final total = _userProvider.data!.config!.goal!.activeMinutes;
+    if (total != null && total > 0) {
+      if (_data.activeMinutes >= total) return 1;
+      return _data.activeMinutes / total;
+    }
+    return 0;
   }
 
   @override
@@ -88,7 +128,9 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
     });
   }
 
-  _goToDaily() {}
+  void _goToConfig() {
+    context.push('/config/metas');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +167,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                       Text('Objetivo Diário',
                           style: Theme.of(context).textTheme.titleMedium),
                       TextButton(
-                        onPressed: _goToDaily,
-                        child: const Text('Ver mais'),
+                        onPressed: _goToConfig,
+                        child: const Text('Configurar'),
                       )
                     ],
                   ),
@@ -145,38 +187,49 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                   const SizedBox(height: 10),
                   _GoalCard(
                     iconAssets: 'assets/icons/shoe.svg',
-                    value: 1,
+                    value: _getStepPercent,
                     textValue: _getStepLabel,
                     text: 'passos',
-                    suffix: const Text('5000',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    suffix: Text(
+                      _userProvider.data?.config?.goal?.steps.toString() ?? '0',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     color: Colors.green,
                   ),
                   _GoalCard(
                     iconAssets: 'assets/icons/pin.svg',
-                    value: 0.5,
+                    value: _getDistancePercent,
                     textValue: _getDistanceLabel,
                     text: 'Km',
-                    suffix: const Text('4',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    suffix: Text(
+                      _userProvider.data?.config?.goal?.distance.toString() ??
+                          '0',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     color: Colors.yellow,
                   ),
                   _GoalCard(
                     iconAssets: 'assets/icons/fire.svg',
-                    value: 0.945,
+                    value: _getCaloriePercent,
                     textValue: _getCalorieLabel,
                     text: 'Calorias',
-                    suffix: const Text('-1000',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    suffix: Text(
+                      '${_userProvider.data?.config?.goal?.calories ?? '0'}',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     color: Colors.red,
                   ),
                   _GoalCard(
                     iconAssets: 'assets/icons/clock-race.svg',
-                    value: 1,
+                    value: _getMinutePercent,
                     textValue: _getMinuteLabel,
                     text: 'minutos ativos',
-                    suffix: const Text('70',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    suffix: Text(
+                      _userProvider.data?.config?.goal?.activeMinutes
+                              .toString() ??
+                          '0',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     color: Colors.purple,
                   ),
                 ],

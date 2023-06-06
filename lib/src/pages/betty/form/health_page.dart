@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
+import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormHealthPage extends StatefulWidget {
-  const BettyFormHealthPage({this.onSubmit, super.key});
+  const BettyFormHealthPage({this.bettyCtrl, super.key});
 
-  final VoidCallback? onSubmit;
+  final BettyController? bettyCtrl;
 
   @override
   State<BettyFormHealthPage> createState() => _BettyFormHealthPageState();
 }
 
 class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
-  final _bettyCtrl = BettyController();
+  late final UserProvider _userProvider;
+  late final _bettyCtrl = widget.bettyCtrl ?? BettyController();
 
-  void _onSubmit() {}
+  @override
+  void initState() {
+    super.initState();
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = _userProvider.data;
+    if (user?.config?.betty != null) _bettyCtrl.initData(user!.config!.betty!);
+  }
+
+  Future<void> _onSubmit() async {
+    UtilService(context).loading('Salvando...');
+
+    final Map<String, dynamic> data = {
+      'timeExercise': _bettyCtrl.timeExerciseCtrl,
+      'frequencyExercise': _bettyCtrl.frequencyExerciseCtrl,
+    };
+
+    final config = _userProvider.data!.config!.toJson();
+    config['betty'] = data;
+
+    await _userProvider.update({'config': config});
+
+    if (!mounted) return;
+
+    context.pop();
+    context.pop();
+  }
 
   void _onTimeList(String id, bool? selected) {
     setState(() {
@@ -32,9 +63,9 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
   void _onFrequencyList(String id, bool? selected) {
     setState(() {
       if (selected == true) {
-        _bettyCtrl.frequencyExerciseCtrl.add(id);
+        _bettyCtrl.frequencyExerciseCtrl = int.parse(id);
       } else {
-        _bettyCtrl.frequencyExerciseCtrl.removeWhere((item) => item == id);
+        _bettyCtrl.frequencyExerciseCtrl = null;
       }
     });
   }
@@ -119,8 +150,8 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                     children: [
                       for (var item in _bettyCtrl.frequencyExerciseList)
                         CheckboxListTile(
-                          value: _bettyCtrl.frequencyExerciseCtrl
-                              .any((id) => id == item.id),
+                          value: _bettyCtrl.frequencyExerciseCtrl.toString() ==
+                              item.id,
                           title: Text(
                             item.name,
                             style: TextStyle(
@@ -144,7 +175,7 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: widget.onSubmit == null,
+        visible: widget.bettyCtrl == null,
         child: SizedBox(
           width: 70,
           height: 70,
