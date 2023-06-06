@@ -63,7 +63,7 @@ class _GoodieListPageState extends State<GoodieListPage> {
             child: FutureBuilder<List<GoodieModel>>(
               future: _loadList(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -71,8 +71,24 @@ class _GoodieListPageState extends State<GoodieListPage> {
                       return _GoodieItem(goodie: goodie);
                     },
                   );
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
                 }
-                return const CircularProgressIndicator();
+
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset('assets/icons/gift.svg', width: 150),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Nenhum registro encontrado!',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ),

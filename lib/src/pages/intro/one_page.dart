@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
+import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 
 class IntroOnePage extends StatefulWidget {
@@ -53,9 +54,10 @@ class _IntroOnePageState extends State<IntroOnePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40),
-              child: Image.asset('assets/images/logo-white.png', width: 120),
+            AppBarCustom(
+              brightness: Brightness.dark,
+              iconBackColor: Colors.white,
+              title: Image.asset('assets/images/logo-white.png', width: 120),
             ),
             Container(
               height: 300,

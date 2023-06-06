@@ -52,11 +52,14 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return SizedBox(
-          height: 300,
-          child: _InsulinParam(
-            item: index != null ? _paramList[index] : null,
-            onSubmit: (item) => _onParamSubmit(item, index),
+        return SafeArea(
+          child: Wrap(
+            children: [
+              _InsulinParam(
+                item: index != null ? _paramList[index] : null,
+                onSubmit: (item) => _onParamSubmit(item, index),
+              ),
+            ],
           ),
         );
       },

@@ -440,7 +440,6 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                   onSelected: (value) =>
                       value ? _onDiabete(true) : _onDiabete(null),
                 ),
-                const SizedBox(width: 10),
                 ChipCustom(
                   text: 'Não',
                   isDisabled: widget.diabeteTypeDisabled,
@@ -503,7 +502,6 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                               onSelected: (value) =>
                                   value ? _onInsulin(true) : _onInsulin(null),
                             ),
-                            const SizedBox(width: 10),
                             ChipCustom(
                               text: 'Não',
                               selected: widget.userCtrl.insulinCtrl != null

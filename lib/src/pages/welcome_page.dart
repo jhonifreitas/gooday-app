@@ -58,6 +58,7 @@ class _WelcomePageState extends State<WelcomePage> {
             padding: const EdgeInsets.only(bottom: 20, top: 10),
             child: AppBarCustom(
               titleCenter: false,
+              brightness: Brightness.dark,
               title: Image.asset(width: 80, 'assets/images/logo-white.png'),
               suffix: Text(
                 '$_temperature ºC | $_timeLabel',

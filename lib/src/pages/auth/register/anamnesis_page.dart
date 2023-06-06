@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
+import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/services/util_service.dart';
@@ -134,14 +135,16 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 30),
+        padding: const EdgeInsets.only(bottom: 40),
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.always,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.asset('assets/images/logo.png', width: 80),
+              AppBarCustom(
+                title: Image.asset('assets/images/logo.png', width: 80),
+              ),
               const SizedBox(height: 40),
               Expanded(
                 child: PageView(
@@ -150,14 +153,14 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: _AuthRegisterAnamneseStep1(
                         userCtrl: _userCtrl,
                         onDateBirth: _onDateBirth,
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: UserAnamneseForm(userCtrl: _userCtrl),
                     )
                   ],

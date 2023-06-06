@@ -111,12 +111,6 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  @override
   void dispose() {
     _loaderCtrl.dispose();
     super.dispose();
@@ -442,11 +436,20 @@ class _GoalCardUpdate extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: ListTile(
         onTap: onLoad,
-        leading: Image.asset(
-          Platform.isIOS
-              ? 'assets/icons/apple-health.png'
-              : 'assets/icons/google-fit.png',
-          width: 40,
+        leading: Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: Platform.isIOS
+                ? [BoxShadow(color: Colors.grey.shade400, blurRadius: 5)]
+                : null,
+          ),
+          child: Image.asset(
+            Platform.isIOS
+                ? 'assets/icons/apple-health.png'
+                : 'assets/icons/google-fit.png',
+            width: 40,
+          ),
         ),
         title: Text(
           Platform.isIOS ? 'App Saúde' : 'Google Fit',

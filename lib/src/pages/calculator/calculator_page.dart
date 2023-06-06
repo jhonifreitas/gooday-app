@@ -19,7 +19,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return const GlycemiaPage();
+        return SafeArea(child: Wrap(children: const [GlycemiaPage()]));
       },
     );
   }

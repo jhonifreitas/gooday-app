@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/widgets/button.dart';
+import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/widgets/profile_image.dart';
 import 'package:gooday/src/services/util_service.dart';
@@ -128,24 +129,16 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => _goToBack(),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  Image.asset('assets/images/logo.png', width: 80),
-                  const SizedBox(width: 50),
-                ],
-              ),
-              Column(
+        padding: const EdgeInsets.only(bottom: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AppBarCustom(
+              title: Image.asset('assets/images/logo.png', width: 80),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
                 children: [
                   Text('E você?',
                       style: Theme.of(context).textTheme.titleLarge),
@@ -204,78 +197,78 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                   )
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Ou cadastre-se usando',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-              ),
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Expanded(child: Divider()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: FloatingActionButton(
-                      tooltip: 'Facebook',
-                      heroTag: 'register-btn-facebook',
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      backgroundColor: Colors.white,
-                      onPressed: _signInFacebook,
-                      child: SvgPicture.asset(
-                        'assets/icons/facebook.svg',
-                        width: 30,
-                      ),
+                    child: Text(
+                      'Ou cadastre-se usando',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: FloatingActionButton(
-                      tooltip: 'Google',
-                      heroTag: 'register-btn-google',
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      onPressed: _signInGoogle,
-                      child: SvgPicture.asset(
-                        'assets/icons/google.svg',
-                        width: 30,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: FloatingActionButton(
-                      tooltip: 'Apple',
-                      heroTag: 'register-btn-apple',
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      onPressed: _signInApple,
-                      child: SvgPicture.asset(
-                        'assets/icons/apple.svg',
-                        width: 30,
-                      ),
-                    ),
-                  ),
+                  const Expanded(child: Divider()),
                 ],
               ),
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: FloatingActionButton(
+                    tooltip: 'Facebook',
+                    heroTag: 'register-btn-facebook',
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Colors.white,
+                    onPressed: _signInFacebook,
+                    child: SvgPicture.asset(
+                      'assets/icons/facebook.svg',
+                      width: 30,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: FloatingActionButton(
+                    tooltip: 'Google',
+                    heroTag: 'register-btn-google',
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    onPressed: _signInGoogle,
+                    child: SvgPicture.asset(
+                      'assets/icons/google.svg',
+                      width: 30,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: FloatingActionButton(
+                    tooltip: 'Apple',
+                    heroTag: 'register-btn-apple',
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    onPressed: _signInApple,
+                    child: SvgPicture.asset(
+                      'assets/icons/apple.svg',
+                      width: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

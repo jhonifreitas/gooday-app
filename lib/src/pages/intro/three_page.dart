@@ -8,6 +8,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
+import 'package:gooday/src/widgets/appbar.dart';
 
 class IntroThreePage extends StatefulWidget {
   const IntroThreePage({super.key});
@@ -56,20 +57,16 @@ class _IntroThreePageState extends State<IntroThreePage> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 30),
+        padding: const EdgeInsets.only(bottom: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _goToBack,
-              ),
+            AppBarCustom(
+              title: Image.asset('assets/images/logo.png', width: 80),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -94,7 +91,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
                     'Gooday para a sua saúde.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Visibility(
                     visible: Platform.isAndroid || Platform.isIOS,
                     child: ClipRRect(
@@ -104,7 +101,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Text(
                     'Quer saber mais?',
                     style: Theme.of(context).textTheme.bodyMedium,

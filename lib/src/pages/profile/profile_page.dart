@@ -126,6 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: AppBarCustom(
+                    brightness: Brightness.dark,
                     prefix: SvgPicture.asset(
                       'assets/icons/user.svg',
                       colorFilter: const ColorFilter.mode(

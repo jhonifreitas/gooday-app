@@ -18,18 +18,33 @@ class ChipCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double? elevation = 8;
+    Color textColor = Colors.white;
+    Color borderColor = primaryColor;
+    Color selectedColor = primaryColor;
+
+    if (selected == false) textColor = primaryColor;
+
+    if (isDisabled) {
+      elevation = null;
+      textColor = Colors.grey.shade800;
+      borderColor = Colors.grey.shade400;
+      selectedColor = Colors.grey.withAlpha(70);
+      if (selected == true) borderColor = Colors.transparent;
+    }
+
     return InputChip(
-      elevation: 8,
+      elevation: elevation,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      selectedColor: primaryColor,
-      side: const BorderSide(color: primaryColor),
+      selectedColor: selectedColor,
+      side: BorderSide(color: borderColor),
       showCheckmark: false,
       selected: selected,
       isEnabled: !isDisabled,
       label: Text(
         text,
         style: TextStyle(
-          color: selected == false ? primaryColor : Colors.white,
+          color: textColor,
           fontWeight: FontWeight.bold,
         ),
       ),

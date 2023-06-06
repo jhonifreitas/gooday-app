@@ -49,7 +49,10 @@ class UtilService {
       builder: (context) {
         return Container(
           height: 250,
-          color: Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
           child: CupertinoDatePicker(
             use24hFormat: true,
             maximumDate: maximumDate,

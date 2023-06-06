@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 class AppBarCustom extends StatelessWidget {
@@ -9,6 +10,7 @@ class AppBarCustom extends StatelessWidget {
     this.iconBackColor = Colors.black,
     this.prefix,
     this.suffix,
+    this.brightness = Brightness.light,
   });
 
   final Widget title;
@@ -16,6 +18,7 @@ class AppBarCustom extends StatelessWidget {
   final bool titleCenter;
   final Widget? prefix;
   final Widget? suffix;
+  final Brightness brightness;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +40,8 @@ class AppBarCustom extends StatelessWidget {
         leading: prefix ?? backButton,
         title: title,
         actions: suffix != null ? [suffix!] : null,
+        systemOverlayStyle:
+            SystemUiOverlayStyle(statusBarBrightness: brightness),
       ),
     );
   }

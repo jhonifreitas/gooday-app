@@ -112,6 +112,7 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                       shrinkWrap: true,
                       crossAxisCount: 2,
                       childAspectRatio: 3.5,
+                      padding: EdgeInsets.zero,
                       children: [
                         for (var item in _bettyCtrl.timeExerciseList)
                           CheckboxListTile(

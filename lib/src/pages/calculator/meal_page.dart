@@ -81,9 +81,12 @@ class _MealFormPageState extends State<MealFormPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return SizedBox(
-          height: 320,
-          child: _MealEdit(item: item, onSubmit: _onMealEdit),
+        return SafeArea(
+          child: Wrap(
+            children: [
+              _MealEdit(item: item, onSubmit: _onMealEdit),
+            ],
+          ),
         );
       },
     );
@@ -414,7 +417,7 @@ class _MealFormPageState extends State<MealFormPage> {
           Visibility(
             visible: _toggleSearchList,
             child: Positioned(
-              top: 120,
+              top: 180,
               left: 0,
               right: 0,
               bottom: 0,
@@ -443,6 +446,7 @@ class _MealList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: items.length,
+      padding: const EdgeInsets.only(bottom: 20),
       itemBuilder: (context, index) {
         final item = items[index];
         return Column(

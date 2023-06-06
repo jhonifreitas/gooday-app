@@ -419,6 +419,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                         shrinkWrap: true,
                         crossAxisCount: 2,
                         childAspectRatio: 3.5,
+                        padding: EdgeInsets.zero,
                         children: [
                           for (var item in _bettyCtrl.foodLimitList)
                             CheckboxListTile(

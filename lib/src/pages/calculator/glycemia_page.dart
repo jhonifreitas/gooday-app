@@ -39,7 +39,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
