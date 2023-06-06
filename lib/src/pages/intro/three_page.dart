@@ -40,10 +40,6 @@ class _IntroThreePageState extends State<IntroThreePage> {
     launchUrl(url);
   }
 
-  void _goToBack() {
-    context.pop();
-  }
-
   void _goToHome() {
     context.go('/');
   }

@@ -95,14 +95,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _onUploadImage() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      try {
+        final picker = ImagePicker();
+        final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-      if (pickedFile != null && context.mounted) {
-        UtilService(context).loading('Carregando...');
-        final file = File(pickedFile.path);
-        await context.read<UserProvider>().uploadImage(file);
-        if (context.mounted) context.pop();
+        if (pickedFile != null && mounted) {
+          UtilService(context).loading('Carregando...');
+          final file = File(pickedFile.path);
+          await context.read<UserProvider>().uploadImage(file).catchError((_) {
+            UtilService(context).message('Não foi possível salvar a imagem!');
+          });
+          if (mounted) context.pop();
+        }
+      } catch (e) {
+        UtilService(context)
+            .message('Não foi possível carregar a imagem\nTente Novamente!');
       }
     }
   }

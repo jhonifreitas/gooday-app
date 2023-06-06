@@ -50,9 +50,11 @@ class UserProvider extends ChangeNotifier {
   Future<void> uploadImage(File file) async {
     if (_data?.id != null) {
       final ref =
-          FirebaseStorage.instance.refFromURL('users/${_data!.id}/image.png');
-      final snapshot = await ref.putFile(file);
-      await update({'image': snapshot.ref.fullPath});
+          FirebaseStorage.instance.ref().child('users/${_data!.id}/image.png');
+      final metadata = SettableMetadata(contentType: "image/png");
+      final snapshot = await ref.putFile(file, metadata);
+      final url = await snapshot.ref.getDownloadURL();
+      await update({'image': url});
     }
   }
 

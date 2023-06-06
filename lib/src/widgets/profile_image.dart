@@ -20,18 +20,17 @@ class ProfileImage extends StatelessWidget {
       return SizedBox(
         width: 100,
         height: 100,
-        child: FloatingActionButton(
-          elevation: 0,
-          focusElevation: 0,
-          hoverElevation: 0,
-          highlightElevation: 0,
-          tooltip: 'Enviar foto',
-          heroTag: 'profile-btn-image',
-          backgroundColor: Colors.transparent,
-          splashColor: color.withOpacity(0.2),
-          shape: StadiumBorder(side: BorderSide(width: 2, color: color)),
-          onPressed: onUpload,
-          child: Icon(Icons.camera_alt_outlined, color: color, size: 40),
+        child: Tooltip(
+          message: 'Enviar foto',
+          child: Material(
+            color: Colors.transparent,
+            clipBehavior: Clip.hardEdge,
+            shape: CircleBorder(side: BorderSide(width: 2, color: color)),
+            child: InkWell(
+              onTap: onUpload,
+              child: Icon(Icons.camera_alt_outlined, color: color, size: 40),
+            ),
+          ),
         ),
       );
     }
@@ -45,7 +44,7 @@ class ProfileImage extends StatelessWidget {
             width: 100,
             height: 100,
             fit: BoxFit.cover,
-            image: const AssetImage('assets/images/avatar.png'),
+            image: NetworkImage(image!),
             child: InkWell(onTap: onUpload),
           ),
         ),
