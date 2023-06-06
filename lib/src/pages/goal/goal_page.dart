@@ -10,7 +10,12 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/models/goal_model.dart';
+import 'package:gooday/src/models/goodie_model.dart';
+import 'package:gooday/src/services/goal_service.dart';
+import 'package:gooday/src/services/health_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/services/goodie_service.dart';
+import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({super.key});
@@ -20,11 +25,14 @@ class GoalPage extends StatefulWidget {
 }
 
 class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
-  DateTime _date = DateTime.now();
-  DateTime _lastUpdate = DateTime.now();
+  final _goalService = GoalService();
+  final _healthService = HealthService();
+  final _goodieService = GoodieService();
   late final _userProvider = context.watch<UserProvider>();
 
-  final _data = GoalModel();
+  bool _goalDone = false;
+  GoalModel _data = GoalModel();
+  DateTime _date = DateTime.now();
 
   late final AnimationController _loaderCtrl = AnimationController(
     vsync: this,
@@ -41,8 +49,13 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
     return "$week, ${_date.day} de $month".toUpperCase();
   }
 
-  int get _goalTotal {
-    return 70;
+  double get _goalTotalPercent {
+    final total = _getStepPercent +
+        _getDistancePercent +
+        _getCaloriePercent +
+        _getMinutePercent;
+    final result = total / 4;
+    return result;
   }
 
   String get _getStepLabel {
@@ -58,7 +71,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   String get _getMinuteLabel {
-    return NumberFormat().format(_data.activeMinutes);
+    return NumberFormat().format(_data.exerciseTime);
   }
 
   double get _getStepPercent {
@@ -89,12 +102,18 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   double get _getMinutePercent {
-    final total = _userProvider.data!.config!.goal!.activeMinutes;
+    final total = _userProvider.data!.config!.goal!.exerciseTime;
     if (total != null && total > 0) {
-      if (_data.activeMinutes >= total) return 1;
-      return _data.activeMinutes / total;
+      if (_data.exerciseTime >= total) return 1;
+      return _data.exerciseTime / total;
     }
     return 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
   @override
@@ -103,29 +122,91 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _loadData() async {
+  Future<void> _loadData() async {
+    final data = await _goalService.getByDate(_date);
+    if (data != null) {
+      setState(() {
+        _data = data;
+      });
+    }
+
+    final goodies = await _goodieService.getByDate(_date);
+    final goalDone =
+        goodies.any((goodie) => goodie.type == GoodieType.goalDone);
+    setState(() {
+      _goalDone = goalDone;
+    });
+  }
+
+  Future<void> _fetchHealth() async {
     setState(() {
       _loaderCtrl.repeat();
     });
 
-    await Future.delayed(const Duration(seconds: 5));
+    try {
+      // HEALTH
+      final healthData = await _healthService.fetchData(_date);
+
+      setState(() {
+        _data.steps = healthData['steps']!;
+        _data.calories = healthData['calories']!;
+        _data.distance = healthData['distance']!;
+        _data.exerciseTime = healthData['exerciseTime']!;
+      });
+
+      // UPDATE GOAL
+      await _goalService.update(_data);
+      setState(() {
+        _data.updatedAt = DateTime.now();
+      });
+
+      // ADD GOODIE
+      if (_getStepPercent == 1 && !_goalDone) {
+        _addGoodie();
+      }
+    } catch (e) {
+      debugPrint('HEALTH: ${e.toString()}');
+    }
 
     setState(() {
-      _lastUpdate = DateTime.now();
       _loaderCtrl.stop();
     });
+  }
+
+  Future<void> _addGoodie() async {
+    const goodies = 50;
+    final goal = _userProvider.data?.config?.goal?.steps;
+    final data = GoodieModel(value: goodies, goal: goal);
+    await _goodieService.add(data);
+
+    setState(() {
+      _goalDone = true;
+    });
+
+    if (!mounted) return;
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: GoodieCongratulationPage(value: data.value),
+        );
+      },
+    );
   }
 
   void _goToPrev() {
     setState(() {
       _date = _date.add(const Duration(days: 1));
     });
+    _loadData();
   }
 
   void _goToNext() {
     setState(() {
       _date = _date.subtract(const Duration(days: 1));
     });
+    _loadData();
   }
 
   void _goToConfig() {
@@ -175,8 +256,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                   const SizedBox(height: 10),
                   _GoalCard(
                     iconAssets: 'assets/icons/target.svg',
-                    value: _goalTotal / 100,
-                    textValue: '$_goalTotal%',
+                    value: _goalTotalPercent,
+                    textValue: '${_goalTotalPercent * 100}%',
                     text: 'concluído',
                     suffix:
                         SvgPicture.asset('assets/icons/gift.svg', width: 24),
@@ -225,7 +306,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                     textValue: _getMinuteLabel,
                     text: 'minutos ativos',
                     suffix: Text(
-                      _userProvider.data?.config?.goal?.activeMinutes
+                      _userProvider.data?.config?.goal?.exerciseTime
                               .toString() ??
                           '0',
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -243,8 +324,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
           right: 10,
           child: _GoalCardUpdate(
             loaderAnimation: _loaderAnimation,
-            onLoad: _loadData,
-            lastUpdate: _lastUpdate,
+            onLoad: _fetchHealth,
+            lastUpdate: _data.updatedAt ?? _data.createdAt,
           ),
         )
       ],
@@ -290,7 +371,10 @@ class _GoalCard extends StatelessWidget {
               margin: const EdgeInsets.only(right: 10),
               child: SvgPicture.asset(
                 iconAssets,
-                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(
+                  value == 1 ? Colors.green : color,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             Expanded(
@@ -315,9 +399,9 @@ class _GoalCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     child: LinearProgressIndicator(
-                      color: color,
                       minHeight: 8,
                       value: value,
+                      color: value == 1 ? Colors.green : color,
                     ),
                   ),
                 ],
@@ -334,17 +418,20 @@ class _GoalCardUpdate extends StatelessWidget {
   const _GoalCardUpdate({
     required this.loaderAnimation,
     required this.onLoad,
-    required this.lastUpdate,
+    this.lastUpdate,
   });
 
-  final DateTime lastUpdate;
+  final DateTime? lastUpdate;
   final VoidCallback onLoad;
   final Animation<double> loaderAnimation;
 
   String get _lastUpdateLabel {
-    final month = DateFormat('MMMM', 'pt_BR').format(lastUpdate);
-    final time = DateFormat('H:mm').format(lastUpdate);
-    return "${lastUpdate.day} de $month, $time";
+    if (lastUpdate != null) {
+      final month = DateFormat('MMMM', 'pt_BR').format(lastUpdate!);
+      final time = DateFormat('H:mm').format(lastUpdate!);
+      return "${lastUpdate!.day} de $month, $time";
+    }
+    return 'Clique para sincronizar!';
   }
 
   @override

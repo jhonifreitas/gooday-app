@@ -6,7 +6,7 @@ class GoalController {
   final stepsCtrl = TextEditingController();
   final distanceCtrl = TextEditingController();
   final caloriesCtrl = TextEditingController();
-  final activeMinutesCtrl = TextEditingController();
+  final exerciseTimeCtrl = TextEditingController();
 
   List<Item> stepList(DateTime dateBirth) {
     final now = DateTime.now();
@@ -63,8 +63,8 @@ class GoalController {
     if (user.config?.goal?.calories != null) {
       caloriesCtrl.text = user.config!.goal!.calories.toString();
     }
-    if (user.config?.goal?.activeMinutes != null) {
-      activeMinutesCtrl.text = user.config!.goal!.activeMinutes.toString();
+    if (user.config?.goal?.exerciseTime != null) {
+      exerciseTimeCtrl.text = user.config!.goal!.exerciseTime.toString();
     }
   }
 
@@ -72,7 +72,7 @@ class GoalController {
     int steps = 0;
     int distance = 0;
     int calories = 0;
-    int activeMinutes = 0;
+    int exerciseTime = 0;
 
     if (stepsCtrl.text.isNotEmpty) {
       steps = int.parse(stepsCtrl.text);
@@ -83,15 +83,15 @@ class GoalController {
     if (caloriesCtrl.text.isNotEmpty) {
       calories = int.parse(caloriesCtrl.text);
     }
-    if (activeMinutesCtrl.text.isNotEmpty) {
-      activeMinutes = int.parse(activeMinutesCtrl.text);
+    if (exerciseTimeCtrl.text.isNotEmpty) {
+      exerciseTime = int.parse(exerciseTimeCtrl.text);
     }
 
     return {
       'steps': steps,
       'distance': distance,
       'calories': calories,
-      'activeMinutes': activeMinutes,
+      'exerciseTime': exerciseTime,
     };
   }
 }

@@ -3,16 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gooday/src/models/base_model.dart';
 
 class UserModel extends BaseModel {
-  final String authId;
-  final String? name;
-  final String? email;
-  final String? phone;
-  final String? image;
-  final String? genre;
-  final DateTime? dateBirth;
-  final int goodies;
-  final UserAnamnese? anamnese;
-  final UserConfig? config;
+  String authId;
+  String? name;
+  String? email;
+  String? phone;
+  String? image;
+  String? genre;
+  DateTime? dateBirth;
+  int goodies;
+  UserAnamnese? anamnese;
+  UserConfig? config;
 
   UserModel({
     this.authId = '',
@@ -148,16 +148,16 @@ class UserConfig {
 }
 
 class UserConfigGoal {
-  int? steps;
-  int? distance;
-  int? calories;
-  int? activeMinutes;
+  num? steps;
+  num? distance;
+  num? calories;
+  num? exerciseTime;
 
   UserConfigGoal({
     this.steps = 0,
     this.distance = 0,
     this.calories = 0,
-    this.activeMinutes = 0,
+    this.exerciseTime = 0,
   });
 
   UserConfigGoal.fromJson(Map<String, dynamic> json)
@@ -165,7 +165,7 @@ class UserConfigGoal {
           steps: json['steps'],
           distance: json['distance'],
           calories: json['calories'],
-          activeMinutes: json['activeMinutes'],
+          exerciseTime: json['exerciseTime'],
         );
 
   Map<String, dynamic> toJson() {
@@ -173,7 +173,7 @@ class UserConfigGoal {
       'steps': steps,
       'distance': distance,
       'calories': calories,
-      'activeMinutes': activeMinutes,
+      'exerciseTime': exerciseTime,
     };
   }
 }

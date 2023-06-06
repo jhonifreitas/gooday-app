@@ -7,11 +7,13 @@ class ChipCustom extends StatelessWidget {
     super.key,
     required this.text,
     required this.selected,
+    this.isDisabled = false,
     this.onSelected,
   });
 
   final String text;
   final bool selected;
+  final bool isDisabled;
   final ValueChanged<bool>? onSelected;
 
   @override
@@ -23,6 +25,7 @@ class ChipCustom extends StatelessWidget {
       side: const BorderSide(color: primaryColor),
       showCheckmark: false,
       selected: selected,
+      isEnabled: !isDisabled,
       label: Text(
         text,
         style: TextStyle(

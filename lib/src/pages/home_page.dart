@@ -2,8 +2,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gooday/src/common/theme.dart';
-import 'package:gooday/src/pages/goal_page.dart';
 import 'package:gooday/src/pages/welcome_page.dart';
+import 'package:gooday/src/pages/goal/goal_page.dart';
 import 'package:gooday/src/widgets/circle_notch.dart';
 import 'package:gooday/src/pages/notification_page.dart';
 import 'package:gooday/src/pages/profile/profile_page.dart';
@@ -19,8 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   int _currentPage = 0;
-  double _bottomBarSpace = 20;
-  double _circleNotchRadius = 25;
+  final _bottomBarSpace = 20.0;
+  final _circleNotchRadius = 25.0;
   final _pageCtrl = PageController();
 
   final btnCalculateKey = GlobalKey();

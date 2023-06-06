@@ -8,8 +8,10 @@ import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/services/goodie_service.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
@@ -22,12 +24,14 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   late final UserProvider _userProvider;
-  final _formKey = GlobalKey<FormState>();
-
-  final _goodies = 50;
-  int _currentPage = 0;
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
+  final _goodieService = GoodieService();
+  final _formKey = GlobalKey<FormState>();
+
+  final _goodies = 10;
+  int _currentPage = 0;
+  bool _diabeteTypeDisabled = false;
 
   @override
   void initState() {
@@ -35,7 +39,12 @@ class _UserPageState extends State<UserPage> {
 
     _userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = _userProvider.data;
-    if (user != null) _userCtrl.initData(user);
+    if (user != null) {
+      _userCtrl.initData(user);
+      setState(() {
+        _diabeteTypeDisabled = true;
+      });
+    }
   }
 
   Future<void> _onSubmit() async {
@@ -75,7 +84,7 @@ class _UserPageState extends State<UserPage> {
 
       if (mounted) context.pop();
 
-      if (isComplete) await _openGoodieCongratulation(_goodies);
+      if (isComplete) await _addGoodie();
 
       if (mounted) context.pop();
     } else {
@@ -83,12 +92,17 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
-  Future<void> _openGoodieCongratulation(int value) {
+  Future<void> _addGoodie() async {
+    final data = GoodieModel(type: GoodieType.profileComplete, value: _goodies);
+    await _goodieService.add(data);
+
+    if (!mounted) return;
+
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          content: GoodieCongratulationPage(value: value),
+          content: GoodieCongratulationPage(value: data.value),
         );
       },
     );
@@ -165,7 +179,10 @@ class _UserPageState extends State<UserPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: UserAnamneseForm(userCtrl: _userCtrl),
+                      child: UserAnamneseForm(
+                        userCtrl: _userCtrl,
+                        diabeteTypeDisabled: _diabeteTypeDisabled,
+                      ),
                     )
                   ],
                 ),
@@ -367,10 +384,12 @@ class _UserForm extends StatelessWidget {
 class UserAnamneseForm extends StatefulWidget {
   const UserAnamneseForm({
     required this.userCtrl,
+    this.diabeteTypeDisabled = false,
     super.key,
   });
 
   final UserController userCtrl;
+  final bool diabeteTypeDisabled;
 
   @override
   State<UserAnamneseForm> createState() => _UserAnamneseFormState();
@@ -414,6 +433,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
               children: [
                 ChipCustom(
                   text: 'Sim',
+                  isDisabled: widget.diabeteTypeDisabled,
                   selected: widget.userCtrl.diabeteCtrl != null
                       ? widget.userCtrl.diabeteCtrl == true
                       : false,
@@ -423,6 +443,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                 const SizedBox(width: 10),
                 ChipCustom(
                   text: 'Não',
+                  isDisabled: widget.diabeteTypeDisabled,
                   selected: widget.userCtrl.diabeteCtrl != null
                       ? widget.userCtrl.diabeteCtrl == false
                       : false,
@@ -448,6 +469,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                   for (var option in widget.userCtrl.diabeteTypeList)
                     ChipCustom(
                       text: option.name,
+                      isDisabled: widget.diabeteTypeDisabled,
                       selected:
                           widget.userCtrl.diabeteTypeCtrl.text == option.id,
                       onSelected: (value) => value

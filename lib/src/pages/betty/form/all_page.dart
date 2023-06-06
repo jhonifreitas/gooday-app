@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
-import 'package:gooday/src/models/user_model.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/pages/betty/form/food_page.dart';

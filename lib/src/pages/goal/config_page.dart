@@ -120,7 +120,7 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
                   ),
                   FormFieldCustom(
                     label: 'Minutos ativos',
-                    controller: _goalCtrl.activeMinutesCtrl,
+                    controller: _goalCtrl.exerciseTimeCtrl,
                     inputType: TextInputType.number,
                     prefixIcon: SvgPicture.asset(
                       'assets/icons/clock-race.svg',

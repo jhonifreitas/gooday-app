@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/services/goodie_service.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
@@ -21,12 +23,13 @@ class AuthRegisterAnamnesisPage extends StatefulWidget {
 }
 
 class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  final _goodies = 50;
-  int _currentPage = 0;
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
+  final _goodieService = GoodieService();
+  final _formKey = GlobalKey<FormState>();
+
+  final _goodies = 10;
+  int _currentPage = 0;
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
@@ -63,7 +66,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
 
       if (mounted) context.pop();
 
-      if (isComplete) await _openGoodieCongratulation(_goodies);
+      if (isComplete) await _addGoodie();
 
       if (mounted) context.push('/introducao/1');
     } else {
@@ -71,12 +74,17 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     }
   }
 
-  Future<void> _openGoodieCongratulation(int value) {
+  Future<void> _addGoodie() async {
+    final data = GoodieModel(type: GoodieType.profileComplete, value: _goodies);
+    await _goodieService.add(data);
+
+    if (!mounted) return;
+
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          content: GoodieCongratulationPage(value: value),
+          content: GoodieCongratulationPage(value: data.value),
         );
       },
     );
