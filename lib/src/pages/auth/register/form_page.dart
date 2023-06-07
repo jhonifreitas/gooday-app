@@ -84,7 +84,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
         }
       } catch (e) {
         UtilService(context)
-            .message('Não foi possível carregar a imagem\nTente Novamente!');
+            .message('Não foi possível carregar a imagem.\nTente Novamente!');
       }
     }
   }

@@ -39,8 +39,8 @@ class _MealFormPageState extends State<MealFormPage> {
   ];
 
   String get _getDateFullLabel {
-    final week = DateFormat('EEE', 'pt_BR').format(_dateCtrl);
-    final month = DateFormat('MMM', 'pt_BR').format(_dateCtrl);
+    final week = DateFormat('EEE').format(_dateCtrl);
+    final month = DateFormat('MMM').format(_dateCtrl);
     final time = DateFormat('HH:mm').format(_dateCtrl);
     return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
   }

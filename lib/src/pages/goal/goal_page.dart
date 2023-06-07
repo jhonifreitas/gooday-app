@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
+import 'package:gooday/src/services/util_service.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +31,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   final _goodieService = GoodieService();
   late final _userProvider = context.watch<UserProvider>();
 
+  GoalModel? _data;
   bool _goalDone = false;
-  GoalModel _data = GoalModel();
   DateTime _date = DateTime.now();
 
   late final AnimationController _loaderCtrl = AnimationController(
@@ -44,12 +45,33 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   );
 
   String get _getDateLabel {
-    final week = DateFormat('EEEE', 'pt_BR').format(_date);
-    final month = DateFormat('MMMM', 'pt_BR').format(_date);
+    final week = DateFormat('EEEE').format(_date);
+    final month = DateFormat('MMMM').format(_date);
     return "$week, ${_date.day} de $month".toUpperCase();
   }
 
-  double get _goalTotalPercent {
+  String get _getStepLabel {
+    return NumberFormat().format(_data?.steps ?? 0);
+  }
+
+  String get _getDistanceLabel {
+    return NumberFormat().format(_data?.distance ?? 0);
+  }
+
+  String get _getCalorieLabel {
+    return NumberFormat().format(_data?.calories ?? 0);
+  }
+
+  String get _getMinuteLabel {
+    return NumberFormat().format(_data?.exerciseTime ?? 0);
+  }
+
+  String get _getTotalLabel {
+    final value = NumberFormat().format(_getTotalPercent * 100);
+    return '$value%';
+  }
+
+  double get _getTotalPercent {
     final total = _getStepPercent +
         _getDistancePercent +
         _getCaloriePercent +
@@ -58,56 +80,46 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
     return result;
   }
 
-  String get _getStepLabel {
-    return NumberFormat().format(_data.steps);
-  }
-
-  String get _getDistanceLabel {
-    return NumberFormat().format(_data.distance);
-  }
-
-  String get _getCalorieLabel {
-    return NumberFormat().format(_data.calories);
-  }
-
-  String get _getMinuteLabel {
-    return NumberFormat().format(_data.exerciseTime);
-  }
-
   double get _getStepPercent {
     final total = _userProvider.data!.config!.goal!.steps;
-    if (total != null && total > 0) {
-      if (_data.steps >= total) return 1;
-      return _data.steps / total;
+    if (_data?.steps != null && total != null && total > 0) {
+      if (_data!.steps >= total) return 1;
+      return _data!.steps / total;
     }
     return 0;
   }
 
   double get _getDistancePercent {
     final total = _userProvider.data!.config!.goal!.distance;
-    if (total != null && total > 0) {
-      if (_data.distance >= total) return 1;
-      return _data.distance / total;
+    if (_data?.distance != null && total != null && total > 0) {
+      if (_data!.distance >= total) return 1;
+      return _data!.distance / total;
     }
     return 0;
   }
 
   double get _getCaloriePercent {
     final total = _userProvider.data!.config!.goal!.calories;
-    if (total != null && total > 0) {
-      if (_data.calories >= total) return 1;
-      return _data.calories / total;
+    if (_data?.calories != null && total != null && total > 0) {
+      if (_data!.calories >= total) return 1;
+      return _data!.calories / total;
     }
     return 0;
   }
 
   double get _getMinutePercent {
     final total = _userProvider.data!.config!.goal!.exerciseTime;
-    if (total != null && total > 0) {
-      if (_data.exerciseTime >= total) return 1;
-      return _data.exerciseTime / total;
+    if (_data?.exerciseTime != null && total != null && total > 0) {
+      if (_data!.exerciseTime >= total) return 1;
+      return _data!.exerciseTime / total;
     }
     return 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
   @override
@@ -118,15 +130,16 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
 
   Future<void> _loadData() async {
     final data = await _goalService.getByDate(_date);
-    if (data != null) {
-      setState(() {
-        _data = data;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _data = data;
+    });
 
     final goodies = await _goodieService.getByDate(_date);
     final goalDone =
         goodies.any((goodie) => goodie.type == GoodieType.goalDone);
+
+    if (!mounted) return;
     setState(() {
       _goalDone = goalDone;
     });
@@ -142,16 +155,25 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
       final healthData = await _healthService.fetchData(_date);
 
       setState(() {
-        _data.steps = healthData['steps']!;
-        _data.calories = healthData['calories']!;
-        _data.distance = healthData['distance']!;
-        _data.exerciseTime = healthData['exerciseTime']!;
+        if (_data == null) {
+          _data = GoalModel(
+            steps: healthData['steps']!,
+            calories: healthData['calories']!,
+            distance: healthData['distance']!,
+            exerciseTime: healthData['exerciseTime']!,
+          );
+        } else {
+          _data!.steps = healthData['steps']!;
+          _data!.calories = healthData['calories']!;
+          _data!.distance = healthData['distance']!;
+          _data!.exerciseTime = healthData['exerciseTime']!;
+        }
       });
 
       // UPDATE GOAL
-      await _goalService.update(_data);
+      final goal = await _goalService.save(_data!);
       setState(() {
-        _data.updatedAt = DateTime.now();
+        _data = goal;
       });
 
       // ADD GOODIE
@@ -159,6 +181,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
         _addGoodie();
       }
     } catch (e) {
+      UtilService(context)
+          .message('Não foi possível sincronizar.\nTente novamente!');
       debugPrint('HEALTH: ${e.toString()}');
     }
 
@@ -250,8 +274,8 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
                   const SizedBox(height: 10),
                   _GoalCard(
                     iconAssets: 'assets/icons/target.svg',
-                    value: _goalTotalPercent,
-                    textValue: '${_goalTotalPercent * 100}%',
+                    value: _getTotalPercent,
+                    textValue: _getTotalLabel,
                     text: 'concluído',
                     suffix:
                         SvgPicture.asset('assets/icons/gift.svg', width: 24),
@@ -317,9 +341,9 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
           left: 10,
           right: 10,
           child: _GoalCardUpdate(
-            loaderAnimation: _loaderAnimation,
             onLoad: _fetchHealth,
-            lastUpdate: _data.updatedAt ?? _data.createdAt,
+            loaderAnimation: _loaderAnimation,
+            lastUpdate: _data?.updatedAt ?? _data?.createdAt,
           ),
         )
       ],
@@ -421,7 +445,7 @@ class _GoalCardUpdate extends StatelessWidget {
 
   String get _lastUpdateLabel {
     if (lastUpdate != null) {
-      final month = DateFormat('MMMM', 'pt_BR').format(lastUpdate!);
+      final month = DateFormat('MMMM').format(lastUpdate!);
       final time = DateFormat('H:mm').format(lastUpdate!);
       return "${lastUpdate!.day} de $month, $time";
     }

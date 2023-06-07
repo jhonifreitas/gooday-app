@@ -60,15 +60,21 @@ class _GoodieListPageState extends State<GoodieListPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<GoodieModel>>(
+            child: FutureBuilder(
               future: _loadList(),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   return ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 10),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final goodie = snapshot.data![index];
-                      return _GoodieItem(goodie: goodie);
+                      return _GoodieItem(
+                        goodie: goodie,
+                        isFirst: index == 0,
+                        isLast: snapshot.data!.length - 1 == index,
+                      );
                     },
                   );
                 } else if (snapshot.connectionState ==
@@ -99,8 +105,14 @@ class _GoodieListPageState extends State<GoodieListPage> {
 }
 
 class _GoodieItem extends StatelessWidget {
-  const _GoodieItem({required this.goodie});
+  const _GoodieItem({
+    required this.goodie,
+    required this.isFirst,
+    required this.isLast,
+  });
 
+  final bool isFirst;
+  final bool isLast;
   final GoodieModel goodie;
 
   String get _titleLabel {
@@ -146,8 +158,8 @@ class _GoodieItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TimelineItem(
-      isFirst: true,
-      isLast: true,
+      isFirst: isFirst,
+      isLast: isLast,
       title: Text(
         _titleLabel,
         style: const TextStyle(fontSize: 16),

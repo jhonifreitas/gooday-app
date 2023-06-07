@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gooday/src/models/goal_model.dart';
 
 class GoalService {
-  final _ref = FirebaseFirestore.instance.collection('goodies').withConverter(
+  final _ref = FirebaseFirestore.instance.collection('goals').withConverter(
       fromFirestore: (snapshot, _) =>
           GoalModel.fromJson({'id': snapshot.id, ...snapshot.data()!}),
       toFirestore: (obj, _) => obj.toJson());
@@ -22,13 +22,25 @@ class GoalService {
     return query.docs.first.data();
   }
 
-  Future<void> add(GoalModel data) async {
-    await _ref.add(data);
-    return;
+  Future<GoalModel> save(GoalModel data) async {
+    DocumentReference<GoalModel> ref;
+    if (data.id != null) {
+      ref = await _update(data);
+    } else {
+      ref = await _add(data);
+    }
+
+    final doc = await ref.get();
+    return doc.data()!;
   }
 
-  Future<void> update(GoalModel data) async {
-    await _ref.doc(data.id).update(data.toJson());
-    return;
+  Future<DocumentReference<GoalModel>> _add(GoalModel data) {
+    return _ref.add(data);
+  }
+
+  Future<DocumentReference<GoalModel>> _update(GoalModel data) async {
+    final ref = _ref.doc(data.id);
+    await ref.update(data.toJson());
+    return ref;
   }
 }

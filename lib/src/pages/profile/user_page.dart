@@ -77,7 +77,7 @@ class _UserPageState extends State<UserPage> {
           data['anamnese']['weight'] != null &&
           data['anamnese']['diabeteType'].isNotEmpty;
       if (isComplete) {
-        data['goodies'] += _userProvider.data!.goodies + _goodies;
+        data['goodies'] = _userProvider.data!.goodies + _goodies;
       }
 
       await _userProvider.update(data);

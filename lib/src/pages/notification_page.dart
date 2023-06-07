@@ -16,13 +16,13 @@ class _NotificationPageState extends State<NotificationPage> {
   DateTime _date = DateTime.now();
 
   String get _getDateFullLabel {
-    final week = DateFormat('EEEE', 'pt_BR').format(_date);
-    final month = DateFormat('MMMM', 'pt_BR').format(_date);
+    final week = DateFormat('EEEE').format(_date);
+    final month = DateFormat('MMMM').format(_date);
     return "$week, ${_date.day} de $month".toUpperCase();
   }
 
   String get _getDateLabel {
-    final month = DateFormat('MMMM', 'pt_BR').format(_date);
+    final month = DateFormat('MMMM').format(_date);
     return "${_date.day} de $month";
   }
 

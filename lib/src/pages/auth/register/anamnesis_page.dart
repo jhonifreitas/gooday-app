@@ -60,7 +60,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           data['anamnese']['weight'] != null &&
           data['anamnese']['diabeteType'].isNotEmpty;
       if (isComplete) {
-        data['goodies'] += userProvider.data!.goodies + _goodies;
+        data['goodies'] = userProvider.data!.goodies + _goodies;
       }
 
       await userProvider.update(data);

@@ -22,9 +22,12 @@ class GoodieModel extends BaseModel {
 
   factory GoodieModel.fromJson(Map<String, dynamic> json) {
     final base = BaseModel.fromJson(json);
+    final typeStr = json['type'] as String;
+    final type =
+        GoodieType.values.singleWhere((value) => value.name == typeStr);
 
     return GoodieModel(
-      type: json['type'],
+      type: type,
       value: json['value'],
       goal: json['goal'],
       id: base.id,
@@ -37,7 +40,7 @@ class GoodieModel extends BaseModel {
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json['type'] = type;
+    json['type'] = type.name;
     json['value'] = value;
     json['goal'] = goal;
     return json;

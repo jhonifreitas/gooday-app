@@ -21,8 +21,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final int _coins = 0;
-
   void _goToGoodies() {
     context.push('/goodies');
   }
@@ -109,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       } catch (e) {
         UtilService(context)
-            .message('Não foi possível carregar a imagem\nTente Novamente!');
+            .message('Não foi possível carregar a imagem.\nTente Novamente!');
       }
     }
   }
@@ -186,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           SvgPicture.asset('assets/icons/coin.svg', width: 30),
                     ),
                     Text(
-                      '$_coins coins',
+                      '${context.watch<UserProvider>().data?.goodies} coins',
                       style: const TextStyle(
                           fontWeight: FontWeight.normal, fontSize: 16),
                     )

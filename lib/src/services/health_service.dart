@@ -32,10 +32,7 @@ class HealthService {
       permissions.add(HealthDataAccess.READ);
     }
 
-    bool requested =
-        await _health.requestAuthorization(_types, permissions: permissions);
-
-    if (!requested) throw 'Request Denied!';
+    await _health.requestAuthorization(_types, permissions: permissions);
 
     final points = await _health.getHealthDataFromTypes(start, end, _types);
 
