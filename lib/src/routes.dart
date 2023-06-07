@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/pages/home_page.dart';
-import 'package:gooday/src/pages/splash_page.dart';
 import 'package:gooday/src/pages/intro/one_page.dart';
 import 'package:gooday/src/pages/intro/two_page.dart';
 import 'package:gooday/src/pages/auth/login_page.dart';
@@ -31,10 +30,6 @@ final router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const HomePage(),
-    ),
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashPage(),
     ),
     GoRoute(
       path: '/refeicao',
