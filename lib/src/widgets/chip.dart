@@ -7,14 +7,14 @@ class ChipCustom extends StatelessWidget {
     super.key,
     required this.text,
     required this.selected,
+    required this.onSelected,
     this.isDisabled = false,
-    this.onSelected,
   });
 
   final String text;
   final bool selected;
   final bool isDisabled;
-  final ValueChanged<bool>? onSelected;
+  final ValueChanged<bool> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,7 @@ class ChipCustom extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      onSelected: (value) {
-        if (onSelected != null) onSelected!(value);
-      },
+      onSelected: onSelected,
     );
   }
 }

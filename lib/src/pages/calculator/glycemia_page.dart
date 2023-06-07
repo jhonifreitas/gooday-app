@@ -4,6 +4,7 @@ import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/widgets/checkbox_list_tile.dart';
 
 class GlycemiaPage extends StatefulWidget {
   const GlycemiaPage({super.key});
@@ -40,7 +41,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -55,41 +56,41 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
             ),
           ),
           const SizedBox(height: 10),
-          FormFieldCustom(
-            label: 'Informe sua glicemia',
-            placeholder: '000 mg/dL',
-            controller: _glycemiaCtrl,
-            isRequired: true,
-            inputType: TextInputType.number,
-            maxLength: 3,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: FormFieldCustom(
+              label: 'Informe sua glicemia',
+              placeholder: '000 mg/dL',
+              controller: _glycemiaCtrl,
+              isRequired: true,
+              inputType: TextInputType.number,
+              maxLength: 3,
+            ),
           ),
-          const SizedBox(height: 10),
-          const Text('Selecione o tipo de glicemia'),
-          GridView.count(
-            primary: false,
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            childAspectRatio: 3.5,
+          const SizedBox(height: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Text('Selecione o tipo de glicemia'),
+          ),
+          Wrap(
             children: [
               for (var item in _typeList)
-                CheckboxListTile(
-                  value: _typeCtrl.any((id) => id == item.id),
-                  title: Text(
-                    item.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey.shade700,
-                    ),
+                SizedBox(
+                  width: (MediaQuery.of(context).size.width) / 2,
+                  child: CheckboxListTileCustom(
+                    selected: _typeCtrl.any((id) => id == item.id),
+                    text: item.name,
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    onSelected: (value) => _onType(item.id, value),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  onChanged: (value) => _onType(item.id, value),
                 )
             ],
           ),
           const SizedBox(height: 20),
-          ButtonCustom(text: 'Salvar', onPressed: _onSubmit)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: ButtonCustom(text: 'Salvar', onPressed: _onSubmit),
+          )
         ],
       ),
     );

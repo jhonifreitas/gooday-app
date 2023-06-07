@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:health/health.dart';
+import 'package:gooday/src/models/health_model.dart';
 
 class HealthService {
   final _health = HealthFactory();
@@ -23,7 +24,7 @@ class HealthService {
     return list;
   }
 
-  Future<Map<String, num>> fetchData(DateTime date) async {
+  Future<HealthModel> fetchData(DateTime date) async {
     List<HealthDataAccess> permissions = [];
     final start = DateTime(date.year, date.month, date.day, 0, 0, 0);
     final end = start.add(const Duration(days: 1));
@@ -36,30 +37,22 @@ class HealthService {
 
     final points = await _health.getHealthDataFromTypes(start, end, _types);
 
-    num steps = 0;
-    num distance = 0;
-    num calories = 0;
-    num exerciseTime = 0;
+    final data = HealthModel();
 
     for (var point in points) {
       if (point.type == HealthDataType.STEPS) {
-        steps += num.parse(point.value.toString());
+        data.steps += num.parse(point.value.toString());
       } else if (point.type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-        calories += num.parse(point.value.toString());
+        data.calories += num.parse(point.value.toString());
       } else if (point.type == HealthDataType.DISTANCE_DELTA ||
           point.type == HealthDataType.DISTANCE_WALKING_RUNNING) {
-        distance += num.parse(point.value.toString());
+        data.distance += num.parse(point.value.toString());
       } else if (point.type == HealthDataType.MOVE_MINUTES ||
           point.type == HealthDataType.EXERCISE_TIME) {
-        exerciseTime += num.parse(point.value.toString());
+        data.exerciseTime += num.parse(point.value.toString());
       }
     }
 
-    return {
-      'steps': steps,
-      'distance': distance,
-      'calories': calories,
-      'exerciseTime': exerciseTime,
-    };
+    return data;
   }
 }

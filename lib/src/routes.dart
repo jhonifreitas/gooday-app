@@ -26,7 +26,7 @@ import 'package:gooday/src/pages/profile/reset_password_page.dart';
 import 'package:gooday/src/pages/auth/register/anamnesis_page.dart';
 
 final router = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',

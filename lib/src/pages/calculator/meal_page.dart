@@ -10,6 +10,7 @@ import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/checkbox_list_tile.dart';
 
 class MealFormPage extends StatefulWidget {
   const MealFormPage({super.key});
@@ -512,53 +513,37 @@ class _MealEditState extends State<_MealEdit> {
           ),
           const SizedBox(height: 20),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
+            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Text('Quantidade', style: TextStyle(fontSize: 16)),
           ),
           const SizedBox(height: 10),
-          GridView.count(
-            primary: false,
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            childAspectRatio: 4,
+          Wrap(
             children: [
-              ListTile(
-                onTap: () {},
-                minLeadingWidth: 0,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                title: const Text(
-                  'Gramas (g)',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-                ),
-                leading: Checkbox(
-                  value: false,
-                  onChanged: (value) {},
+              SizedBox(
+                width: (MediaQuery.of(context).size.width) / 3,
+                child: CheckboxListTileCustom(
+                  selected: false,
+                  onSelected: (value) {},
+                  padding: const EdgeInsets.only(left: 15),
+                  text: 'Gramas (g)',
                 ),
               ),
-              ListTile(
-                onTap: () {},
-                minLeadingWidth: 0,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                title: const Text(
-                  'Colher de Sopa (20g)',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-                ),
-                leading: Checkbox(
-                  value: false,
-                  onChanged: (value) {},
+              SizedBox(
+                width: (MediaQuery.of(context).size.width) / 3,
+                child: CheckboxListTileCustom(
+                  selected: false,
+                  onSelected: (value) {},
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  text: 'Colher de Sopa (20g)',
                 ),
               ),
-              ListTile(
-                onTap: () {},
-                minLeadingWidth: 0,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                title: const Text(
-                  'Porção de 100g',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-                ),
-                leading: Checkbox(
-                  value: false,
-                  onChanged: (value) {},
+              SizedBox(
+                width: (MediaQuery.of(context).size.width) / 3,
+                child: CheckboxListTileCustom(
+                  selected: false,
+                  onSelected: (value) {},
+                  padding: const EdgeInsets.only(left: 5, right: 25),
+                  text: 'Porção de 100g',
                 ),
               ),
             ],

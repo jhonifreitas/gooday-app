@@ -9,6 +9,7 @@ import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
+import 'package:gooday/src/widgets/checkbox_list_tile.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFitnessPage extends StatefulWidget {
@@ -189,21 +190,12 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                     Column(
                       children: [
                         for (var item in _bettyCtrl.exerciseHelpList)
-                          CheckboxListTile(
-                            value: _bettyCtrl.exerciseHelpsCtrl
+                          CheckboxListTileCustom(
+                            selected: _bettyCtrl.exerciseHelpsCtrl
                                 .any((id) => id == item.id),
-                            title: Text(
-                              item.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 35),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (value) =>
+                            text: item.name,
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            onSelected: (value) =>
                                 _onExerciseHelps(item.id, value),
                           )
                       ],

@@ -7,6 +7,7 @@ import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
+import 'package:gooday/src/widgets/checkbox_list_tile.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormHealthPage extends StatefulWidget {
@@ -105,34 +106,20 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                         'essas atividades?'),
                   ),
                   const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: GridView.count(
-                      primary: false,
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      childAspectRatio: 3.5,
-                      padding: EdgeInsets.zero,
-                      children: [
-                        for (var item in _bettyCtrl.timeExerciseList)
-                          CheckboxListTile(
-                            value: _bettyCtrl.timeExerciseCtrl
+                  Wrap(
+                    children: [
+                      for (var item in _bettyCtrl.timeExerciseList)
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width) / 2,
+                          child: CheckboxListTileCustom(
+                            selected: _bettyCtrl.timeExerciseCtrl
                                 .any((id) => id == item.id),
-                            title: Text(
-                              item.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 5),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (value) => _onTimeList(item.id, value),
-                          )
-                      ],
-                    ),
+                            text: item.name,
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            onSelected: (value) => _onTimeList(item.id, value),
+                          ),
+                        )
+                    ],
                   )
                 ],
               ),
@@ -150,21 +137,13 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                   Column(
                     children: [
                       for (var item in _bettyCtrl.frequencyExerciseList)
-                        CheckboxListTile(
-                          value: _bettyCtrl.frequencyExerciseCtrl.toString() ==
-                              item.id,
-                          title: Text(
-                            item.name,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 35),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          onChanged: (value) =>
+                        CheckboxListTileCustom(
+                          selected:
+                              _bettyCtrl.frequencyExerciseCtrl.toString() ==
+                                  item.id,
+                          text: item.name,
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          onSelected: (value) =>
                               _onFrequencyList(item.id, value),
                         )
                     ],

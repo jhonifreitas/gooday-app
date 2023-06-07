@@ -9,6 +9,7 @@ import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
+import 'package:gooday/src/widgets/checkbox_list_tile.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFoodPage extends StatefulWidget {
@@ -264,21 +265,12 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     Column(
                       children: [
                         for (var item in _bettyCtrl.foodHelpList)
-                          CheckboxListTile(
-                            value: _bettyCtrl.foodHelpsCtrl
+                          CheckboxListTileCustom(
+                            selected: _bettyCtrl.foodHelpsCtrl
                                 .any((id) => id == item.id),
-                            title: Text(
-                              item.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 35),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (value) => _onFoodHelps(item.id, value),
+                            text: item.name,
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            onSelected: (value) => _onFoodHelps(item.id, value),
                           )
                       ],
                     )
@@ -412,35 +404,22 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                   const SizedBox(height: 10),
                   Visibility(
                     visible: _limit == true,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: GridView.count(
-                        primary: false,
-                        shrinkWrap: true,
-                        crossAxisCount: 2,
-                        childAspectRatio: 3.5,
-                        padding: EdgeInsets.zero,
-                        children: [
-                          for (var item in _bettyCtrl.foodLimitList)
-                            CheckboxListTile(
-                              value: _bettyCtrl.foodLimitsCtrl
+                    child: Wrap(
+                      children: [
+                        for (var item in _bettyCtrl.foodLimitList)
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width) / 2,
+                            child: CheckboxListTileCustom(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30),
+                              selected: _bettyCtrl.foodLimitsCtrl
                                   .any((id) => id == item.id),
-                              title: Text(
-                                item.name,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              onChanged: (value) =>
+                              text: item.name,
+                              onSelected: (value) =>
                                   _onFoodLimits(item.id, value),
-                            )
-                        ],
-                      ),
+                            ),
+                          )
+                      ],
                     ),
                   )
                 ],

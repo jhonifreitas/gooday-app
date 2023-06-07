@@ -157,16 +157,16 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
       setState(() {
         if (_data == null) {
           _data = GoalModel(
-            steps: healthData['steps']!,
-            calories: healthData['calories']!,
-            distance: healthData['distance']!,
-            exerciseTime: healthData['exerciseTime']!,
+            steps: healthData.steps,
+            calories: healthData.calories,
+            distance: healthData.distance,
+            exerciseTime: healthData.exerciseTime,
           );
         } else {
-          _data!.steps = healthData['steps']!;
-          _data!.calories = healthData['calories']!;
-          _data!.distance = healthData['distance']!;
-          _data!.exerciseTime = healthData['exerciseTime']!;
+          _data!.steps = healthData.steps;
+          _data!.calories = healthData.calories;
+          _data!.distance = healthData.distance;
+          _data!.exerciseTime = healthData.exerciseTime;
         }
       });
 

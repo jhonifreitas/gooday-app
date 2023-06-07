@@ -71,7 +71,7 @@ class UserModel extends BaseModel {
     json['genre'] = genre;
     json['dateBirth'] = dateBirth;
     json['goodies'] = goodies;
-    json['anamnese'] = anamnese;
+    json['anamnese'] = anamnese?.toJson();
     json['config'] = config?.toJson();
     return json;
   }
