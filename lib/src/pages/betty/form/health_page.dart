@@ -7,7 +7,7 @@ import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
-import 'package:gooday/src/widgets/checkbox_list_tile.dart';
+import 'package:gooday/src/widgets/form/checkbox_field.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormHealthPage extends StatefulWidget {
@@ -108,10 +108,10 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                   const SizedBox(height: 10),
                   Wrap(
                     children: [
-                      for (var item in _bettyCtrl.timeExerciseList)
+                      for (final item in _bettyCtrl.timeExerciseList)
                         SizedBox(
                           width: (MediaQuery.of(context).size.width) / 2,
-                          child: CheckboxListTileCustom(
+                          child: CheckboxField(
                             selected: _bettyCtrl.timeExerciseCtrl
                                 .any((id) => id == item.id),
                             text: item.name,
@@ -136,8 +136,8 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                   const SizedBox(height: 10),
                   Column(
                     children: [
-                      for (var item in _bettyCtrl.frequencyExerciseList)
-                        CheckboxListTileCustom(
+                      for (final item in _bettyCtrl.frequencyExerciseList)
+                        CheckboxField(
                           selected:
                               _bettyCtrl.frequencyExerciseCtrl.toString() ==
                                   item.id,

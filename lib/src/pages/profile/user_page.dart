@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
-import 'package:gooday/src/services/goodie_service.dart';
+import 'package:gooday/src/widgets/form/chip_field.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/widgets/form/dropdown_field.dart';
+import 'package:gooday/src/services/api/goodie_service.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
@@ -26,8 +27,8 @@ class _UserPageState extends State<UserPage> {
   late final UserProvider _userProvider;
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
-  final _goodieService = GoodieService();
   final _formKey = GlobalKey<FormState>();
+  final _goodieApi = GoodieApiService();
 
   final _goodies = 10;
   int _currentPage = 0;
@@ -93,8 +94,12 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> _addGoodie() async {
-    final data = GoodieModel(type: GoodieType.profileComplete, value: _goodies);
-    await _goodieService.add(data);
+    final data = GoodieModel(
+      userId: _userProvider.data!.id!,
+      type: GoodieType.profileComplete,
+      value: _goodies,
+    );
+    await _goodieApi.add(data);
 
     if (!mounted) return;
 
@@ -173,6 +178,7 @@ class _UserPageState extends State<UserPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: _UserForm(
+                        goodies: _goodies,
                         userCtrl: _userCtrl,
                         onDateBirth: _onDateBirth,
                       ),
@@ -247,8 +253,13 @@ class _UserPageState extends State<UserPage> {
 }
 
 class _UserForm extends StatelessWidget {
-  const _UserForm({required this.userCtrl, required this.onDateBirth});
+  const _UserForm({
+    required this.userCtrl,
+    required this.onDateBirth,
+    required this.goodies,
+  });
 
+  final int goodies;
   final UserController userCtrl;
   final VoidCallback onDateBirth;
 
@@ -304,7 +315,7 @@ class _UserForm extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall),
             Row(
               children: [
-                Text('Preencha seus dados e ganhe 10 Goodies',
+                Text('Preencha seus dados e ganhe $goodies Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
                   onPressed: () => _openGoodies(context),
@@ -319,16 +330,16 @@ class _UserForm extends StatelessWidget {
         ),
         Column(
           children: [
-            FormFieldCustom(
+            InputField(
               label: 'Nome',
               controller: userCtrl.nameCtrl,
             ),
-            FormFieldCustom(
+            InputField(
               label: 'E-mail',
               controller: userCtrl.emailCtrl,
               inputType: TextInputType.emailAddress,
             ),
-            FormFieldCustom(
+            InputField(
               label: 'Celular',
               controller: userCtrl.phoneCtrl,
               isRequired: true,
@@ -339,7 +350,7 @@ class _UserForm extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: FormFieldCustom(
+                  child: InputField(
                     label: 'Data de Nascimento',
                     controller: userCtrl.dateBirthCtrl,
                     readOnly: true,
@@ -349,23 +360,22 @@ class _UserForm extends StatelessWidget {
                 const SizedBox(width: 20),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 3,
-                  child: FormFieldCustom(
+                  child: DropdownField(
                     label: 'Sexo',
                     controller: userCtrl.genreCtrl,
-                    isDropdown: true,
                     options: userCtrl.genreList,
                   ),
                 ),
               ],
             ),
-            FormFieldCustom(
+            InputField(
               label: 'Qual a sua altura?',
               controller: userCtrl.heightCtrl,
               inputType: TextInputType.number,
               minLength: 4,
               masks: const ['9,99'],
             ),
-            FormFieldCustom(
+            InputField(
               label: 'Quanto você pesa?',
               controller: userCtrl.weightCtrl,
               inputType: TextInputType.number,
@@ -431,7 +441,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
               spacing: 10,
               runSpacing: 10,
               children: [
-                ChipCustom(
+                ChipField(
                   text: 'Sim',
                   isDisabled: widget.diabeteTypeDisabled,
                   selected: widget.userCtrl.diabeteCtrl != null
@@ -440,7 +450,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                   onSelected: (value) =>
                       value ? _onDiabete(true) : _onDiabete(null),
                 ),
-                ChipCustom(
+                ChipField(
                   text: 'Não',
                   isDisabled: widget.diabeteTypeDisabled,
                   selected: widget.userCtrl.diabeteCtrl != null
@@ -465,14 +475,13 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  for (var option in widget.userCtrl.diabeteTypeList)
-                    ChipCustom(
-                      text: option.name,
+                  for (final item in widget.userCtrl.diabeteTypeList)
+                    ChipField(
+                      text: item.name,
                       isDisabled: widget.diabeteTypeDisabled,
-                      selected:
-                          widget.userCtrl.diabeteTypeCtrl.text == option.id,
+                      selected: widget.userCtrl.diabeteTypeCtrl.text == item.id,
                       onSelected: (value) => value
-                          ? _onDiabeteType(option.id)
+                          ? _onDiabeteType(item.id)
                           : _onDiabeteType(null),
                     ),
                 ],
@@ -494,7 +503,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                           spacing: 10,
                           runSpacing: 10,
                           children: [
-                            ChipCustom(
+                            ChipField(
                               text: 'Sim',
                               selected: widget.userCtrl.insulinCtrl != null
                                   ? widget.userCtrl.insulinCtrl == true
@@ -502,7 +511,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                               onSelected: (value) =>
                                   value ? _onInsulin(true) : _onInsulin(null),
                             ),
-                            ChipCustom(
+                            ChipField(
                               text: 'Não',
                               selected: widget.userCtrl.insulinCtrl != null
                                   ? widget.userCtrl.insulinCtrl == false
@@ -526,10 +535,9 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                                 (widget.userCtrl.diabeteTypeCtrl.text ==
                                         'type-2' &&
                                     widget.userCtrl.insulinCtrl == true),
-                            child: FormFieldCustom(
+                            child: DropdownField(
                               label: 'Basal (Lenta)',
                               controller: widget.userCtrl.insulinSlowCtrl,
-                              isDropdown: true,
                               options: widget.userCtrl.insulinSlowList,
                             ),
                           ),
@@ -537,21 +545,19 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                             visible: !(widget.userCtrl.diabeteTypeCtrl.text ==
                                     'type-2' &&
                                 widget.userCtrl.insulinCtrl == false),
-                            child: FormFieldCustom(
+                            child: DropdownField(
                               label: widget.userCtrl.diabeteTypeCtrl.text ==
                                           'type-1' &&
                                       widget.userCtrl.insulinCtrl == true
                                   ? 'Insulina'
                                   : 'Bolus (Rápida)',
                               controller: widget.userCtrl.insulinFastCtrl,
-                              isDropdown: true,
                               options: widget.userCtrl.insulinFastList,
                             ),
                           ),
-                          FormFieldCustom(
+                          DropdownField(
                             label: 'Medicamentos',
                             controller: widget.userCtrl.drugCtrl,
-                            isDropdown: true,
                             options: widget.userCtrl.drugList,
                           ),
                         ],

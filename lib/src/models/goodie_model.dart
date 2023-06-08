@@ -1,11 +1,13 @@
 import 'package:gooday/src/models/base_model.dart';
 
 class GoodieModel extends BaseModel {
+  String userId;
   int value;
   num? goal;
   GoodieType type;
 
   GoodieModel({
+    required this.userId,
     this.value = 0,
     this.type = GoodieType.goalDone,
     this.goal,
@@ -27,6 +29,7 @@ class GoodieModel extends BaseModel {
         GoodieType.values.singleWhere((value) => value.name == typeStr);
 
     return GoodieModel(
+      userId: json['userId'],
       type: type,
       value: json['value'],
       goal: json['goal'],
@@ -40,6 +43,7 @@ class GoodieModel extends BaseModel {
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
+    json['userId'] = userId;
     json['type'] = type.name;
     json['value'] = value;
     json['goal'] = goal;

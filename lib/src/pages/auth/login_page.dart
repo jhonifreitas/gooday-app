@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/button.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class AuthLoginPage extends StatefulWidget {
@@ -119,13 +119,13 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        FormFieldCustom(
+                        InputField(
                           label: 'E-mail',
                           controller: _emailCtrl,
                           isRequired: true,
                           inputType: TextInputType.emailAddress,
                         ),
-                        FormFieldCustom(
+                        InputField(
                           label: 'Senha',
                           controller: _passwordCtrl,
                           isRequired: true,

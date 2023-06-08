@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 
 class GlycemiaConfigPage extends StatefulWidget {
@@ -80,9 +80,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Mínimo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -90,9 +90,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Normal',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -100,9 +100,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Máximo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -118,9 +118,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Mínimo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -128,9 +128,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Normal',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -138,9 +138,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Máximo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -156,9 +156,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Mínimo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -166,9 +166,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Normal',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,
@@ -176,9 +176,9 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: FormFieldCustom(
+                          child: InputField(
                             label: 'Máximo',
-                            placeholder: 'ml/g',
+                            hint: 'ml/g',
                             maxLength: 3,
                             controller: _userCtrl.nameCtrl,
                             inputType: TextInputType.number,

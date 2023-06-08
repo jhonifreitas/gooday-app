@@ -8,7 +8,7 @@ import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
 import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
-import 'package:gooday/src/services/goodie_service.dart';
+import 'package:gooday/src/services/api/goodie_service.dart';
 
 class GoodieListPage extends StatefulWidget {
   const GoodieListPage({super.key});
@@ -18,10 +18,11 @@ class GoodieListPage extends StatefulWidget {
 }
 
 class _GoodieListPageState extends State<GoodieListPage> {
-  final _goodieService = GoodieService();
+  final _goodieApi = GoodieApiService();
 
   Future<List<GoodieModel>> _loadList() {
-    return _goodieService.getByDate(DateTime.now());
+    final userId = context.read<UserProvider>().data!.id!;
+    return _goodieApi.getAll(userId);
   }
 
   @override

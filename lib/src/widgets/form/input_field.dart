@@ -1,50 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:easy_mask/easy_mask.dart';
 
-import 'package:gooday/src/common/item.dart';
-
-class FormFieldCustom extends StatelessWidget {
-  const FormFieldCustom({
+class InputField extends StatelessWidget {
+  const InputField({
     super.key,
     required this.controller,
-    this.label,
     this.inputType,
-    this.masks,
-    this.placeholder,
+    this.label,
+    this.hint,
     this.helper,
-    this.obscureText = false,
     this.readOnly = false,
+    this.obscureText = false,
     this.isRequired = false,
     this.isDisabled = false,
-    this.isDropdown = false,
-    this.maskReverse = false,
     this.showCounter = false,
+    this.masks,
+    this.maskReverse = false,
+    this.icon,
+    this.prefixIcon,
+    this.suffixIcon,
     this.maxLength,
     this.minLength,
-    this.options,
-    this.suffixIcon,
-    this.prefixIcon,
-    this.onChange,
     this.onTap,
+    this.onChange,
   });
 
-  final String? label;
   final TextEditingController controller;
   final TextInputType? inputType;
-  final List<Item>? options;
+
+  final String? label;
+  final String? hint;
+  final String? helper;
 
   final bool readOnly;
   final bool obscureText;
   final bool isRequired;
   final bool isDisabled;
-  final bool isDropdown;
   final bool showCounter;
 
   final List<String>? masks;
   final bool maskReverse;
 
-  final String? helper;
-  final String? placeholder;
+  final Widget? icon;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
 
@@ -54,7 +51,7 @@ class FormFieldCustom extends StatelessWidget {
   final VoidCallback? onTap;
   final ValueChanged<String?>? onChange;
 
-  String? _valiation(String? value) {
+  String? _validator(String? value) {
     if (isRequired && (value == null || value.isEmpty)) {
       return '$label obrigatório';
     }
@@ -72,54 +69,11 @@ class FormFieldCustom extends StatelessWidget {
   }
 
   void _onChanged(String? value) {
-    if (isDropdown) {
-      controller.text = value ?? '';
-    }
     if (onChange != null) onChange!(value);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (options != null) {
-      if (isDropdown) return _dropownField();
-    }
-
-    return _inputField();
-  }
-
-  Widget _dropownField() {
-    return DropdownButtonFormField<String>(
-      value: controller.text.isNotEmpty ? controller.text : null,
-      items: [
-        for (var option in options!)
-          DropdownMenuItem(
-            value: option.id,
-            child: Text(
-              option.name,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          )
-      ],
-      focusColor: Colors.white,
-      decoration: InputDecoration(
-        labelText: label,
-        icon: prefixIcon,
-        helperText: helper,
-        hintText: placeholder,
-        suffixIcon: suffixIcon,
-        counterText: showCounter ? null : '',
-        hintStyle: const TextStyle(fontWeight: FontWeight.normal),
-      ),
-      validator: _valiation,
-      onChanged: _onChanged,
-    );
-  }
-
-  Widget _inputField() {
     TextInputMask? inputMask;
 
     if (masks != null) {
@@ -136,16 +90,17 @@ class FormFieldCustom extends StatelessWidget {
       maxLength: maxLength,
       onTap: onTap,
       onChanged: _onChanged,
-      validator: _valiation,
+      validator: _validator,
       keyboardType: inputType,
       obscureText: obscureText,
       style: const TextStyle(fontSize: 14),
       inputFormatters: inputMask != null ? [inputMask] : null,
       decoration: InputDecoration(
         labelText: label,
-        icon: prefixIcon,
+        hintText: hint,
         helperText: helper,
-        hintText: placeholder,
+        icon: icon,
+        prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         counterText: showCounter ? null : '',
         hintStyle: const TextStyle(fontWeight: FontWeight.normal),

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/chip_field.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
-import 'package:gooday/src/widgets/checkbox_list_tile.dart';
+import 'package:gooday/src/widgets/form/checkbox_field.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFitnessPage extends StatefulWidget {
@@ -119,14 +119,14 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      ChipCustom(
+                      ChipField(
                         text: 'Sim',
                         selected: _bettyCtrl.doExerciseCtrl == true,
                         onSelected: (value) =>
                             _onDoExercise(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
-                      ChipCustom(
+                      ChipField(
                         text: 'Não',
                         selected: _bettyCtrl.doExerciseCtrl == false,
                         onSelected: (value) =>
@@ -152,14 +152,14 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      ChipCustom(
+                      ChipField(
                         text: 'Sim',
                         selected: _help == true,
                         onSelected: (value) =>
                             _onHelp(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
-                      ChipCustom(
+                      ChipField(
                         text: 'Não',
                         selected: _help == false,
                         onSelected: (value) =>
@@ -189,8 +189,8 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                     const SizedBox(height: 10),
                     Column(
                       children: [
-                        for (var item in _bettyCtrl.exerciseHelpList)
-                          CheckboxListTileCustom(
+                        for (final item in _bettyCtrl.exerciseHelpList)
+                          CheckboxField(
                             selected: _bettyCtrl.exerciseHelpsCtrl
                                 .any((id) => id == item.id),
                             text: item.name,
@@ -225,7 +225,7 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       children: [
-                        for (var item in _bettyCtrl.exerciseList)
+                        for (final item in _bettyCtrl.exerciseList)
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,

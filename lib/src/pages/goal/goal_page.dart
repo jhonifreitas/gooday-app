@@ -12,24 +12,26 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/models/goal_model.dart';
 import 'package:gooday/src/models/goodie_model.dart';
-import 'package:gooday/src/services/goal_service.dart';
+import 'package:gooday/src/services/api/goal_service.dart';
 import 'package:gooday/src/services/health_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
-import 'package:gooday/src/services/goodie_service.dart';
+import 'package:gooday/src/services/api/goodie_service.dart';
 import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
 class GoalPage extends StatefulWidget {
-  const GoalPage({super.key});
+  const GoalPage({required this.goToPage, super.key});
+
+  final ValueChanged<int> goToPage;
 
   @override
   State<GoalPage> createState() => _GoalPageState();
 }
 
 class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
-  final _goalService = GoalService();
+  final _goalApi = GoalApiService();
+  final _goodieApi = GoodieApiService();
   final _healthService = HealthService();
-  final _goodieService = GoodieService();
-  late final _userProvider = context.watch<UserProvider>();
+  late final UserProvider _userProvider;
 
   GoalModel? _data;
   bool _goalDone = false;
@@ -119,6 +121,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
     _loadData();
   }
 
@@ -129,19 +132,18 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   Future<void> _loadData() async {
-    final data = await _goalService.getByDate(_date);
+    final data = await _goalApi.getByDate(_userProvider.data!.id!, _date);
     if (!mounted) return;
     setState(() {
       _data = data;
     });
 
-    final goodies = await _goodieService.getByDate(_date);
-    final goalDone =
-        goodies.any((goodie) => goodie.type == GoodieType.goalDone);
+    final goodies = await _goodieApi.getByTypeByDate(
+        _userProvider.data!.id!, GoodieType.goalDone, _date);
 
     if (!mounted) return;
     setState(() {
-      _goalDone = goalDone;
+      _goalDone = goodies.isNotEmpty;
     });
   }
 
@@ -157,6 +159,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
       setState(() {
         if (_data == null) {
           _data = GoalModel(
+            userId: _userProvider.data!.id!,
             steps: healthData.steps,
             calories: healthData.calories,
             distance: healthData.distance,
@@ -171,7 +174,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
       });
 
       // UPDATE GOAL
-      final goal = await _goalService.save(_data!);
+      final goal = await _goalApi.save(_data!);
       setState(() {
         _data = goal;
       });
@@ -194,8 +197,12 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   Future<void> _addGoodie() async {
     const goodies = 50;
     final goal = _userProvider.data?.config?.goal?.steps;
-    final data = GoodieModel(value: goodies, goal: goal);
-    await _goodieService.add(data);
+    final data = GoodieModel(
+      userId: _userProvider.data!.id!,
+      value: goodies,
+      goal: goal,
+    );
+    await _goodieApi.add(data);
 
     setState(() {
       _goalDone = true;

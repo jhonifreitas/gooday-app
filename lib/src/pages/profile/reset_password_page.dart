@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -82,7 +82,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       'acesso!',
                       style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 10),
-                  FormFieldCustom(
+                  InputField(
                     label: 'Senha',
                     minLength: 6,
                     isRequired: true,
@@ -96,7 +96,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           : const Icon(Icons.visibility),
                     ),
                   ),
-                  FormFieldCustom(
+                  InputField(
                     label: 'Confirme sua senha',
                     minLength: 6,
                     isRequired: true,

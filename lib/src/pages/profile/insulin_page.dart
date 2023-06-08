@@ -8,8 +8,9 @@ import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/button.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/widgets/form/dropdown_field.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 
 class InsulinConfigPage extends StatefulWidget {
@@ -101,20 +102,18 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: FormFieldCustom(
+                        child: DropdownField(
                           label: 'Insulina',
                           controller: _userCtrl.nameCtrl,
-                          isDropdown: true,
                           options: _userCtrl.insulinFastList,
                         ),
                       ),
                       const SizedBox(width: 20),
                       SizedBox(
                         width: MediaQuery.of(context).size.width / 4,
-                        child: FormFieldCustom(
+                        child: DropdownField(
                           label: 'Escala',
                           controller: _userCtrl.nameCtrl,
-                          isDropdown: true,
                           options: _userCtrl.scaleInsulinList,
                         ),
                       ),
@@ -371,7 +370,7 @@ class _InsulinParamState extends State<_InsulinParam> {
           Row(
             children: [
               Expanded(
-                child: FormFieldCustom(
+                child: InputField(
                   label: 'Início',
                   controller: _startTimeCtrl,
                   inputType: TextInputType.number,
@@ -381,7 +380,7 @@ class _InsulinParamState extends State<_InsulinParam> {
               ),
               const SizedBox(width: 20),
               Expanded(
-                child: FormFieldCustom(
+                child: InputField(
                   label: 'Fim',
                   controller: _endTimeCtrl,
                   isDisabled: _startTimeCtrl.text.isEmpty,
@@ -395,7 +394,7 @@ class _InsulinParamState extends State<_InsulinParam> {
           Row(
             children: [
               Expanded(
-                child: FormFieldCustom(
+                child: InputField(
                   label: 'FC',
                   maxLength: 3,
                   controller: _fcCtrl,
@@ -404,7 +403,7 @@ class _InsulinParamState extends State<_InsulinParam> {
               ),
               const SizedBox(width: 20),
               Expanded(
-                child: FormFieldCustom(
+                child: InputField(
                   label: 'I/C',
                   maxLength: 3,
                   controller: _icCtrl,

@@ -8,9 +8,12 @@ import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
+import 'package:gooday/src/models/meal_model.dart';
+import 'package:gooday/src/models/food_model.dart';
 import 'package:gooday/src/services/util_service.dart';
-import 'package:gooday/src/widgets/checkbox_list_tile.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/services/api/food_service.dart';
+import 'package:gooday/src/widgets/form/checkbox_field.dart';
 
 class MealFormPage extends StatefulWidget {
   const MealFormPage({super.key});
@@ -24,19 +27,26 @@ class _MealFormPageState extends State<MealFormPage> {
 
   String? _typeCtrl;
   DateTime _dateCtrl = DateTime.now();
-  final List<Item> _mealListCtrl = [];
+  final List<FoodModel> _foodListCtrl = [];
   final _glycemiaCtrl = TextEditingController();
 
-  final List<Item> _typeList = const [
-    Item(id: 'breakfast', name: 'Café', image: 'assets/icons/sandwich.svg'),
-    Item(id: 'lunch', name: 'Almoço', image: 'assets/icons/chicken.svg'),
-    Item(id: 'dinner', name: 'Jantar', image: 'assets/icons/cake.svg'),
-    Item(id: 'snack', name: 'Lanche', image: 'assets/icons/fruits.svg'),
-  ];
-
-  final List<Item> _mealList = const [
-    Item(id: 'option-1', name: 'Opção 1'),
-    Item(id: 'option-2', name: 'Opção 2'),
+  final List<Item> _typeList = [
+    Item(
+        id: MealType.breakfast.name,
+        name: 'Café',
+        image: 'assets/icons/sandwich.svg'),
+    Item(
+        id: MealType.lunch.name,
+        name: 'Almoço',
+        image: 'assets/icons/chicken.svg'),
+    Item(
+        id: MealType.dinner.name,
+        name: 'Jantar',
+        image: 'assets/icons/cake.svg'),
+    Item(
+        id: MealType.snack.name,
+        name: 'Lanche',
+        image: 'assets/icons/fruits.svg'),
   ];
 
   String get _getDateFullLabel {
@@ -44,6 +54,25 @@ class _MealFormPageState extends State<MealFormPage> {
     final month = DateFormat('MMM').format(_dateCtrl);
     final time = DateFormat('HH:mm').format(_dateCtrl);
     return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
+  }
+
+  String get _getTotalCHO {
+    final total = _foodListCtrl.fold(0.0, (prev, food) => prev + food.cho);
+    final fomated = NumberFormat().format(total);
+    return '${fomated}g';
+  }
+
+  String get _getTotalCalories {
+    final total = _foodListCtrl.fold(0.0, (prev, food) => prev + food.calories);
+    final fomated = NumberFormat().format(total);
+    return '${fomated}kcal';
+  }
+
+  String get _getTotalSize {
+    final total =
+        _foodListCtrl.fold(0.0, (prev, food) => prev + (food.size ?? 0));
+    final fomated = NumberFormat().format(total);
+    return '$fomated(g/ml)';
   }
 
   Future<void> _onSubmit() async {}
@@ -63,9 +92,9 @@ class _MealFormPageState extends State<MealFormPage> {
     });
   }
 
-  void _onSearch(Item value) {
+  void _onSearch(FoodModel value) {
     setState(() {
-      _mealListCtrl.add(value);
+      _foodListCtrl.add(value);
     });
     _onToggleSearchList();
   }
@@ -76,16 +105,16 @@ class _MealFormPageState extends State<MealFormPage> {
     });
   }
 
-  void _onMealEdit(Item item) {}
+  void _onFoodEdit(Item item) {}
 
-  void _openMealEdit(Item item) {
+  void _openFoodEdit(FoodModel item) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              _MealEdit(item: item, onSubmit: _onMealEdit),
+              _FoodEdit(item: item, onSubmit: _onFoodEdit),
             ],
           ),
         );
@@ -164,9 +193,9 @@ class _MealFormPageState extends State<MealFormPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              FormFieldCustom(
-                                label: 'Informe sua glicemia',
-                                placeholder: '000 mg/dL',
+                              InputField(
+                                label: 'Glicemia',
+                                hint: '000 mg/dL',
                                 controller: _glycemiaCtrl,
                                 inputType: TextInputType.number,
                               ),
@@ -180,7 +209,7 @@ class _MealFormPageState extends State<MealFormPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  for (var item in _typeList)
+                                  for (final item in _typeList)
                                     Material(
                                       color: Colors.transparent,
                                       clipBehavior: Clip.hardEdge,
@@ -238,9 +267,9 @@ class _MealFormPageState extends State<MealFormPage> {
                                   style: TextStyle(fontSize: 18)),
                               const SizedBox(height: 10),
                               Visibility(
-                                visible: _mealListCtrl.isEmpty,
+                                visible: _foodListCtrl.isEmpty,
                                 child: const Text(
-                                  'Procure pela sua refeição para adiciona-la aqui',
+                                  'Procure pela sua refeição para adiciona-la aqui.',
                                   style: TextStyle(fontStyle: FontStyle.italic),
                                 ),
                               ),
@@ -248,15 +277,15 @@ class _MealFormPageState extends State<MealFormPage> {
                           ),
                         ),
                         Visibility(
-                          visible: _mealListCtrl.isNotEmpty,
+                          visible: _foodListCtrl.isNotEmpty,
                           child: Column(
                             children: [
-                              for (var item in _mealListCtrl)
+                              for (final item in _foodListCtrl)
                                 ListTile(
                                   minLeadingWidth: 20,
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 30),
-                                  onTap: () => _openMealEdit(item),
+                                  onTap: () => _openFoodEdit(item),
                                   title: Text(
                                     item.name,
                                     style: const TextStyle(
@@ -266,8 +295,9 @@ class _MealFormPageState extends State<MealFormPage> {
                                     ),
                                   ),
                                   subtitle: Text(
-                                    '25,9 Carbs | 0,2g Gorduras | 0,4g Proteínas | '
-                                    '110,9kcal Calorias',
+                                    '${item.cho}g Carbos | '
+                                    '${item.calories}kcal Calorias | '
+                                    '${item.size}(g/ml) Peso',
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey.shade600,
@@ -281,9 +311,9 @@ class _MealFormPageState extends State<MealFormPage> {
                                       BlendMode.srcIn,
                                     ),
                                   ),
-                                  trailing: const Text(
-                                    '80g',
-                                    style: TextStyle(
+                                  trailing: Text(
+                                    '${item.size ?? 0}(g/ml)',
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: primaryColor,
@@ -330,14 +360,14 @@ class _MealFormPageState extends State<MealFormPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             'Carbos',
                             style: TextStyle(color: Colors.white),
                           ),
                           Text(
-                            'Og',
-                            style: TextStyle(
+                            _getTotalCHO,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -345,50 +375,35 @@ class _MealFormPageState extends State<MealFormPage> {
                         ],
                       ),
                       Column(
-                        children: const [
-                          Text(
-                            'Proteínas',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            'Og',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: const [
-                          Text(
-                            'Gorduras',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            'Og',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             'Calorias',
                             style: TextStyle(color: Colors.white),
                           ),
                           Text(
-                            'Okcal',
-                            style: TextStyle(
+                            _getTotalCalories,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            'Peso',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            _getTotalSize,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -424,7 +439,7 @@ class _MealFormPageState extends State<MealFormPage> {
               bottom: 0,
               child: Material(
                 color: Colors.grey.shade100,
-                child: _MealList(onSelected: _onSearch, items: _mealList),
+                child: _FoodList(onSelected: _onSearch),
               ),
             ),
           ),
@@ -434,64 +449,108 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 }
 
-class _MealList extends StatelessWidget {
-  const _MealList({
-    required this.onSelected,
-    required this.items,
-  });
+class _FoodList extends StatefulWidget {
+  const _FoodList({required this.onSelected});
 
-  final List<Item> items;
-  final ValueChanged<Item> onSelected;
+  final ValueChanged<FoodModel> onSelected;
+
+  @override
+  State<_FoodList> createState() => _FoodListState();
+}
+
+class _FoodListState extends State<_FoodList> {
+  final _foodApi = FoodApiService();
+
+  Future<List<FoodModel>> _loadData() async {
+    final foods = await _foodApi.getAll();
+    return foods;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      padding: const EdgeInsets.only(bottom: 20),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return Column(
-          children: [
-            ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-              onTap: () => onSelected(item),
-              title: Text(
-                item.name,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
+    return FutureBuilder(
+      future: _loadData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+          return const Center(child: Text('Nenhum alimento encontrado!'));
+        }
+
+        return ListView.builder(
+          itemCount: snapshot.data!.length,
+          padding: const EdgeInsets.only(bottom: 20),
+          itemBuilder: (context, index) {
+            final item = snapshot.data![index];
+            return Column(
+              children: [
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+                  onTap: () => widget.onSelected(item),
+                  title: Text(
+                    item.name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
                 ),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-            ),
-            Divider(
-              height: 1,
-              indent: 30,
-              endIndent: 30,
-              color: Colors.grey.shade300,
-            ),
-          ],
+                Divider(
+                  height: 1,
+                  indent: 30,
+                  endIndent: 30,
+                  color: Colors.grey.shade300,
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 }
 
-class _MealEdit extends StatefulWidget {
-  const _MealEdit({required this.item, required this.onSubmit});
+class _FoodEdit extends StatefulWidget {
+  const _FoodEdit({required this.item, required this.onSubmit});
 
-  final Item item;
+  final FoodModel item;
   final ValueChanged<Item> onSubmit;
 
   @override
-  State<_MealEdit> createState() => _MealEditState();
+  State<_FoodEdit> createState() => _FoodEditState();
 }
 
-class _MealEditState extends State<_MealEdit> {
+class _FoodEditState extends State<_FoodEdit> {
+  final _measureCtrl = TextEditingController();
   final _quantityCtrl = TextEditingController();
 
-  Future<void> _onSubmit() async {
-    context.pop();
+  final _measureList = const [
+    Item(id: 'gramas', name: 'Gramas (g)'),
+    Item(id: 'mililitro', name: 'Mililitro (ml)'),
+    Item(id: 'colher de sopa', name: 'Colher de Sopa (20g)'),
+    Item(id: 'porção de 100g', name: 'Porção de 100g'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _measureCtrl.text = 'gramas';
+    _quantityCtrl.text = widget.item.size.toString();
+  }
+
+  void _onSubmit() {
+    context.pop(_quantityCtrl.text);
+  }
+
+  void _onMeasure(String measure, bool selected) {
+    setState(() {
+      if (selected) {
+        _measureCtrl.text = measure;
+      } else {
+        _measureCtrl.clear();
+      }
+    });
   }
 
   @override
@@ -519,39 +578,23 @@ class _MealEditState extends State<_MealEdit> {
           const SizedBox(height: 10),
           Wrap(
             children: [
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 3,
-                child: CheckboxListTileCustom(
-                  selected: false,
-                  onSelected: (value) {},
-                  padding: const EdgeInsets.only(left: 15),
-                  text: 'Gramas (g)',
+              for (final item in _measureList)
+                SizedBox(
+                  width: (MediaQuery.of(context).size.width) / 2,
+                  child: CheckboxField(
+                    isRequired: true,
+                    selected: _measureCtrl.text == item.id,
+                    onSelected: (value) => _onMeasure(item.id, value),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    text: item.name,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 3,
-                child: CheckboxListTileCustom(
-                  selected: false,
-                  onSelected: (value) {},
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  text: 'Colher de Sopa (20g)',
-                ),
-              ),
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 3,
-                child: CheckboxListTileCustom(
-                  selected: false,
-                  onSelected: (value) {},
-                  padding: const EdgeInsets.only(left: 5, right: 25),
-                  text: 'Porção de 100g',
-                ),
-              ),
             ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: FormFieldCustom(
-              placeholder: '000',
+            child: InputField(
+              hint: '000',
               controller: _quantityCtrl,
               inputType: TextInputType.number,
             ),

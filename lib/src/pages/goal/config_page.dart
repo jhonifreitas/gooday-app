@@ -6,9 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/widgets/form/dropdown_field.dart';
 import 'package:gooday/src/controllers/goal_controller.dart';
 
 class GoalConfigPage extends StatefulWidget {
@@ -48,10 +49,9 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
 
       if (!mounted) return;
 
-      final userProvider = context.read<UserProvider>();
-      final config = userProvider.data!.config!.toJson();
+      final config = _userProvider.data!.config!.toJson();
       config['goal'] = data;
-      await userProvider.update({'config': config});
+      await _userProvider.update({'config': config});
 
       if (!mounted) return;
 
@@ -89,40 +89,39 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
                       'goodies, caso atinja suas metas.',
                       style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 10),
-                  FormFieldCustom(
+                  DropdownField(
                     label: 'Passos',
                     isRequired: true,
                     controller: _goalCtrl.stepsCtrl,
-                    prefixIcon: SvgPicture.asset(
+                    icon: SvgPicture.asset(
                       'assets/icons/shoe.svg',
                       width: 30,
                     ),
-                    isDropdown: true,
                     options: _stepList,
                   ),
-                  FormFieldCustom(
+                  InputField(
                     label: 'Quilometros',
                     controller: _goalCtrl.distanceCtrl,
                     inputType: TextInputType.number,
-                    prefixIcon: SvgPicture.asset(
+                    icon: SvgPicture.asset(
                       'assets/icons/pin.svg',
                       width: 30,
                     ),
                   ),
-                  FormFieldCustom(
+                  InputField(
                     label: 'Calorias',
                     controller: _goalCtrl.caloriesCtrl,
                     inputType: TextInputType.number,
-                    prefixIcon: SvgPicture.asset(
+                    icon: SvgPicture.asset(
                       'assets/icons/fire.svg',
                       width: 30,
                     ),
                   ),
-                  FormFieldCustom(
+                  InputField(
                     label: 'Minutos ativos',
                     controller: _goalCtrl.exerciseTimeCtrl,
                     inputType: TextInputType.number,
-                    prefixIcon: SvgPicture.asset(
+                    icon: SvgPicture.asset(
                       'assets/icons/clock-race.svg',
                       width: 30,
                     ),

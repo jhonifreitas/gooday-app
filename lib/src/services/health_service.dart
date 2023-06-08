@@ -39,7 +39,7 @@ class HealthService {
 
     final data = HealthModel();
 
-    for (var point in points) {
+    for (final point in points) {
       if (point.type == HealthDataType.STEPS) {
         data.steps += num.parse(point.value.toString());
       } else if (point.type == HealthDataType.ACTIVE_ENERGY_BURNED) {

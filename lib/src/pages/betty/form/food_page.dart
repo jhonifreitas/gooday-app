@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gooday/src/widgets/chip.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/grid_image_item.dart';
+import 'package:gooday/src/widgets/form/chip_field.dart';
 import 'package:gooday/src/pages/betty/form/all_page.dart';
-import 'package:gooday/src/widgets/checkbox_list_tile.dart';
+import 'package:gooday/src/widgets/form/checkbox_field.dart';
 import 'package:gooday/src/controllers/betty_controller.dart';
 
 class BettyFormFoodPage extends StatefulWidget {
@@ -162,14 +162,14 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      ChipCustom(
+                      ChipField(
                         text: 'Sim',
                         selected: _bettyCtrl.lostWeightFoodCtrl == true,
                         onSelected: (value) =>
                             _onLostWeight(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
-                      ChipCustom(
+                      ChipField(
                         text: 'Não',
                         selected: _bettyCtrl.lostWeightFoodCtrl == false,
                         onSelected: (value) =>
@@ -195,14 +195,14 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      ChipCustom(
+                      ChipField(
                         text: 'Sim',
                         selected: _bettyCtrl.adequateFoodCtrl == true,
                         onSelected: (value) =>
                             _onAdequateFood(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
-                      ChipCustom(
+                      ChipField(
                         text: 'Não',
                         selected: _bettyCtrl.adequateFoodCtrl == false,
                         onSelected: (value) =>
@@ -227,14 +227,14 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      ChipCustom(
+                      ChipField(
                         text: 'Sim',
                         selected: _help == true,
                         onSelected: (value) =>
                             _onHelp(value == true ? true : null),
                       ),
                       const SizedBox(width: 10),
-                      ChipCustom(
+                      ChipField(
                         text: 'Não',
                         selected: _help == false,
                         onSelected: (value) =>
@@ -264,8 +264,8 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     const SizedBox(height: 10),
                     Column(
                       children: [
-                        for (var item in _bettyCtrl.foodHelpList)
-                          CheckboxListTileCustom(
+                        for (final item in _bettyCtrl.foodHelpList)
+                          CheckboxField(
                             selected: _bettyCtrl.foodHelpsCtrl
                                 .any((id) => id == item.id),
                             text: item.name,
@@ -304,7 +304,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       children: [
-                        for (var item in _bettyCtrl.foodList)
+                        for (final item in _bettyCtrl.foodList)
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,
@@ -356,7 +356,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       children: [
-                        for (var item in _bettyCtrl.foodList)
+                        for (final item in _bettyCtrl.foodList)
                           GridImageItem(
                             tooltip: item.name,
                             image: item.image!,
@@ -385,14 +385,14 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
                       children: [
-                        ChipCustom(
+                        ChipField(
                           text: 'Sim',
                           selected: _limit == true,
                           onSelected: (value) =>
                               _onLimit(value == true ? true : null),
                         ),
                         const SizedBox(width: 10),
-                        ChipCustom(
+                        ChipField(
                           text: 'Não',
                           selected: _limit == false,
                           onSelected: (value) =>
@@ -406,10 +406,10 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     visible: _limit == true,
                     child: Wrap(
                       children: [
-                        for (var item in _bettyCtrl.foodLimitList)
+                        for (final item in _bettyCtrl.foodLimitList)
                           SizedBox(
                             width: (MediaQuery.of(context).size.width) / 2,
-                            child: CheckboxListTileCustom(
+                            child: CheckboxField(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 30),
                               selected: _bettyCtrl.foodLimitsCtrl

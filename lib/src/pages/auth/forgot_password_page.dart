@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 
 import 'package:gooday/src/widgets/button.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class AuthForgotPasswordPage extends StatefulWidget {
@@ -30,7 +30,7 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
       UtilService(context)
           .message('Verifique a caixa de entrada de seu e-mail!');
 
-      context.pop(context);
+      context.pop();
       context.go('/auth/entrar');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
@@ -67,7 +67,7 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        FormFieldCustom(
+                        InputField(
                           label: 'E-mail',
                           controller: _emailCtrl,
                           isRequired: true,

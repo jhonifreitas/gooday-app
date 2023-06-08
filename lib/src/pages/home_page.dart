@@ -98,12 +98,12 @@ class _HomePageState extends State<HomePage>
       body: PageView(
         controller: _pageCtrl,
         onPageChanged: _onPageChanged,
-        children: const [
-          WelcomePage(),
-          CalculatorPage(),
-          GoalPage(),
-          NotificationPage(),
-          ProfilePage()
+        children: [
+          WelcomePage(goToPage: _goToPage),
+          CalculatorPage(goToPage: _goToPage),
+          GoalPage(goToPage: _goToPage),
+          NotificationPage(goToPage: _goToPage),
+          ProfilePage(goToPage: _goToPage)
         ],
       ),
       bottomNavigationBar: CustomPaint(

@@ -12,7 +12,7 @@ final appTheme = ThemeData(
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.transparent,
     titleTextStyle: TextStyle(
-      fontSize: 15,
+      fontSize: 18,
       color: Colors.black,
       fontWeight: FontWeight.bold,
     ),

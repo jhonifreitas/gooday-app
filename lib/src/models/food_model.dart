@@ -1,18 +1,18 @@
 import 'package:gooday/src/models/base_model.dart';
 
-class GoalModel extends BaseModel {
-  String userId;
-  num steps;
-  num distance;
+class FoodModel extends BaseModel {
+  String name;
+  String measure;
+  num cho;
   num calories;
-  num exerciseTime;
+  num? size;
 
-  GoalModel({
-    required this.userId,
-    this.steps = 0,
-    this.distance = 0,
-    this.calories = 0,
-    this.exerciseTime = 0,
+  FoodModel({
+    required this.name,
+    required this.measure,
+    required this.cho,
+    required this.calories,
+    this.size,
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -24,15 +24,15 @@ class GoalModel extends BaseModel {
           deletedAt: deletedAt,
         );
 
-  factory GoalModel.fromJson(Map<String, dynamic> json) {
+  factory FoodModel.fromJson(Map<String, dynamic> json) {
     final base = BaseModel.fromJson(json);
 
-    return GoalModel(
-      userId: json['userId'],
-      steps: json['steps'],
-      distance: json['distance'],
+    return FoodModel(
+      name: json['name'],
+      measure: json['measure'],
+      cho: json['cho'],
       calories: json['calories'],
-      exerciseTime: json['exerciseTime'],
+      size: json['size'],
       id: base.id,
       createdAt: base.createdAt,
       updatedAt: base.updatedAt,
@@ -43,11 +43,11 @@ class GoalModel extends BaseModel {
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
-    json['userId'] = userId;
-    json['steps'] = steps;
-    json['distance'] = distance;
+    json['name'] = name;
+    json['measure'] = measure;
+    json['cho'] = cho;
     json['calories'] = calories;
-    json['exerciseTime'] = exerciseTime;
+    json['size'] = size;
     return json;
   }
 }

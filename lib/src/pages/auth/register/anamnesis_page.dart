@@ -6,12 +6,13 @@ import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/models/goodie_model.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/pages/profile/user_page.dart';
 import 'package:gooday/src/providers/user_provider.dart';
-import 'package:gooday/src/services/goodie_service.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/widgets/form/dropdown_field.dart';
+import 'package:gooday/src/services/api/goodie_service.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/pages/goodie/congratulation_page.dart';
 
@@ -26,11 +27,19 @@ class AuthRegisterAnamnesisPage extends StatefulWidget {
 class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
   final _userCtrl = UserController();
   final _pageCtrl = PageController();
-  final _goodieService = GoodieService();
+  final _goodieApi = GoodieApiService();
   final _formKey = GlobalKey<FormState>();
+  late final UserProvider _userProvider;
 
   final _goodies = 10;
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
@@ -49,7 +58,6 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           'drug': _userCtrl.drugCtrl.text,
         }
       };
-      final userProvider = context.read<UserProvider>();
       final isComplete = data['name'].isNotEmpty &&
           data['name'].isNotEmpty &&
           data['email'].isNotEmpty &&
@@ -60,10 +68,10 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           data['anamnese']['weight'] != null &&
           data['anamnese']['diabeteType'].isNotEmpty;
       if (isComplete) {
-        data['goodies'] = userProvider.data!.goodies + _goodies;
+        data['goodies'] = _userProvider.data!.goodies + _goodies;
       }
 
-      await userProvider.update(data);
+      await _userProvider.update(data);
 
       if (mounted) context.pop();
 
@@ -76,8 +84,12 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
   }
 
   Future<void> _addGoodie() async {
-    final data = GoodieModel(type: GoodieType.profileComplete, value: _goodies);
-    await _goodieService.add(data);
+    final data = GoodieModel(
+      userId: _userProvider.data!.id!,
+      type: GoodieType.profileComplete,
+      value: _goodies,
+    );
+    await _goodieApi.add(data);
 
     if (!mounted) return;
 
@@ -155,6 +167,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: _AuthRegisterAnamneseStep1(
+                        goodies: _goodies,
                         userCtrl: _userCtrl,
                         onDateBirth: _onDateBirth,
                       ),
@@ -226,9 +239,13 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
 }
 
 class _AuthRegisterAnamneseStep1 extends StatelessWidget {
-  const _AuthRegisterAnamneseStep1(
-      {required this.userCtrl, required this.onDateBirth});
+  const _AuthRegisterAnamneseStep1({
+    required this.userCtrl,
+    required this.onDateBirth,
+    required this.goodies,
+  });
 
+  final int goodies;
   final UserController userCtrl;
   final VoidCallback onDateBirth;
 
@@ -283,7 +300,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: FormFieldCustom(
+                  child: InputField(
                     label: 'Data de Nascimento',
                     controller: userCtrl.dateBirthCtrl,
                     readOnly: true,
@@ -293,23 +310,22 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 const SizedBox(width: 20),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 3,
-                  child: FormFieldCustom(
+                  child: DropdownField(
                     label: 'Sexo',
                     controller: userCtrl.genreCtrl,
-                    isDropdown: true,
                     options: userCtrl.genreList,
                   ),
                 ),
               ],
             ),
-            FormFieldCustom(
+            InputField(
               label: 'Qual a sua altura?',
               controller: userCtrl.heightCtrl,
               inputType: TextInputType.number,
               minLength: 4,
               masks: const ['9,99'],
             ),
-            FormFieldCustom(
+            InputField(
               label: 'Quanto você pesa?',
               controller: userCtrl.weightCtrl,
               inputType: TextInputType.number,
@@ -327,7 +343,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall),
             Row(
               children: [
-                Text('Preencha seus dados e ganhe 10 Goodies',
+                Text('Preencha seus dados e ganhe $goodies Goodies',
                     style: Theme.of(context).textTheme.bodySmall),
                 IconButton(
                   onPressed: () => _openGoodie(context),

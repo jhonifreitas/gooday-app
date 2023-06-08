@@ -68,23 +68,23 @@ class GoalController {
     }
   }
 
-  Map<String, int?> clearValues() {
-    int steps = 0;
-    int distance = 0;
-    int calories = 0;
-    int exerciseTime = 0;
+  Map<String, num> clearValues() {
+    num steps = 0;
+    num distance = 0;
+    num calories = 0;
+    num exerciseTime = 0;
 
     if (stepsCtrl.text.isNotEmpty) {
-      steps = int.parse(stepsCtrl.text);
+      steps = num.parse(stepsCtrl.text);
     }
     if (distanceCtrl.text.isNotEmpty) {
-      distance = int.parse(distanceCtrl.text);
+      distance = num.parse(distanceCtrl.text);
     }
     if (caloriesCtrl.text.isNotEmpty) {
-      calories = int.parse(caloriesCtrl.text);
+      calories = num.parse(caloriesCtrl.text);
     }
     if (exerciseTimeCtrl.text.isNotEmpty) {
-      exerciseTime = int.parse(exerciseTimeCtrl.text);
+      exerciseTime = num.parse(exerciseTimeCtrl.text);
     }
 
     return {

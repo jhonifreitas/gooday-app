@@ -9,7 +9,9 @@ import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 
 class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
+  const WelcomePage({required this.goToPage, super.key});
+
+  final ValueChanged<int> goToPage;
 
   @override
   State<WelcomePage> createState() => _WelcomePageState();
@@ -89,7 +91,7 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
             ),
           ),
-          _WelcomeNotificationList(),
+          _WelcomeNotificationList(goToPage: widget.goToPage),
           Expanded(
             child: Align(
               alignment: Alignment.center,
@@ -103,17 +105,24 @@ class _WelcomePageState extends State<WelcomePage> {
 }
 
 class _WelcomeNotificationList extends StatelessWidget {
-  void _openNotification() {}
+  const _WelcomeNotificationList({required this.goToPage});
+
+  final ValueChanged<int> goToPage;
+
+  void _openNotification() {
+    goToPage(3);
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: ListView(
+      child: ListView.builder(
+        itemCount: 1,
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 30),
-        children: [
-          SizedBox(
+        itemBuilder: (context, index) {
+          return SizedBox(
             width: 270,
             child: Card(
               elevation: 5,
@@ -191,8 +200,8 @@ class _WelcomeNotificationList extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

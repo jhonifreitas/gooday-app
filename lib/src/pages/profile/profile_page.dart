@@ -14,7 +14,9 @@ import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({required this.goToPage, super.key});
+
+  final ValueChanged<int> goToPage;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();

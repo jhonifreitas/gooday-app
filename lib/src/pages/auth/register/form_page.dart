@@ -9,10 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/widgets/form_field.dart';
 import 'package:gooday/src/widgets/profile_image.dart';
 import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
 import 'package:gooday/src/controllers/auth_controller.dart';
 
@@ -154,12 +154,12 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                     autovalidateMode: AutovalidateMode.always,
                     child: Column(
                       children: [
-                        FormFieldCustom(
+                        InputField(
                           label: 'Nome',
                           controller: _userCtrl.nameCtrl,
                           isRequired: true,
                         ),
-                        FormFieldCustom(
+                        InputField(
                           label: 'Celular',
                           controller: _userCtrl.phoneCtrl,
                           isRequired: true,
@@ -167,13 +167,13 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                           inputType: TextInputType.number,
                           masks: const ['(99) 99999-9999'],
                         ),
-                        FormFieldCustom(
+                        InputField(
                           label: 'E-mail',
                           controller: _userCtrl.emailCtrl,
                           isRequired: true,
                           inputType: TextInputType.emailAddress,
                         ),
-                        FormFieldCustom(
+                        InputField(
                           label: 'Senha',
                           controller: _passwordCtrl,
                           minLength: 6,

@@ -6,7 +6,9 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
+  const NotificationPage({required this.goToPage, super.key});
+
+  final ValueChanged<int> goToPage;
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();

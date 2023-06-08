@@ -4,9 +4,11 @@ class MealModel extends BaseModel {
   num glycemia;
   MealType type;
   DateTime date;
+  String userId;
   List<MealFood> foods;
 
   MealModel({
+    required this.userId,
     required this.glycemia,
     required this.type,
     required this.date,
@@ -26,6 +28,7 @@ class MealModel extends BaseModel {
     final base = BaseModel.fromJson(json);
 
     return MealModel(
+      userId: json['userId'],
       glycemia: json['glycemia'],
       type: json['type'],
       date: json['date'],
@@ -40,6 +43,7 @@ class MealModel extends BaseModel {
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
+    json['userId'] = userId;
     json['glycemia'] = glycemia;
     json['type'] = type;
     json['date'] = date;

@@ -1,31 +1,105 @@
+import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
+import 'package:gooday/src/models/meal_model.dart';
+import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/services/api/meal_service.dart';
+import 'package:gooday/src/services/api/glycemia_service.dart';
 import 'package:gooday/src/pages/calculator/glycemia_page.dart';
 
 class CalculatorPage extends StatefulWidget {
-  const CalculatorPage({super.key});
+  const CalculatorPage({required this.goToPage, super.key});
+
+  final ValueChanged<int> goToPage;
 
   @override
   State<CalculatorPage> createState() => _CalculatorPageState();
 }
 
 class _CalculatorPageState extends State<CalculatorPage> {
+  final _mealApi = MealApiService();
+  final _glycemiaApi = GlycemiaApiService();
+
+  Future<List<dynamic>> _loadData() async {
+    final list = [];
+    final user = context.read<UserProvider>().data!;
+
+    final glycemias = await _glycemiaApi.getAll(user.id!);
+    final meals = await _mealApi.getAll(user.id!);
+
+    list.addAll(glycemias);
+    list.addAll(meals);
+
+    return list;
+  }
+
   void _openGlycemiaForm() {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return SafeArea(child: Wrap(children: const [GlycemiaPage()]));
+        return const GlycemiaPage();
       },
     );
   }
 
   void _goToMealForm() {
     context.push('/refeicao');
+  }
+
+  String _getDateLabel(DateTime date) {
+    final now = DateTime.now();
+
+    if (now.month == date.month && now.year == date.year) {
+      if (now.day == date.day) return 'Hoje';
+      if (now.day - 1 == date.day) return 'Ontem';
+    }
+
+    final month = DateFormat('MMM').format(date);
+    return '${date.day} de $month';
+  }
+
+  String _getTimeLabel(DateTime date) {
+    return DateFormat('HH:mm').format(date);
+  }
+
+  String _getTitle(dynamic item) {
+    if (MealType.breakfast == item.type) {
+      return 'Café da manhã';
+    } else if (MealType.lunch == item.type) {
+      return 'Almoço';
+    } else if (MealType.dinner == item.type) {
+      return 'Jantar';
+    } else if (MealType.snack == item.type) {
+      return 'Lanche';
+    }
+
+    return 'Glicemia';
+  }
+
+  String _getDescription(dynamic item) {
+    if (item.value != null) return '${item.value} (mg/dL)';
+
+    return '25,9 Carbs | 0,2g Gorduras | 0,4g Proteínas 110,9kcal Calorias';
+  }
+
+  String _getIcon(dynamic item) {
+    if (MealType.breakfast == item.type) {
+      return 'assets/icons/sandwich.svg';
+    } else if (MealType.lunch == item.type) {
+      return 'assets/icons/chicken.svg';
+    } else if (MealType.dinner == item.type) {
+      return 'assets/icons/cake.svg';
+    } else if (MealType.snack == item.type) {
+      return 'assets/icons/fruits.svg';
+    }
+
+    return 'assets/icons/water.svg';
   }
 
   @override
@@ -153,49 +227,84 @@ class _CalculatorPageState extends State<CalculatorPage> {
                 borderRadius: BorderRadius.circular(10)),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 10, left: 20, right: 20),
-          child: Text('Hoje', style: TextStyle(fontSize: 20)),
-        ),
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 60),
-            children: [
-              TimelineItem(
-                isFirst: true,
-                isLast: true,
-                title:
-                    const Text('Café da manhã', style: TextStyle(fontSize: 16)),
-                subtitle: Text(
-                  '25,9 Carbs | 0,2g Gorduras | 0,4g Proteínas | '
-                  '110,9kcal Calorias',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey.shade600,
+          child: FutureBuilder(
+            future: _loadData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Nenhum registro encontrado!\n'
+                    'Registre sua glicemia ou refeição para adiciona-la aqui.',
+                    style: TextStyle(fontStyle: FontStyle.italic),
                   ),
-                ),
-                prefix: Column(
-                  children: [
-                    SvgPicture.asset(
-                      height: 30,
-                      'assets/icons/water.svg',
-                      colorFilter: const ColorFilter.mode(
-                        primaryColor,
-                        BlendMode.srcIn,
+                );
+              }
+
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                padding: const EdgeInsets.only(bottom: 60),
+                itemBuilder: (context, index) {
+                  final item = snapshot.data![index];
+                  final prev = index > 0 ? snapshot.data![index - 1] : null;
+                  final itemDate = _getDateLabel(item.date);
+                  final prevDate =
+                      prev != null ? _getDateLabel(prev.date) : null;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Visibility(
+                        visible: prevDate != itemDate,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            itemDate,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
                       ),
-                    ),
-                    const Text(
-                      '8:00',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: primaryColor,
+                      TimelineItem(
+                        isFirst: index == 0,
+                        isLast: snapshot.data!.length - 1 == index,
+                        title: Text(_getTitle(item),
+                            style: const TextStyle(fontSize: 16)),
+                        subtitle: Text(
+                          _getDescription(item),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        prefix: Column(
+                          children: [
+                            SvgPicture.asset(
+                              height: 30,
+                              _getIcon(item),
+                              colorFilter: const ColorFilter.mode(
+                                primaryColor,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            Text(
+                              _getTimeLabel(item.date),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: primaryColor,
+                              ),
+                            )
+                          ],
+                        ),
+                        onPressed: () {},
                       ),
-                    )
-                  ],
-                ),
-                onPressed: () {},
-              ),
-            ],
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ),
       ],
