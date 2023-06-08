@@ -1,3 +1,4 @@
+import 'package:gooday/src/common/item.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:gooday/src/services/util_service.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/chip_field.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
+import 'package:gooday/src/services/api/drug_service.dart';
 import 'package:gooday/src/widgets/form/dropdown_field.dart';
 import 'package:gooday/src/services/api/goodie_service.dart';
 import 'package:gooday/src/controllers/user_controller.dart';
@@ -32,6 +34,7 @@ class _UserPageState extends State<UserPage> {
 
   final _goodies = 10;
   int _currentPage = 0;
+  bool _userCompleted = true;
   bool _diabeteTypeDisabled = false;
 
   @override
@@ -42,8 +45,19 @@ class _UserPageState extends State<UserPage> {
     final user = _userProvider.data;
     if (user != null) {
       _userCtrl.initData(user);
+
+      final userCompleted = user.name!.isNotEmpty &&
+          user.email!.isNotEmpty &&
+          user.phone!.isNotEmpty &&
+          user.dateBirth != null &&
+          user.genre!.isNotEmpty &&
+          user.anamnese?.height != null &&
+          user.anamnese?.weight != null &&
+          user.anamnese?.diabeteType != null &&
+          user.anamnese?.insulin != null;
       setState(() {
-        _diabeteTypeDisabled = true;
+        _userCompleted = userCompleted;
+        _diabeteTypeDisabled = user.anamnese?.diabeteType != null;
       });
     }
   }
@@ -51,6 +65,7 @@ class _UserPageState extends State<UserPage> {
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
+
       final Map<String, dynamic> data = {
         'name': _userCtrl.nameCtrl.text,
         'email': _userCtrl.emailCtrl.text,
@@ -77,7 +92,7 @@ class _UserPageState extends State<UserPage> {
           data['anamnese']['height'] != null &&
           data['anamnese']['weight'] != null &&
           data['anamnese']['diabeteType'].isNotEmpty;
-      if (isComplete) {
+      if (isComplete && !_userCompleted) {
         data['goodies'] = _userProvider.data!.goodies + _goodies;
       }
 
@@ -85,7 +100,7 @@ class _UserPageState extends State<UserPage> {
 
       if (mounted) context.pop();
 
-      if (isComplete) await _addGoodie();
+      if (isComplete && !_userCompleted) await _addGoodie();
 
       if (mounted) context.pop();
     } else {
@@ -406,6 +421,8 @@ class UserAnamneseForm extends StatefulWidget {
 }
 
 class _UserAnamneseFormState extends State<UserAnamneseForm> {
+  final _drugApi = DrugApiService();
+
   void _onDiabete(bool? value) {
     setState(() {
       widget.userCtrl.diabeteCtrl = value;
@@ -555,11 +572,26 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                               options: widget.userCtrl.insulinFastList,
                             ),
                           ),
-                          DropdownField(
-                            label: 'Medicamentos',
-                            controller: widget.userCtrl.drugCtrl,
-                            options: widget.userCtrl.drugList,
-                          ),
+                          FutureBuilder(
+                            future: _drugApi.getAll(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+
+                              final options = snapshot.data!
+                                  .map((value) =>
+                                      Item(id: value.name, name: value.name))
+                                  .toList();
+
+                              return DropdownField(
+                                label: 'Medicamentos',
+                                controller: widget.userCtrl.drugCtrl,
+                                options: options,
+                              );
+                            },
+                          )
                         ],
                       ),
                     ),

@@ -43,11 +43,6 @@ class UserController {
     Item(id: 'Novorapid', name: 'Novorapid'),
     Item(id: 'Fiasp', name: 'Fiasp'),
   ];
-  final List<Item> drugList = const [
-    Item(id: 'drug-1', name: 'Medicamento 1'),
-    Item(id: 'drug-2', name: 'Medicamento 2'),
-    Item(id: 'drug-3', name: 'Medicamento 3'),
-  ];
   final List<Item> scaleInsulinList = const [
     Item(id: '0.1', name: '0.1'),
     Item(id: '0.5', name: '0.5'),

@@ -23,6 +23,7 @@ class MealFormPage extends StatefulWidget {
 }
 
 class _MealFormPageState extends State<MealFormPage> {
+  String? _searchCtrl;
   bool _toggleSearchList = false;
 
   String? _typeCtrl;
@@ -92,11 +93,15 @@ class _MealFormPageState extends State<MealFormPage> {
     });
   }
 
-  void _onSearch(FoodModel value) {
-    setState(() {
-      _foodListCtrl.add(value);
-    });
+  void _onFood(FoodModel value) {
+    _openFood(value);
     _onToggleSearchList();
+  }
+
+  void _onSearch(String? value) {
+    setState(() {
+      _searchCtrl = value;
+    });
   }
 
   void _onToggleSearchList() {
@@ -105,16 +110,26 @@ class _MealFormPageState extends State<MealFormPage> {
     });
   }
 
-  void _onFoodEdit(Item item) {}
+  void _onFoodSubmit(FoodModel item) {
+    final index = _foodListCtrl.indexWhere((food) => food.id == item.id);
 
-  void _openFoodEdit(FoodModel item) {
+    setState(() {
+      if (index >= 0) {
+        _foodListCtrl[index] = item;
+      } else {
+        _foodListCtrl.add(item);
+      }
+    });
+  }
+
+  void _openFood(FoodModel item) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              _FoodEdit(item: item, onSubmit: _onFoodEdit),
+              _FoodEdit(item: item, onSubmit: _onFoodSubmit),
             ],
           ),
         );
@@ -152,29 +167,19 @@ class _MealFormPageState extends State<MealFormPage> {
                   Padding(
                     padding:
                         const EdgeInsets.only(bottom: 20, left: 30, right: 30),
-                    child: Material(
-                      clipBehavior: Clip.hardEdge,
-                      borderRadius: BorderRadius.circular(30),
-                      child: InkWell(
-                        onTap: _onToggleSearchList,
-                        child: Ink(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Procurar refeição',
-                                style: TextStyle(color: Colors.grey.shade700),
-                              ),
-                              const Icon(Icons.search, size: 20)
-                            ],
-                          ),
+                    child: TextField(
+                      onChanged: _onSearch,
+                      onTap: _onToggleSearchList,
+                      decoration: InputDecoration(
+                        filled: true,
+                        hintText: 'Pesquisar...',
+                        suffix: const Icon(Icons.search),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        border: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.grey.shade300, width: 1),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),
@@ -285,7 +290,7 @@ class _MealFormPageState extends State<MealFormPage> {
                                   minLeadingWidth: 20,
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 30),
-                                  onTap: () => _openFoodEdit(item),
+                                  onTap: () => _openFood(item),
                                   title: Text(
                                     item.name,
                                     style: const TextStyle(
@@ -439,7 +444,8 @@ class _MealFormPageState extends State<MealFormPage> {
               bottom: 0,
               child: Material(
                 color: Colors.grey.shade100,
-                child: _FoodList(onSelected: _onSearch),
+                child:
+                    _FoodList(onSelected: _onFood, search: _searchCtrl ?? ''),
               ),
             ),
           ),
@@ -450,8 +456,9 @@ class _MealFormPageState extends State<MealFormPage> {
 }
 
 class _FoodList extends StatefulWidget {
-  const _FoodList({required this.onSelected});
+  const _FoodList({required this.onSelected, required this.search});
 
+  final String search;
   final ValueChanged<FoodModel> onSelected;
 
   @override
@@ -471,17 +478,23 @@ class _FoodListState extends State<_FoodList> {
     return FutureBuilder(
       future: _loadData(),
       builder: (context, snapshot) {
+        List<FoodModel> items = snapshot.data ?? [];
+        items = items
+            .where((val) =>
+                val.name.toLowerCase().contains(widget.search.toLowerCase()))
+            .toList();
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+        } else if (snapshot.hasData && items.isEmpty) {
           return const Center(child: Text('Nenhum alimento encontrado!'));
         }
 
         return ListView.builder(
-          itemCount: snapshot.data!.length,
+          itemCount: items.length,
           padding: const EdgeInsets.only(bottom: 20),
           itemBuilder: (context, index) {
-            final item = snapshot.data![index];
+            final item = items[index];
             return Column(
               children: [
                 ListTile(
@@ -515,7 +528,7 @@ class _FoodEdit extends StatefulWidget {
   const _FoodEdit({required this.item, required this.onSubmit});
 
   final FoodModel item;
-  final ValueChanged<Item> onSubmit;
+  final ValueChanged<FoodModel> onSubmit;
 
   @override
   State<_FoodEdit> createState() => _FoodEditState();
@@ -525,18 +538,19 @@ class _FoodEditState extends State<_FoodEdit> {
   final _measureCtrl = TextEditingController();
   final _quantityCtrl = TextEditingController();
 
-  final _measureList = const [
-    Item(id: 'gramas', name: 'Gramas (g)'),
-    Item(id: 'mililitro', name: 'Mililitro (ml)'),
-    Item(id: 'colher de sopa', name: 'Colher de Sopa (20g)'),
-    Item(id: 'porção de 100g', name: 'Porção de 100g'),
-  ];
+  List<Item> _measureList = [];
 
   @override
   void initState() {
     super.initState();
-    _measureCtrl.text = 'gramas';
-    _quantityCtrl.text = widget.item.size.toString();
+    _measureCtrl.text = 'usual';
+    _quantityCtrl.text = '1';
+    _measureList = [
+      Item(
+          id: 'usual',
+          name: '${widget.item.measure} (${widget.item.size} g/ml)'),
+      const Item(id: 'custom', name: 'Medida (g/ml)'),
+    ];
   }
 
   void _onSubmit() {
