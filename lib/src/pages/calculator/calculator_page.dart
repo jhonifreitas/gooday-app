@@ -24,7 +24,14 @@ class CalculatorPage extends StatefulWidget {
 
 class _CalculatorPageState extends State<CalculatorPage> {
   final _mealApi = MealApiService();
+  late Future<List<dynamic>> _loadList;
   final _glycemiaApi = GlycemiaApiService();
+
+  @override
+  void initState() {
+    _loadList = _loadData();
+    super.initState();
+  }
 
   Future<List<dynamic>> _loadData() async {
     final list = [];
@@ -39,13 +46,18 @@ class _CalculatorPageState extends State<CalculatorPage> {
     return list;
   }
 
-  void _openGlycemiaForm() {
-    showModalBottomSheet(
+  void _openGlycemiaForm() async {
+    final result = await showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return const GlycemiaPage();
       },
     );
+    if (result != null) {
+      setState(() {
+        _loadList = _loadData();
+      });
+    }
   }
 
   void _goToMealForm() {
@@ -231,7 +243,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
         ),
         Expanded(
           child: FutureBuilder(
-            future: _loadData(),
+            future: _loadList,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

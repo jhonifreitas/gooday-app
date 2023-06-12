@@ -16,7 +16,7 @@ class _IntroTwoPageState extends State<IntroTwoPage> {
   void _goToNext() {
     context.push(Uri(
       path: '/introducao/3',
-      queryParameters: {'hideConfigBetty': widget.hideConfigBetty},
+      queryParameters: {'hideConfigBetty': widget.hideConfigBetty.toString()},
     ).toString());
   }
 

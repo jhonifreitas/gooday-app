@@ -1,3 +1,4 @@
+import 'package:gooday/src/models/drug_model.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
@@ -639,6 +640,13 @@ class _DrugList extends StatefulWidget {
 
 class _DrugListState extends State<_DrugList> {
   final _drugApi = DrugApiService();
+  late Future<List<DrugModel>> _loadData;
+
+  @override
+  void initState() {
+    _loadData = _drugApi.getAll();
+    super.initState();
+  }
 
   void _onChanged(String id, bool? value) {
     if (value != null) {
@@ -662,7 +670,7 @@ class _DrugListState extends State<_DrugList> {
           const SizedBox(height: 10),
           Expanded(
             child: FutureBuilder(
-              future: _drugApi.getAll(),
+              future: _loadData,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
