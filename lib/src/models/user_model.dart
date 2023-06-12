@@ -84,7 +84,7 @@ class UserAnamnese {
   bool? insulin;
   String? insulinSlow;
   String? insulinFast;
-  String? drug;
+  List<String> drugs;
 
   UserAnamnese({
     this.height,
@@ -93,7 +93,7 @@ class UserAnamnese {
     this.insulin,
     this.insulinSlow,
     this.insulinFast,
-    this.drug,
+    this.drugs = const [],
   });
 
   UserAnamnese.fromJson(Map<String, dynamic> json)
@@ -104,7 +104,7 @@ class UserAnamnese {
           insulin: json['insulin'],
           insulinSlow: json['insulinSlow'],
           insulinFast: json['insulinFast'],
-          drug: json['drug'],
+          drugs: (json['drugs'] as List<String>).cast(),
         );
 
   Map<String, dynamic> toJson() {
@@ -115,7 +115,7 @@ class UserAnamnese {
       'insulin': insulin,
       'insulinSlow': insulinSlow,
       'insulinFast': insulinFast,
-      'drug': drug,
+      'drugs': drugs,
     };
   }
 }
@@ -123,11 +123,13 @@ class UserAnamnese {
 class UserConfig {
   UserConfigGoal? goal;
   UserConfigGlycemia? glycemia;
+  UserConfigInsulin? insulin;
   UserConfigBetty? betty;
 
   UserConfig({
     this.goal,
     this.glycemia,
+    this.insulin,
     this.betty,
   });
 
@@ -135,6 +137,7 @@ class UserConfig {
       : this(
           goal: UserConfigGoal.fromJson(json['goal'] ?? {}),
           glycemia: UserConfigGlycemia.fromJson(json['glycemia'] ?? {}),
+          insulin: UserConfigInsulin.fromJson(json['insulin'] ?? {}),
           betty: UserConfigBetty.fromJson(json['betty'] ?? {}),
         );
 
@@ -142,6 +145,7 @@ class UserConfig {
     return {
       'goal': goal?.toJson(),
       'glycemia': glycemia?.toJson(),
+      'insulin': insulin?.toJson(),
       'betty': betty?.toJson(),
     };
   }
@@ -225,6 +229,64 @@ class UserConfigGlycemia {
       'beforeSleepMin': beforeSleepMin,
       'beforeSleepNormal': beforeSleepNormal,
       'beforeSleepMax': beforeSleepMax,
+    };
+  }
+}
+
+class UserConfigInsulin {
+  String insulin;
+  double scale;
+  List<UserConfigInsulinTime> times;
+
+  UserConfigInsulin({
+    required this.insulin,
+    required this.scale,
+    required this.times,
+  });
+
+  UserConfigInsulin.fromJson(Map<String, dynamic> json)
+      : this(
+          insulin: json['insulin'],
+          scale: json['scale'],
+          times: (json['times'] as List<dynamic>).cast(),
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'insulin': insulin,
+      'scale': scale,
+      'times': times,
+    };
+  }
+}
+
+class UserConfigInsulinTime {
+  String startTime;
+  String endTime;
+  num fc;
+  num ic;
+
+  UserConfigInsulinTime({
+    required this.startTime,
+    required this.endTime,
+    required this.fc,
+    required this.ic,
+  });
+
+  UserConfigInsulinTime.fromJson(Map<String, dynamic> json)
+      : this(
+          startTime: json['startTime'],
+          endTime: json['endTime'],
+          fc: json['fc'],
+          ic: json['ic'],
+        );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'startTime': startTime,
+      'endTime': endTime,
+      'fc': fc,
+      'ic': ic,
     };
   }
 }

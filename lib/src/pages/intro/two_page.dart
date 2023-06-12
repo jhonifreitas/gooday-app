@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/common/theme.dart';
 
 class IntroTwoPage extends StatefulWidget {
-  const IntroTwoPage({super.key});
+  const IntroTwoPage({this.hideConfigBetty = false, super.key});
+
+  final bool hideConfigBetty;
 
   @override
   State<IntroTwoPage> createState() => _IntroTwoPageState();
@@ -12,7 +14,10 @@ class IntroTwoPage extends StatefulWidget {
 
 class _IntroTwoPageState extends State<IntroTwoPage> {
   void _goToNext() {
-    context.push('/introducao/3');
+    context.push(Uri(
+      path: '/introducao/3',
+      queryParameters: {'hideConfigBetty': widget.hideConfigBetty},
+    ).toString());
   }
 
   @override

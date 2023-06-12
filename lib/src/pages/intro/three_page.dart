@@ -11,7 +11,9 @@ import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 
 class IntroThreePage extends StatefulWidget {
-  const IntroThreePage({super.key});
+  const IntroThreePage({this.hideConfigBetty = false, super.key});
+
+  final bool hideConfigBetty;
 
   @override
   State<IntroThreePage> createState() => _IntroThreePageState();
@@ -169,20 +171,33 @@ class _IntroThreePageState extends State<IntroThreePage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Column(
-                children: [
-                  ButtonCustom(
-                    text: 'Configurar Assistente Virtual',
-                    onPressed: _goToBetty,
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton(
-                    onPressed: _goToHome,
-                    child: const Text('Configurar depois'),
-                  )
-                ],
+            Visibility(
+              visible: !widget.hideConfigBetty,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Column(
+                  children: [
+                    ButtonCustom(
+                      text: 'Configurar Assistente Virtual',
+                      onPressed: _goToBetty,
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: _goToHome,
+                      child: const Text('Configurar depois'),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Visibility(
+              visible: widget.hideConfigBetty,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: ButtonCustom(
+                  text: 'Concluir',
+                  onPressed: _goToHome,
+                ),
               ),
             )
           ],

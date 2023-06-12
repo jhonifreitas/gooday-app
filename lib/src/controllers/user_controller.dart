@@ -16,7 +16,7 @@ class UserController {
   final diabeteTypeCtrl = TextEditingController();
   final insulinSlowCtrl = TextEditingController();
   final insulinFastCtrl = TextEditingController();
-  final drugCtrl = TextEditingController();
+  List<String> drugsCtrl = [];
 
   bool? diabeteCtrl;
   bool? insulinCtrl;
@@ -42,11 +42,6 @@ class UserController {
     Item(id: 'Humalog', name: 'Humalog'),
     Item(id: 'Novorapid', name: 'Novorapid'),
     Item(id: 'Fiasp', name: 'Fiasp'),
-  ];
-  final List<Item> scaleInsulinList = const [
-    Item(id: '0.1', name: '0.1'),
-    Item(id: '0.5', name: '0.5'),
-    Item(id: '1.0', name: '1.0'),
   ];
 
   initData(UserModel data) {
@@ -79,9 +74,7 @@ class UserController {
       if (data.anamnese!.insulinFast != null) {
         insulinFastCtrl.text = data.anamnese!.insulinFast!;
       }
-      if (data.anamnese!.drug != null) {
-        drugCtrl.text = data.anamnese!.drug!;
-      }
+      drugsCtrl = data.anamnese!.drugs;
     }
   }
 

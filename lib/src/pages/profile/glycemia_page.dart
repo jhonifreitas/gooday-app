@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
-import 'package:gooday/src/controllers/user_controller.dart';
+import 'package:gooday/src/controllers/user_glycemia_controller.dart';
 
 class GlycemiaConfigPage extends StatefulWidget {
   const GlycemiaConfigPage({super.key});
@@ -18,11 +20,18 @@ class GlycemiaConfigPage extends StatefulWidget {
 class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _userCtrl = UserController();
+  final _userGlycemiaCtrl = UserGlycemiaController();
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
+
+      final userProvider = context.read<UserProvider>();
+      final config = userProvider.data!.config!.toJson();
+      final data = _userGlycemiaCtrl.clearValues();
+
+      config['glycemia'] = data;
+      await userProvider.update({'config': config});
 
       if (!mounted) return;
 
@@ -84,7 +93,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Mínimo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.afterMealMinCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -94,7 +103,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Normal',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.beforeMealNormalCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -104,7 +113,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Máximo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.beforeMealMaxCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -122,7 +131,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Mínimo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.afterMealMinCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -132,7 +141,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Normal',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.afterMealNormalCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -142,7 +151,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Máximo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.afterMealMaxCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -160,7 +169,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Mínimo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.beforeSleepMinCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -170,7 +179,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Normal',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.beforeSleepNormalCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),
@@ -180,7 +189,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Máximo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userCtrl.nameCtrl,
+                            controller: _userGlycemiaCtrl.beforeSleepMaxCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),

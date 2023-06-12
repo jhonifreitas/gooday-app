@@ -85,7 +85,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
   String _getDescription(dynamic item) {
     if (item.value != null) return '${item.value} (mg/dL)';
 
-    return '25,9 Carbs | 0,2g Gorduras | 0,4g Proteínas 110,9kcal Calorias';
+    return '${item.cho}g Carbos | '
+        '${item.calories}kcal Calorias | '
+        '${item.size}(g/ml) Peso';
   }
 
   String _getIcon(dynamic item) {

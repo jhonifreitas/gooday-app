@@ -1,4 +1,4 @@
-import 'package:gooday/src/common/item.dart';
+import 'package:gooday/src/widgets/button.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +79,7 @@ class _UserPageState extends State<UserPage> {
           'insulin': _userCtrl.insulinCtrl,
           'insulinSlow': _userCtrl.insulinSlowCtrl.text,
           'insulinFast': _userCtrl.insulinFastCtrl.text,
-          'drug': _userCtrl.drugCtrl.text,
+          'drugs': _userCtrl.drugsCtrl,
         }
       };
 
@@ -421,7 +421,7 @@ class UserAnamneseForm extends StatefulWidget {
 }
 
 class _UserAnamneseFormState extends State<UserAnamneseForm> {
-  final _drugApi = DrugApiService();
+  final _drugsCtrl = TextEditingController();
 
   void _onDiabete(bool? value) {
     setState(() {
@@ -439,6 +439,27 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
     setState(() {
       widget.userCtrl.insulinCtrl = value;
     });
+  }
+
+  void _onDrug(String id, bool selected) {
+    if (selected) {
+      widget.userCtrl.drugsCtrl.add(id);
+    } else {
+      final index = widget.userCtrl.drugsCtrl.indexWhere((drug) => drug == id);
+      widget.userCtrl.drugsCtrl.removeAt(index);
+    }
+  }
+
+  void _openDrug() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return _DrugList(
+          onSelected: _onDrug,
+          selecteds: widget.userCtrl.drugsCtrl,
+        );
+      },
+    );
   }
 
   @override
@@ -572,26 +593,6 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                               options: widget.userCtrl.insulinFastList,
                             ),
                           ),
-                          FutureBuilder(
-                            future: _drugApi.getAll(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              }
-
-                              final options = snapshot.data!
-                                  .map((value) =>
-                                      Item(id: value.name, name: value.name))
-                                  .toList();
-
-                              return DropdownField(
-                                label: 'Medicamentos',
-                                controller: widget.userCtrl.drugCtrl,
-                                options: options,
-                              );
-                            },
-                          )
                         ],
                       ),
                     ),
@@ -599,6 +600,62 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
                 ),
               ),
             ],
+          ),
+        ),
+        Visibility(
+          visible: widget.userCtrl.diabeteCtrl != null,
+          child: InputField(
+            label: 'Medicamentos',
+            controller: _drugsCtrl,
+            readOnly: true,
+            onTap: _openDrug,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DrugList extends StatelessWidget {
+  _DrugList({required this.selecteds, required this.onSelected});
+
+  final List<String> selecteds;
+  final _drugApi = DrugApiService();
+  final void Function(String, bool) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Align(
+          alignment: Alignment.center,
+          child: Text('Medicamentos'),
+        ),
+        FutureBuilder(
+          future: _drugApi.getAll(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final drug = snapshot.data![index];
+
+                return CheckboxListTile(
+                  value: selecteds.any((val) => val == drug.name),
+                  onChanged: (value) => onSelected(drug.name, value ?? false),
+                );
+              },
+            );
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: ButtonCustom(
+            text: 'Confirmar',
+            onPressed: () => context.pop(),
           ),
         ),
       ],

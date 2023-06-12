@@ -71,11 +71,15 @@ final router = GoRouter(
         ),
         GoRoute(
           path: '2',
-          builder: (context, state) => const IntroTwoPage(),
+          builder: (context, state) => IntroTwoPage(
+              hideConfigBetty:
+                  state.queryParameters['hideConfigBetty'] == 'true'),
         ),
         GoRoute(
           path: '3',
-          builder: (context, state) => const IntroThreePage(),
+          builder: (context, state) => IntroThreePage(
+              hideConfigBetty:
+                  state.queryParameters['hideConfigBetty'] == 'true'),
         ),
       ],
     ),

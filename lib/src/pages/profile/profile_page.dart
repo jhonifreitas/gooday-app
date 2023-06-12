@@ -40,7 +40,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _goToIntrodution() {
-    context.push('/introducao/2');
+    context.push(
+        Uri(path: '/introducao/2', queryParameters: {'hideConfigBetty': true})
+            .toString());
   }
 
   void _goToBetty() {

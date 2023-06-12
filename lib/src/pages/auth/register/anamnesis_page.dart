@@ -55,7 +55,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           'insulin': _userCtrl.insulinCtrl,
           'insulinSlow': _userCtrl.insulinSlowCtrl.text,
           'insulinFast': _userCtrl.insulinFastCtrl.text,
-          'drug': _userCtrl.drugCtrl.text,
+          'drugs': _userCtrl.drugsCtrl,
         }
       };
       final isComplete = data['name'].isNotEmpty &&

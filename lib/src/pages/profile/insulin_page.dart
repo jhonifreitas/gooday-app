@@ -2,16 +2,18 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:gooday/src/common/item.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/button.dart';
+import 'package:gooday/src/models/user_model.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/widgets/form/dropdown_field.dart';
-import 'package:gooday/src/controllers/user_controller.dart';
+import 'package:gooday/src/controllers/user_insulin_controller.dart';
 
 class InsulinConfigPage extends StatefulWidget {
   const InsulinConfigPage({super.key});
@@ -21,44 +23,51 @@ class InsulinConfigPage extends StatefulWidget {
 }
 
 class _InsulinConfigPageState extends State<InsulinConfigPage> {
-  final _userCtrl = UserController();
+  final _formKey = GlobalKey<FormState>();
+  final _userInsulinCtrl = UserInsulinController();
 
-  final List<Item> _paramList = [];
+  final List<UserConfigInsulinTime> _timeList = [];
 
   Future<void> _onSubmit() async {
-    // if () {
-    //   UtilService(context).loading('Salvando...');
-    //   final data = _userCtrl.onSerialize();
+    if (_formKey.currentState!.validate()) {
+      UtilService(context).loading('Salvando...');
 
-    //   if (!mounted) return;
+      final userProvider = context.read<UserProvider>();
+      final config = userProvider.data!.config!.toJson();
+      final data = _userInsulinCtrl.clearValues();
 
-    //   context.pop();
-    //   context.pop();
-    // } else {
-    //   UtilService(context).message('Verifique os campos destacados!');
-    // }
+      config['insulin'] = data;
+      await userProvider.update({'config': config});
+
+      if (!mounted) return;
+
+      context.pop();
+      context.pop();
+    } else {
+      UtilService(context).message('Verifique os campos destacados!');
+    }
   }
 
-  void _onParamSubmit(Item item, int? index) {
+  void _onTimeSubmit(UserConfigInsulinTime item, int? index) {
     setState(() {
       if (index != null) {
-        _paramList[index] = item;
+        _timeList[index] = item;
       } else {
-        _paramList.add(item);
+        _timeList.add(item);
       }
     });
   }
 
-  void _onParam([int? index]) {
+  void _onTime([int? index]) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              _InsulinParam(
-                item: index != null ? _paramList[index] : null,
-                onSubmit: (item) => _onParamSubmit(item, index),
+              _InsulinTimeForm(
+                time: index != null ? _timeList[index] : null,
+                onSubmit: (time) => _onTimeSubmit(time, index),
               ),
             ],
           ),
@@ -67,9 +76,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
     );
   }
 
-  void _onParamRemove(int index) {
+  void _onTimeRemove(int index) {
     setState(() {
-      _paramList.removeAt(index);
+      _timeList.removeAt(index);
     });
   }
 
@@ -104,8 +113,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                       Expanded(
                         child: DropdownField(
                           label: 'Insulina',
-                          controller: _userCtrl.nameCtrl,
-                          options: _userCtrl.insulinFastList,
+                          isRequired: true,
+                          controller: _userInsulinCtrl.insulinCtrl,
+                          options: _userInsulinCtrl.insulinList,
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -113,8 +123,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                         width: MediaQuery.of(context).size.width / 4,
                         child: DropdownField(
                           label: 'Escala',
-                          controller: _userCtrl.nameCtrl,
-                          options: _userCtrl.scaleInsulinList,
+                          isRequired: true,
+                          controller: _userInsulinCtrl.scaleCtrl,
+                          options: _userInsulinCtrl.scaleList,
                         ),
                       ),
                     ],
@@ -143,7 +154,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                               SizedBox(
                                 height: 26,
                                 child: FilledButton.tonal(
-                                  onPressed: _onParam,
+                                  onPressed: _onTime,
                                   child: const Text(
                                     'Adicionar',
                                     style: TextStyle(fontSize: 12),
@@ -155,12 +166,12 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                         ),
                         const SizedBox(height: 10),
                         Visibility(
-                          visible: _paramList.isEmpty,
+                          visible: _timeList.isEmpty,
                           child: const Padding(
                             padding: EdgeInsets.only(
                                 bottom: 10, left: 20, right: 20),
                             child: Text(
-                              'Adicione uma aplicação para ser mostrado aqui!',
+                              'Adicione um horário para ser mostrado aqui!',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
@@ -170,11 +181,11 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                           ),
                         ),
                         Visibility(
-                          visible: _paramList.isNotEmpty,
-                          child: _InsulinParamList(
-                            items: _paramList,
-                            onSelected: _onParam,
-                            onRemoved: _onParamRemove,
+                          visible: _timeList.isNotEmpty,
+                          child: _InsulinTimeList(
+                            times: _timeList,
+                            onSelected: _onTime,
+                            onRemoved: _onTimeRemove,
                           ),
                         ),
                       ],
@@ -212,14 +223,14 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
   }
 }
 
-class _InsulinParamList extends StatelessWidget {
-  const _InsulinParamList({
-    required this.items,
+class _InsulinTimeList extends StatelessWidget {
+  const _InsulinTimeList({
+    required this.times,
     required this.onSelected,
     required this.onRemoved,
   });
 
-  final List<Item> items;
+  final List<UserConfigInsulinTime> times;
   final ValueChanged<int> onSelected;
   final ValueChanged<int> onRemoved;
 
@@ -227,62 +238,91 @@ class _InsulinParamList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.grey.shade200,
-      child: Column(
-        children: [
-          for (var i = 0; i < items.length; i++)
-            ListTile(
-              minLeadingWidth: 20,
-              onTap: () => onSelected(i),
-              title: Text(
-                items[i].name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
-                ),
+      child: ListView.builder(
+        itemCount: times.length,
+        itemBuilder: (context, index) {
+          final time = times[index];
+
+          return ListTile(
+            minLeadingWidth: 20,
+            onTap: () => onSelected(index),
+            title: Text(
+              'Início: ${time.startTime} - Fim: ${time.endTime}',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
               ),
-              subtitle: Text(
-                'Início: 8:00 - Fim: 10:00',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey.shade600,
-                ),
+            ),
+            subtitle: Text(
+              'FC: ${time.fc} - I/C: ${time.ic}',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade600,
               ),
-              leading: SvgPicture.asset(
-                'assets/icons/edit-square.svg',
-                width: 20,
-                colorFilter: const ColorFilter.mode(
-                  primaryColor,
-                  BlendMode.srcIn,
-                ),
+            ),
+            leading: SvgPicture.asset(
+              'assets/icons/edit-square.svg',
+              width: 20,
+              colorFilter: const ColorFilter.mode(
+                primaryColor,
+                BlendMode.srcIn,
               ),
-              trailing: IconButton(
-                icon:
-                    const Icon(Icons.remove_circle_outline, color: Colors.red),
-                onPressed: () => onRemoved(i),
-              ),
-            )
-        ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+              onPressed: () => onRemoved(index),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class _InsulinParam extends StatefulWidget {
-  const _InsulinParam({required this.onSubmit, this.item});
+class _InsulinTimeForm extends StatefulWidget {
+  const _InsulinTimeForm({required this.onSubmit, this.time});
 
-  final Item? item;
-  final ValueChanged<Item> onSubmit;
+  final UserConfigInsulinTime? time;
+  final ValueChanged<UserConfigInsulinTime> onSubmit;
 
   @override
-  State<_InsulinParam> createState() => _InsulinParamState();
+  State<_InsulinTimeForm> createState() => _InsulinTimeFormState();
 }
 
-class _InsulinParamState extends State<_InsulinParam> {
+class _InsulinTimeFormState extends State<_InsulinTimeForm> {
+  final _formKey = GlobalKey<FormState>();
+
   final _fcCtrl = TextEditingController();
   final _icCtrl = TextEditingController();
   final _endTimeCtrl = TextEditingController();
   final _startTimeCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.time != null) {
+      _startTimeCtrl.text = widget.time!.startTime;
+      _endTimeCtrl.text = widget.time!.endTime;
+      _fcCtrl.text = widget.time!.fc.toString();
+      _icCtrl.text = widget.time!.ic.toString();
+    }
+  }
+
+  void _onSubmit() {
+    if (_formKey.currentState!.validate()) {
+      final time = UserConfigInsulinTime(
+        fc: num.parse(_fcCtrl.text),
+        ic: num.parse(_icCtrl.text),
+        endTime: _endTimeCtrl.text,
+        startTime: _startTimeCtrl.text,
+      );
+      widget.onSubmit(time);
+      context.pop();
+    } else {
+      UtilService(context).message('Verifique os campos destacados!');
+    }
+  }
 
   void _onStartTime() {
     final startTimeList = _startTimeCtrl.text.split(':');
@@ -343,12 +383,6 @@ class _InsulinParamState extends State<_InsulinParam> {
     );
   }
 
-  void _onSubmit() {
-    const item = Item(id: '123', name: 'asd');
-    widget.onSubmit(item);
-    context.pop();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -374,6 +408,7 @@ class _InsulinParamState extends State<_InsulinParam> {
                   label: 'Início',
                   controller: _startTimeCtrl,
                   inputType: TextInputType.number,
+                  isRequired: true,
                   readOnly: true,
                   onTap: _onStartTime,
                 ),
@@ -385,6 +420,7 @@ class _InsulinParamState extends State<_InsulinParam> {
                   controller: _endTimeCtrl,
                   isDisabled: _startTimeCtrl.text.isEmpty,
                   inputType: TextInputType.number,
+                  isRequired: true,
                   readOnly: true,
                   onTap: _onEndTime,
                 ),
@@ -397,6 +433,7 @@ class _InsulinParamState extends State<_InsulinParam> {
                 child: InputField(
                   label: 'FC',
                   maxLength: 3,
+                  isRequired: true,
                   controller: _fcCtrl,
                   inputType: TextInputType.number,
                 ),
@@ -406,6 +443,7 @@ class _InsulinParamState extends State<_InsulinParam> {
                 child: InputField(
                   label: 'I/C',
                   maxLength: 3,
+                  isRequired: true,
                   controller: _icCtrl,
                   inputType: TextInputType.number,
                 ),

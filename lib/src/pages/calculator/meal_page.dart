@@ -469,7 +469,7 @@ class _FoodListState extends State<_FoodList> {
   final _foodApi = FoodApiService();
 
   Future<List<FoodModel>> _loadData() async {
-    final foods = await _foodApi.getAll();
+    List<FoodModel> foods = await _foodApi.getAll();
     return foods;
   }
 
@@ -535,8 +535,9 @@ class _FoodEdit extends StatefulWidget {
 }
 
 class _FoodEditState extends State<_FoodEdit> {
-  final _measureCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final _quantityCtrl = TextEditingController();
+  final _measureCtrl = TextEditingController();
 
   List<Item> _measureList = [];
 
@@ -554,7 +555,24 @@ class _FoodEditState extends State<_FoodEdit> {
   }
 
   void _onSubmit() {
-    context.pop(_quantityCtrl.text);
+    if (_formKey.currentState!.validate()) {
+      // final quantity = num.parse(_quantityCtrl.text);
+      widget.item.measure = _measureCtrl.text;
+
+      if (widget.item.measure == 'usual') {
+        // widget.item.size = widget.item.sizeUnit ?? 0 * quantity;
+        // widget.item.cho = widget.item.cho * quantity;
+        // widget.item.calories = widget.item.calories * quantity;
+      } else if (widget.item.measure == 'custom') {
+        // widget.item.size = widget.item.sizeUnit ?? 0 * quantity;
+        // widget.item.cho = widget.item.cho * quantity;
+        // widget.item.calories = widget.item.calories * quantity;
+      }
+
+      context.pop(widget.item);
+    } else {
+      UtilService(context).message('Verifique os campos destacados!');
+    }
   }
 
   void _onMeasure(String measure, bool selected) {
@@ -569,59 +587,64 @@ class _FoodEditState extends State<_FoodEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              widget.item.name,
-              style: const TextStyle(
-                color: primaryColor,
-                fontWeight: FontWeight.bold,
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.always,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                widget.item.name,
+                style: const TextStyle(
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Text('Quantidade', style: TextStyle(fontSize: 16)),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            children: [
-              for (final item in _measureList)
-                SizedBox(
-                  width: (MediaQuery.of(context).size.width) / 2,
-                  child: CheckboxField(
-                    isRequired: true,
-                    selected: _measureCtrl.text == item.id,
-                    onSelected: (value) => _onMeasure(item.id, value),
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    text: item.name,
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Text('Quantidade', style: TextStyle(fontSize: 16)),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              children: [
+                for (final item in _measureList)
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width) / 2,
+                    child: CheckboxField(
+                      isRequired: _measureCtrl.text.isEmpty,
+                      selected: _measureCtrl.text == item.id,
+                      onSelected: (value) => _onMeasure(item.id, value),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      text: item.name,
+                    ),
                   ),
-                ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: InputField(
-              hint: '000',
-              controller: _quantityCtrl,
-              inputType: TextInputType.number,
+              ],
             ),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: ButtonCustom(
-              text: 'Salvar',
-              onPressed: _onSubmit,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: InputField(
+                hint: '000',
+                isRequired: true,
+                controller: _quantityCtrl,
+                inputType: TextInputType.number,
+              ),
             ),
-          )
-        ],
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: ButtonCustom(
+                text: 'Salvar',
+                onPressed: _onSubmit,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
