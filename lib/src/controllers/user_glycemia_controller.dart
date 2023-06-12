@@ -44,31 +44,31 @@ class UserGlycemiaController {
     num beforeSleepMax = 0;
 
     if (beforeMealMinCtrl.text.isNotEmpty) {
-      num.parse(beforeMealMinCtrl.text);
+      beforeMealMin = num.parse(beforeMealMinCtrl.text);
     }
     if (beforeMealNormalCtrl.text.isNotEmpty) {
-      num.parse(beforeMealNormalCtrl.text);
+      beforeMealNormal = num.parse(beforeMealNormalCtrl.text);
     }
     if (beforeMealMaxCtrl.text.isNotEmpty) {
-      num.parse(beforeMealMaxCtrl.text);
+      beforeMealMax = num.parse(beforeMealMaxCtrl.text);
     }
     if (afterMealMinCtrl.text.isNotEmpty) {
-      num.parse(afterMealMinCtrl.text);
+      afterMealMin = num.parse(afterMealMinCtrl.text);
     }
     if (afterMealNormalCtrl.text.isNotEmpty) {
-      num.parse(afterMealNormalCtrl.text);
+      afterMealNormal = num.parse(afterMealNormalCtrl.text);
     }
     if (afterMealMaxCtrl.text.isNotEmpty) {
-      num.parse(afterMealMaxCtrl.text);
+      afterMealMax = num.parse(afterMealMaxCtrl.text);
     }
     if (beforeSleepMinCtrl.text.isNotEmpty) {
-      num.parse(beforeSleepMinCtrl.text);
+      beforeSleepMin = num.parse(beforeSleepMinCtrl.text);
     }
     if (beforeSleepNormalCtrl.text.isNotEmpty) {
-      num.parse(beforeSleepNormalCtrl.text);
+      beforeSleepNormal = num.parse(beforeSleepNormalCtrl.text);
     }
     if (beforeSleepMaxCtrl.text.isNotEmpty) {
-      num.parse(beforeSleepMaxCtrl.text);
+      beforeSleepMax = num.parse(beforeSleepMaxCtrl.text);
     }
 
     return {

@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/item.dart';
@@ -11,8 +12,10 @@ import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/models/meal_model.dart';
 import 'package:gooday/src/models/food_model.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/services/api/food_service.dart';
+import 'package:gooday/src/services/api/meal_service.dart';
 import 'package:gooday/src/widgets/form/checkbox_field.dart';
 
 class MealFormPage extends StatefulWidget {
@@ -23,14 +26,23 @@ class MealFormPage extends StatefulWidget {
 }
 
 class _MealFormPageState extends State<MealFormPage> {
-  String? _searchCtrl;
+  bool _showError = false;
+  final _formKey = GlobalKey<FormState>();
+
+  final FoodApiService _foodApi = FoodApiService();
+  final MealApiService _mealApi = MealApiService();
+
   bool _toggleSearchList = false;
+  final FocusNode _searchFocus = FocusNode();
+  final _searchCtrl = TextEditingController();
 
   String? _typeCtrl;
   DateTime _dateCtrl = DateTime.now();
-  final List<FoodModel> _foodListCtrl = [];
+  final List<MealFood> _foodListCtrl = [];
   final _glycemiaCtrl = TextEditingController();
 
+  List<FoodModel> _foodList = [];
+  late Future<List<FoodModel>> _fetchFoodList;
   final List<Item> _typeList = [
     Item(
         id: MealType.breakfast.name,
@@ -50,6 +62,15 @@ class _MealFormPageState extends State<MealFormPage> {
         image: 'assets/icons/fruits.svg'),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchFoodList = _foodApi.getAll();
+    _searchCtrl.addListener(() {
+      setState(() {});
+    });
+  }
+
   String get _getDateFullLabel {
     final week = DateFormat('EEE').format(_dateCtrl);
     final month = DateFormat('MMM').format(_dateCtrl);
@@ -57,26 +78,87 @@ class _MealFormPageState extends State<MealFormPage> {
     return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
   }
 
-  String get _getTotalCHO {
-    final total = _foodListCtrl.fold(0.0, (prev, food) => prev + food.cho);
+  String get _getTotalCho {
+    final total = _foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.cho * value.quantity));
     final fomated = NumberFormat().format(total);
     return '${fomated}g';
   }
 
   String get _getTotalCalories {
-    final total = _foodListCtrl.fold(0.0, (prev, food) => prev + food.calories);
+    final total = _foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.calories * value.quantity));
     final fomated = NumberFormat().format(total);
     return '${fomated}kcal';
   }
 
   String get _getTotalSize {
-    final total =
-        _foodListCtrl.fold(0.0, (prev, food) => prev + (food.size ?? 0));
+    final total = _foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.size * value.quantity));
     final fomated = NumberFormat().format(total);
     return '$fomated(g/ml)';
   }
 
-  Future<void> _onSubmit() async {}
+  List<FoodModel> get _getFoodList {
+    final foods = _foodList
+        .where((food) =>
+            food.name.toLowerCase().contains(_searchCtrl.text.toLowerCase()))
+        .toList();
+    return foods;
+  }
+
+  String getChoLabel(MealFood item) {
+    return NumberFormat().format(item.cho * item.quantity);
+  }
+
+  String getCaloriesLabel(MealFood item) {
+    return NumberFormat().format(item.calories * item.quantity);
+  }
+
+  String getSizeLabel(MealFood item) {
+    return NumberFormat().format(item.size * item.quantity);
+  }
+
+  bool _validator() {
+    final isValid = _foodListCtrl.isNotEmpty && _typeCtrl != null;
+
+    setState(() {
+      _showError = true;
+    });
+
+    return _formKey.currentState!.validate() && isValid;
+  }
+
+  Future<void> _onSubmit() async {
+    if (_validator()) {
+      UtilService(context).loading('Salvando...');
+
+      final userProvider = context.read<UserProvider>();
+      final user = userProvider.data;
+
+      for (final food in _foodListCtrl) {
+        food.food = null;
+      }
+
+      final data = MealModel(
+        userId: user!.id!,
+        glycemia: num.parse(_glycemiaCtrl.text),
+        type: MealType.values.firstWhere((value) => value.name == _typeCtrl),
+        date: _dateCtrl,
+        foods: _foodListCtrl,
+      );
+
+      await _mealApi.save(data);
+
+      if (!mounted) return;
+
+      context.pop();
+      context.pop(data);
+      UtilService(context).message('Refeição salva!');
+    } else {
+      UtilService(context).message('Verifique os campos destacados!');
+    }
+  }
 
   void _onDateTime() {
     UtilService(context).dateTimePicker(
@@ -93,36 +175,32 @@ class _MealFormPageState extends State<MealFormPage> {
     });
   }
 
-  void _onFood(FoodModel value) {
-    _openFood(value);
-    _onToggleSearchList();
-  }
-
-  void _onSearch(String? value) {
-    setState(() {
-      _searchCtrl = value;
-    });
-  }
-
   void _onToggleSearchList() {
     setState(() {
       _toggleSearchList = !_toggleSearchList;
     });
   }
 
-  void _onFoodSubmit(FoodModel item) {
-    final index = _foodListCtrl.indexWhere((food) => food.id == item.id);
+  void _onFood(FoodModel value) {
+    _searchFocus.unfocus();
+    _searchCtrl.clear();
 
-    setState(() {
-      if (index >= 0) {
-        _foodListCtrl[index] = item;
-      } else {
-        _foodListCtrl.add(item);
-      }
-    });
+    final mealFood = MealFood(
+      foodId: value.id!,
+      quantity: 1,
+      name: value.name,
+      measure: value.measure,
+      size: value.size,
+      cho: value.cho,
+      calories: value.calories,
+      food: value,
+    );
+
+    _openFood(mealFood);
+    _onToggleSearchList();
   }
 
-  void _openFood(FoodModel item) {
+  void _openFood(MealFood item) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -137,203 +215,268 @@ class _MealFormPageState extends State<MealFormPage> {
     );
   }
 
+  void _onFoodSubmit(MealFood item) {
+    final index =
+        _foodListCtrl.indexWhere((food) => food.foodId == item.foodId);
+
+    setState(() {
+      if (index >= 0) {
+        _foodListCtrl[index] = item;
+      } else {
+        _foodListCtrl.add(item);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          Column(
-            children: [
-              Column(
-                children: [
-                  AppBarCustom(
-                    title: Material(
-                      clipBehavior: Clip.hardEdge,
-                      borderRadius: BorderRadius.circular(10),
-                      child: InkWell(
-                        onTap: _onDateTime,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 10),
-                          child: Text(_getDateFullLabel),
-                        ),
-                      ),
-                    ),
-                    suffix: IconButton(
-                      icon: const Icon(Icons.calendar_today_outlined),
-                      onPressed: _onDateTime,
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 20, left: 30, right: 30),
-                    child: TextField(
-                      onChanged: _onSearch,
-                      onTap: _onToggleSearchList,
-                      decoration: InputDecoration(
-                        filled: true,
-                        hintText: 'Pesquisar...',
-                        suffix: const Icon(Icons.search),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        border: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.grey.shade300, width: 1),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Material(
-                  color: Colors.grey.shade100,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(top: 10, bottom: 220),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              InputField(
-                                label: 'Glicemia',
-                                hint: '000 mg/dL',
-                                controller: _glycemiaCtrl,
-                                inputType: TextInputType.number,
-                              ),
-                              const SizedBox(height: 20),
-                              const Text(
-                                'Tipo de refeição',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  for (final item in _typeList)
-                                    Material(
-                                      color: Colors.transparent,
-                                      clipBehavior: Clip.hardEdge,
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: InkWell(
-                                        onTap: () => _onType(item.id),
-                                        child: Column(
-                                          children: [
-                                            Ink(
-                                              height: 55,
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey.shade300,
-                                                gradient: _typeCtrl == item.id
-                                                    ? const LinearGradient(
-                                                        begin:
-                                                            Alignment.topLeft,
-                                                        end: Alignment
-                                                            .bottomRight,
-                                                        stops: [0.1, 0.5],
-                                                        colors: [
-                                                          tertiaryColor,
-                                                          primaryColor,
-                                                        ],
-                                                      )
-                                                    : null,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: SvgPicture.asset(
-                                                item.image!,
-                                                width: 40,
-                                                colorFilter: _typeCtrl ==
-                                                        item.id
-                                                    ? const ColorFilter.mode(
-                                                        Colors.white,
-                                                        BlendMode.srcIn)
-                                                    : null,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Text(
-                                              item.name,
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              const Text('Refeição',
-                                  style: TextStyle(fontSize: 18)),
-                              const SizedBox(height: 10),
-                              Visibility(
-                                visible: _foodListCtrl.isEmpty,
-                                child: const Text(
-                                  'Procure pela sua refeição para adiciona-la aqui.',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                            ],
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    AppBarCustom(
+                      title: Material(
+                        clipBehavior: Clip.hardEdge,
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: _onDateTime,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Text(_getDateFullLabel),
                           ),
                         ),
-                        Visibility(
-                          visible: _foodListCtrl.isNotEmpty,
-                          child: Column(
-                            children: [
-                              for (final item in _foodListCtrl)
-                                ListTile(
-                                  minLeadingWidth: 20,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 30),
-                                  onTap: () => _openFood(item),
-                                  title: Text(
-                                    item.name,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryColor,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${item.cho}g Carbos | '
-                                    '${item.calories}kcal Calorias | '
-                                    '${item.size}(g/ml) Peso',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  leading: SvgPicture.asset(
-                                    'assets/icons/edit-square.svg',
-                                    width: 20,
-                                    colorFilter: const ColorFilter.mode(
-                                      primaryColor,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                  trailing: Text(
-                                    '${item.size ?? 0}(g/ml)',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryColor,
-                                    ),
-                                  ),
-                                )
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
+                      suffix: IconButton(
+                        icon: const Icon(Icons.calendar_today_outlined),
+                        onPressed: _onDateTime,
+                      ),
                     ),
-                  ),
+                    FutureBuilder(
+                      future: _fetchFoodList,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          _foodList = snapshot.data!;
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 20, left: 30, right: 30),
+                          child: TextFormField(
+                            enabled: snapshot.connectionState ==
+                                ConnectionState.done,
+                            controller: _searchCtrl,
+                            focusNode: _searchFocus,
+                            onTap: _onToggleSearchList,
+                            validator: (value) {
+                              if (_foodListCtrl.isEmpty) {
+                                return 'Selecione uma refeição';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText: 'Pesquisar...',
+                              suffixIcon: Icon(
+                                snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? Icons.sync
+                                    : Icons.search,
+                              ),
+                              fillColor: Colors.grey.shade200,
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.normal,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 20),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              )
-            ],
+                Expanded(
+                  child: Material(
+                    color: Colors.grey.shade100,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(top: 10, bottom: 220),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                InputField(
+                                  label: 'Glicemia',
+                                  hint: '000 mg/dL',
+                                  controller: _glycemiaCtrl,
+                                  isRequired: true,
+                                  inputType: TextInputType.number,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'Tipo de refeição',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: _showError && _typeCtrl == null
+                                        ? Theme.of(context).colorScheme.error
+                                        : null,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    for (final item in _typeList)
+                                      Material(
+                                        color: Colors.transparent,
+                                        clipBehavior: Clip.hardEdge,
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: InkWell(
+                                          onTap: () => _onType(item.id),
+                                          child: Column(
+                                            children: [
+                                              Ink(
+                                                height: 55,
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade300,
+                                                  gradient: _typeCtrl == item.id
+                                                      ? const LinearGradient(
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                          stops: [0.1, 0.5],
+                                                          colors: [
+                                                            tertiaryColor,
+                                                            primaryColor,
+                                                          ],
+                                                        )
+                                                      : null,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: SvgPicture.asset(
+                                                  item.image!,
+                                                  width: 40,
+                                                  colorFilter: _typeCtrl ==
+                                                          item.id
+                                                      ? const ColorFilter.mode(
+                                                          Colors.white,
+                                                          BlendMode.srcIn)
+                                                      : null,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Text(
+                                                item.name,
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                                Visibility(
+                                  visible: _showError && _typeCtrl == null,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                      'Tipo de refeição é obrigatório!',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                const Text('Refeição',
+                                    style: TextStyle(fontSize: 18)),
+                                const SizedBox(height: 10),
+                                Visibility(
+                                  visible: _foodListCtrl.isEmpty,
+                                  child: const Text(
+                                    'Procure pela sua refeição para adiciona-la aqui.',
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: _foodListCtrl.isNotEmpty,
+                            child: Column(
+                              children: [
+                                for (final item in _foodListCtrl)
+                                  ListTile(
+                                    minLeadingWidth: 20,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 30),
+                                    onTap: () => _openFood(item),
+                                    title: Text(
+                                      item.name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      '${getChoLabel(item)}g Carbos | '
+                                      '${getCaloriesLabel(item)}kcal Calorias | '
+                                      '${getSizeLabel(item)}(g/ml) Peso',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    leading: SvgPicture.asset(
+                                      'assets/icons/edit-square.svg',
+                                      width: 20,
+                                      colorFilter: const ColorFilter.mode(
+                                        primaryColor,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                    trailing: Text(
+                                      '${getSizeLabel(item)}(g/ml)',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
           Positioned(
             left: 0,
@@ -371,7 +514,7 @@ class _MealFormPageState extends State<MealFormPage> {
                             style: TextStyle(color: Colors.white),
                           ),
                           Text(
-                            _getTotalCHO,
+                            _getTotalCho,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -438,14 +581,17 @@ class _MealFormPageState extends State<MealFormPage> {
           Visibility(
             visible: _toggleSearchList,
             child: Positioned(
-              top: 180,
+              top: 190,
               left: 0,
               right: 0,
               bottom: 0,
               child: Material(
                 color: Colors.grey.shade100,
-                child:
-                    _FoodList(onSelected: _onFood, search: _searchCtrl ?? ''),
+                child: _FoodList(
+                  foods: _getFoodList,
+                  onSelected: _onFood,
+                  selecteds: _foodListCtrl.map((item) => item.foodId).toList(),
+                ),
               ),
             ),
           ),
@@ -455,69 +601,53 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 }
 
-class _FoodList extends StatefulWidget {
-  const _FoodList({required this.onSelected, required this.search});
+class _FoodList extends StatelessWidget {
+  const _FoodList({
+    required this.foods,
+    required this.selecteds,
+    required this.onSelected,
+  });
 
-  final String search;
+  final List<FoodModel> foods;
+  final List<String> selecteds;
   final ValueChanged<FoodModel> onSelected;
 
   @override
-  State<_FoodList> createState() => _FoodListState();
-}
-
-class _FoodListState extends State<_FoodList> {
-  final _foodApi = FoodApiService();
-
-  Future<List<FoodModel>> _loadData() async {
-    List<FoodModel> foods = await _foodApi.getAll();
-    return foods;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _loadData(),
-      builder: (context, snapshot) {
-        List<FoodModel> items = snapshot.data ?? [];
-        items = items
-            .where((val) =>
-                val.name.toLowerCase().contains(widget.search.toLowerCase()))
-            .toList();
+    if (foods.isEmpty) {
+      return Center(
+        child: Text(
+          'Nenhum alimento encontrado!',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      );
+    }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasData && items.isEmpty) {
-          return const Center(child: Text('Nenhum alimento encontrado!'));
-        }
+    return ListView.separated(
+      itemCount: foods.length,
+      padding: const EdgeInsets.only(bottom: 20),
+      separatorBuilder: (context, index) => Divider(
+        height: 1,
+        indent: 30,
+        endIndent: 30,
+        color: Colors.grey.shade300,
+      ),
+      itemBuilder: (context, index) {
+        final food = foods[index];
 
-        return ListView.builder(
-          itemCount: items.length,
-          padding: const EdgeInsets.only(bottom: 20),
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return Column(
-              children: [
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-                  onTap: () => widget.onSelected(item),
-                  title: Text(
-                    item.name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-                Divider(
-                  height: 1,
-                  indent: 30,
-                  endIndent: 30,
-                  color: Colors.grey.shade300,
-                ),
-              ],
-            );
-          },
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+          onTap: () => onSelected(food),
+          title: Text(
+            food.name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+          trailing: selecteds.any((id) => id == food.id)
+              ? const Icon(Icons.check, color: Colors.green)
+              : const Icon(Icons.chevron_right),
         );
       },
     );
@@ -527,8 +657,8 @@ class _FoodListState extends State<_FoodList> {
 class _FoodEdit extends StatefulWidget {
   const _FoodEdit({required this.item, required this.onSubmit});
 
-  final FoodModel item;
-  final ValueChanged<FoodModel> onSubmit;
+  final MealFood item;
+  final ValueChanged<MealFood> onSubmit;
 
   @override
   State<_FoodEdit> createState() => _FoodEditState();
@@ -544,32 +674,43 @@ class _FoodEditState extends State<_FoodEdit> {
   @override
   void initState() {
     super.initState();
-    _measureCtrl.text = 'usual';
-    _quantityCtrl.text = '1';
+    _measureCtrl.text = widget.item.measure;
+
+    if (widget.item.measure == 'custom') {
+      _quantityCtrl.text = widget.item.size.toString();
+    } else {
+      _quantityCtrl.text = widget.item.quantity.toString();
+    }
+
     _measureList = [
       Item(
-          id: 'usual',
-          name: '${widget.item.measure} (${widget.item.size} g/ml)'),
+        id: widget.item.food?.measure ?? '---',
+        name: '${widget.item.food?.measure} (${widget.item.size} g/ml)',
+      ),
       const Item(id: 'custom', name: 'Medida (g/ml)'),
     ];
   }
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      // final quantity = num.parse(_quantityCtrl.text);
+      final quantity = num.parse(_quantityCtrl.text);
       widget.item.measure = _measureCtrl.text;
 
-      if (widget.item.measure == 'usual') {
-        // widget.item.size = widget.item.sizeUnit ?? 0 * quantity;
-        // widget.item.cho = widget.item.cho * quantity;
-        // widget.item.calories = widget.item.calories * quantity;
-      } else if (widget.item.measure == 'custom') {
-        // widget.item.size = widget.item.sizeUnit ?? 0 * quantity;
-        // widget.item.cho = widget.item.cho * quantity;
-        // widget.item.calories = widget.item.calories * quantity;
+      if (widget.item.measure == 'custom') {
+        final choUnit = widget.item.food!.cho / widget.item.food!.size;
+        final caloriesUnit =
+            widget.item.food!.calories / widget.item.food!.size;
+
+        widget.item.quantity = 1;
+        widget.item.size = quantity;
+        widget.item.cho = choUnit * quantity;
+        widget.item.calories = caloriesUnit * quantity;
+      } else {
+        widget.item.quantity = quantity;
       }
 
-      context.pop(widget.item);
+      widget.onSubmit(widget.item);
+      context.pop();
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
@@ -630,6 +771,7 @@ class _FoodEditState extends State<_FoodEdit> {
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: InputField(
                 hint: '000',
+                label: 'Valor',
                 isRequired: true,
                 controller: _quantityCtrl,
                 inputType: TextInputType.number,

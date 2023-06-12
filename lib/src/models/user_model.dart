@@ -255,7 +255,7 @@ class UserConfigInsulin {
     return {
       'insulin': insulin,
       'scale': scale,
-      'times': times,
+      'times': times.map((e) => e.toJson()).toList(),
     };
   }
 }

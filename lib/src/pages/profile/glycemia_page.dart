@@ -18,20 +18,30 @@ class GlycemiaConfigPage extends StatefulWidget {
 }
 
 class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
+  late final UserProvider _userProvider;
   final _formKey = GlobalKey<FormState>();
 
   final _userGlycemiaCtrl = UserGlycemiaController();
+
+  @override
+  void initState() {
+    super.initState();
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = _userProvider.data;
+    if (user != null) {
+      _userGlycemiaCtrl.initData(user);
+    }
+  }
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 
-      final userProvider = context.read<UserProvider>();
-      final config = userProvider.data!.config!.toJson();
+      final config = _userProvider.data!.config!.toJson();
       final data = _userGlycemiaCtrl.clearValues();
 
       config['glycemia'] = data;
-      await userProvider.update({'config': config});
+      await _userProvider.update({'config': config});
 
       if (!mounted) return;
 
@@ -93,7 +103,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                             label: 'Mínimo',
                             hint: 'ml/g',
                             maxLength: 3,
-                            controller: _userGlycemiaCtrl.afterMealMinCtrl,
+                            controller: _userGlycemiaCtrl.beforeMealMinCtrl,
                             inputType: TextInputType.number,
                           ),
                         ),

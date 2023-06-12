@@ -3,16 +3,16 @@ import 'package:gooday/src/models/base_model.dart';
 class FoodModel extends BaseModel {
   String name;
   String measure;
+  num size;
   num cho;
   num calories;
-  num? size;
 
   FoodModel({
     required this.name,
     required this.measure,
+    required this.size,
     required this.cho,
     required this.calories,
-    this.size,
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,

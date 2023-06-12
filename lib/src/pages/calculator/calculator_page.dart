@@ -8,6 +8,7 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
 import 'package:gooday/src/models/meal_model.dart';
+import 'package:gooday/src/models/glycemia_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/services/api/meal_service.dart';
 import 'package:gooday/src/services/api/glycemia_service.dart';
@@ -43,6 +44,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
     list.addAll(glycemias);
     list.addAll(meals);
 
+    list.sort((a, b) => b.date.compareTo(a.date));
+
     return list;
   }
 
@@ -53,15 +56,18 @@ class _CalculatorPageState extends State<CalculatorPage> {
         return const GlycemiaPage();
       },
     );
-    if (result != null) {
-      setState(() {
-        _loadList = _loadData();
-      });
-    }
+    if (result != null) _reloadData();
   }
 
-  void _goToMealForm() {
-    context.push('/refeicao');
+  void _goToMealForm() async {
+    final result = await context.push('/refeicao');
+    if (result != null) _reloadData();
+  }
+
+  void _reloadData() {
+    setState(() {
+      _loadList = _loadData();
+    });
   }
 
   String _getDateLabel(DateTime date) {
@@ -81,36 +87,50 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   String _getTitle(dynamic item) {
-    if (MealType.breakfast == item.type) {
-      return 'Café da manhã';
-    } else if (MealType.lunch == item.type) {
-      return 'Almoço';
-    } else if (MealType.dinner == item.type) {
-      return 'Jantar';
-    } else if (MealType.snack == item.type) {
-      return 'Lanche';
+    if (item is MealModel) {
+      if (MealType.breakfast == item.type) {
+        return 'Café da manhã';
+      } else if (MealType.lunch == item.type) {
+        return 'Almoço';
+      } else if (MealType.dinner == item.type) {
+        return 'Jantar';
+      } else if (MealType.snack == item.type) {
+        return 'Lanche';
+      }
     }
 
     return 'Glicemia';
   }
 
   String _getDescription(dynamic item) {
-    if (item.value != null) return '${item.value} (mg/dL)';
+    if (item is GlycemiaModel) {
+      return '${item.value} (mg/dL)';
+    } else if (item is MealModel) {
+      final choTotal = item.foods.fold(0.0, (prev, value) => prev + value.cho);
+      final caloriesTotal =
+          item.foods.fold(0.0, (prev, value) => prev + value.calories);
+      final sizeTotal =
+          item.foods.fold(0.0, (prev, value) => prev + value.size);
 
-    return '${item.cho}g Carbos | '
-        '${item.calories}kcal Calorias | '
-        '${item.size}(g/ml) Peso';
+      return '${choTotal}g Carbos | '
+          '${caloriesTotal}kcal Calorias | '
+          '$sizeTotal(g/ml) Peso';
+    }
+
+    return '';
   }
 
   String _getIcon(dynamic item) {
-    if (MealType.breakfast == item.type) {
-      return 'assets/icons/sandwich.svg';
-    } else if (MealType.lunch == item.type) {
-      return 'assets/icons/chicken.svg';
-    } else if (MealType.dinner == item.type) {
-      return 'assets/icons/cake.svg';
-    } else if (MealType.snack == item.type) {
-      return 'assets/icons/fruits.svg';
+    if (item is MealModel) {
+      if (MealType.breakfast == item.type) {
+        return 'assets/icons/sandwich.svg';
+      } else if (MealType.lunch == item.type) {
+        return 'assets/icons/chicken.svg';
+      } else if (MealType.dinner == item.type) {
+        return 'assets/icons/cake.svg';
+      } else if (MealType.snack == item.type) {
+        return 'assets/icons/fruits.svg';
+      }
     }
 
     return 'assets/icons/water.svg';

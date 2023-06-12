@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:gooday/src/models/base_model.dart';
+import 'package:gooday/src/models/food_model.dart';
 
 class MealModel extends BaseModel {
   num glycemia;
@@ -26,13 +29,16 @@ class MealModel extends BaseModel {
 
   factory MealModel.fromJson(Map<String, dynamic> json) {
     final base = BaseModel.fromJson(json);
+    final foodCast = (json['foods'] as List<dynamic>).cast();
+    final foods = foodCast.map((e) => MealFood.fromJson(e)).toList();
 
     return MealModel(
       userId: json['userId'],
       glycemia: json['glycemia'],
-      type: json['type'],
-      date: json['date'],
-      foods: json['foods'],
+      type: MealType.values
+          .firstWhere((value) => value.name == (json['type'] as String)),
+      date: (json['date'] as Timestamp).toDate(),
+      foods: foods,
       id: base.id,
       createdAt: base.createdAt,
       updatedAt: base.updatedAt,
@@ -45,40 +51,56 @@ class MealModel extends BaseModel {
     final json = super.toJson();
     json['userId'] = userId;
     json['glycemia'] = glycemia;
-    json['type'] = type;
+    json['type'] = type.name;
     json['date'] = date;
-    json['foods'] = foods;
+    json['foods'] = foods.map((e) => e.toJson()).toList();
     return json;
   }
 }
 
 class MealFood {
   String foodId;
-  MealFoodType type;
-  num value;
+  String name;
+  String measure;
+  num quantity;
+  num size;
+  num cho;
+  num calories;
+  FoodModel? food;
 
   MealFood({
     required this.foodId,
-    required this.type,
-    required this.value,
+    required this.name,
+    required this.measure,
+    required this.quantity,
+    required this.size,
+    required this.cho,
+    required this.calories,
+    this.food,
   });
 
   MealFood.fromJson(Map<String, dynamic> json)
       : this(
           foodId: json['foodId'],
-          type: json['type'],
-          value: json['value'],
+          name: json['name'],
+          measure: json['measure'],
+          quantity: json['quantity'],
+          size: json['size'],
+          cho: json['cho'],
+          calories: json['calories'],
         );
 
   Map<String, dynamic> toJson() {
     return {
       'foodId': foodId,
-      'type': type,
-      'value': value,
+      'name': name,
+      'measure': measure,
+      'quantity': quantity,
+      'size': size,
+      'cho': cho,
+      'calories': calories,
     };
   }
 }
 
 enum MealType { breakfast, lunch, dinner, snack }
-
-enum MealFoodType { gram, spoon, portion }
