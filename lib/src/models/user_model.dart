@@ -104,7 +104,7 @@ class UserAnamnese {
           insulin: json['insulin'],
           insulinSlow: json['insulinSlow'],
           insulinFast: json['insulinFast'],
-          drugs: (json['drugs'] as List<String>).cast(),
+          drugs: (json['drugs'] as List<dynamic>).cast(),
         );
 
   Map<String, dynamic> toJson() {
@@ -234,8 +234,8 @@ class UserConfigGlycemia {
 }
 
 class UserConfigInsulin {
-  String insulin;
-  double scale;
+  String? insulin;
+  double? scale;
   List<UserConfigInsulinTime> times;
 
   UserConfigInsulin({
@@ -248,7 +248,7 @@ class UserConfigInsulin {
       : this(
           insulin: json['insulin'],
           scale: json['scale'],
-          times: (json['times'] as List<dynamic>).cast(),
+          times: (json['times'] as List<dynamic>? ?? []).cast(),
         );
 
   Map<String, dynamic> toJson() {

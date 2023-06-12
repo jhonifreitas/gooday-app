@@ -26,7 +26,7 @@ class UserInsulinController {
 
   initData(UserModel user) {
     if (user.config?.insulin != null) {
-      insulinCtrl.text = user.config!.insulin!.insulin;
+      insulinCtrl.text = user.config!.insulin!.insulin!;
       scaleCtrl.text = user.config!.insulin!.scale.toString();
       timesCtrl = user.config!.insulin!.times;
     }

@@ -423,6 +423,12 @@ class UserAnamneseForm extends StatefulWidget {
 class _UserAnamneseFormState extends State<UserAnamneseForm> {
   final _drugsCtrl = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _drugsCtrl.text = widget.userCtrl.drugsCtrl.join(', ');
+  }
+
   void _onDiabete(bool? value) {
     setState(() {
       widget.userCtrl.diabeteCtrl = value;
@@ -442,12 +448,17 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
   }
 
   void _onDrug(String id, bool selected) {
-    if (selected) {
-      widget.userCtrl.drugsCtrl.add(id);
-    } else {
-      final index = widget.userCtrl.drugsCtrl.indexWhere((drug) => drug == id);
-      widget.userCtrl.drugsCtrl.removeAt(index);
-    }
+    setState(() {
+      if (selected) {
+        widget.userCtrl.drugsCtrl.add(id);
+      } else {
+        final index =
+            widget.userCtrl.drugsCtrl.indexWhere((drug) => drug == id);
+        widget.userCtrl.drugsCtrl.removeAt(index);
+      }
+
+      _drugsCtrl.text = widget.userCtrl.drugsCtrl.join(', ');
+    });
   }
 
   void _openDrug() {
@@ -616,49 +627,75 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
   }
 }
 
-class _DrugList extends StatelessWidget {
-  _DrugList({required this.selecteds, required this.onSelected});
+class _DrugList extends StatefulWidget {
+  const _DrugList({required this.selecteds, required this.onSelected});
 
   final List<String> selecteds;
-  final _drugApi = DrugApiService();
   final void Function(String, bool) onSelected;
 
   @override
+  State<_DrugList> createState() => _DrugListState();
+}
+
+class _DrugListState extends State<_DrugList> {
+  final _drugApi = DrugApiService();
+
+  void _onChanged(String id, bool? value) {
+    if (value != null) {
+      setState(() {
+        widget.onSelected(id, value);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Align(
-          alignment: Alignment.center,
-          child: Text('Medicamentos'),
-        ),
-        FutureBuilder(
-          future: _drugApi.getAll(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Text('Medicamentos',
+                style: Theme.of(context).textTheme.titleMedium),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: FutureBuilder(
+              future: _drugApi.getAll(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final drug = snapshot.data![index];
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final drug = snapshot.data![index];
 
-                return CheckboxListTile(
-                  value: selecteds.any((val) => val == drug.name),
-                  onChanged: (value) => onSelected(drug.name, value ?? false),
+                    return CheckboxListTile(
+                      title: Text(
+                        drug.name,
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.normal),
+                      ),
+                      value: widget.selecteds.any((val) => val == drug.name),
+                      onChanged: (value) => _onChanged(drug.name, value),
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: ButtonCustom(
-            text: 'Confirmar',
-            onPressed: () => context.pop(),
+            ),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: ButtonCustom(
+              text: 'Confirmar',
+              onPressed: () => context.pop(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
