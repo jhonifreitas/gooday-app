@@ -244,12 +244,17 @@ class UserConfigInsulin {
     required this.times,
   });
 
-  UserConfigInsulin.fromJson(Map<String, dynamic> json)
-      : this(
-          insulin: json['insulin'],
-          scale: json['scale'],
-          times: (json['times'] as List<dynamic>? ?? []).cast(),
-        );
+  factory UserConfigInsulin.fromJson(Map<String, dynamic> json) {
+    final timeCast = (json['times'] as List<dynamic>).cast();
+    final times =
+        timeCast.map((e) => UserConfigInsulinTime.fromJson(e)).toList();
+
+    return UserConfigInsulin(
+      insulin: json['insulin'],
+      scale: json['scale'],
+      times: times,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

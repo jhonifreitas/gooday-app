@@ -42,6 +42,7 @@ class UtilService {
     DateTime? initialDateTime,
     DateTime? maximumDate,
     DateTime? minimumDate,
+    int minuteInterval = 1,
     CupertinoDatePickerMode? mode,
   }) {
     showCupertinoModalPopup(
@@ -57,6 +58,7 @@ class UtilService {
             use24hFormat: true,
             maximumDate: maximumDate,
             minimumDate: minimumDate,
+            minuteInterval: minuteInterval,
             initialDateTime: initialDateTime,
             dateOrder: DatePickerDateOrder.dmy,
             mode: mode ?? CupertinoDatePickerMode.date,

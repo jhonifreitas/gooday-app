@@ -26,6 +26,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
   @override
   void initState() {
     super.initState();
+
     _userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = _userProvider.data;
     if (user != null) {

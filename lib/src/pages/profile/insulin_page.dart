@@ -23,21 +23,63 @@ class InsulinConfigPage extends StatefulWidget {
 }
 
 class _InsulinConfigPageState extends State<InsulinConfigPage> {
+  late final UserProvider _userProvider;
   final _formKey = GlobalKey<FormState>();
   final _userInsulinCtrl = UserInsulinController();
 
-  final List<UserConfigInsulinTime> _timeList = [];
+  bool _showError = false;
+  bool _timeError24h = false;
+
+  @override
+  initState() {
+    super.initState();
+
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = _userProvider.data;
+    if (user != null) {
+      _userInsulinCtrl.initData(user);
+    }
+  }
 
   Future<void> _onSubmit() async {
-    if (_formKey.currentState!.validate()) {
+    final now = DateTime.now();
+    final hourTotal = _userInsulinCtrl.timesCtrl.map((time) {
+      final startTimeList = time.startTime.split(':');
+      final endTimeList = time.endTime.split(':');
+
+      final startHour = int.parse(startTimeList[0]);
+      final startMinute = int.parse(startTimeList[0]);
+      final endHour = int.parse(endTimeList[0]);
+      final endMinute = int.parse(endTimeList[0]);
+
+      final start =
+          DateTime(now.year, now.month, now.day, startHour, startMinute);
+      final end = DateTime(
+        now.year,
+        now.month,
+        startHour > endHour ? now.day + 1 : now.day,
+        endHour,
+        endMinute,
+      );
+
+      return end.difference(start).inHours;
+    }).fold(0, (prev, value) => prev + value);
+    final isTimeValid =
+        _userInsulinCtrl.timesCtrl.isNotEmpty && hourTotal >= 24;
+
+    setState(() {
+      _showError = true;
+      _timeError24h = hourTotal < 24;
+    });
+
+    if (_formKey.currentState!.validate() && isTimeValid) {
       UtilService(context).loading('Salvando...');
 
-      final userProvider = context.read<UserProvider>();
-      final config = userProvider.data!.config!.toJson();
+      final config = _userProvider.data!.config!.toJson();
       final data = _userInsulinCtrl.clearValues();
 
       config['insulin'] = data;
-      await userProvider.update({'config': config});
+      await _userProvider.update({'config': config});
 
       if (!mounted) return;
 
@@ -51,14 +93,64 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
   void _onTimeSubmit(UserConfigInsulinTime item, int? index) {
     setState(() {
       if (index != null) {
-        _timeList[index] = item;
+        _userInsulinCtrl.timesCtrl[index] = item;
       } else {
-        _timeList.add(item);
+        _userInsulinCtrl.timesCtrl.add(item);
       }
     });
   }
 
   void _onTime([int? index]) {
+    DateTime? minimum;
+    DateTime? maximum;
+    UserConfigInsulinTime? time;
+    final now = DateTime.now();
+
+    if (index != null) {
+      time = _userInsulinCtrl.timesCtrl[index];
+      UserConfigInsulinTime? prevTime;
+      UserConfigInsulinTime? nextTime;
+
+      if (index > 0) {
+        prevTime = _userInsulinCtrl.timesCtrl[index - 1];
+      }
+      if (index < _userInsulinCtrl.timesCtrl.length - 1) {
+        nextTime = _userInsulinCtrl.timesCtrl[index + 1];
+      }
+
+      if (prevTime != null) {
+        final endTimePrevList = prevTime.endTime.split(':');
+        minimum = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          int.parse(endTimePrevList[0]),
+          int.parse(endTimePrevList[1]),
+        );
+      }
+      if (nextTime != null) {
+        final startTimeNextList = nextTime.startTime.split(':');
+        maximum = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          int.parse(startTimeNextList[0]),
+          int.parse(startTimeNextList[1]),
+        );
+      }
+    } else if (_userInsulinCtrl.timesCtrl.isNotEmpty) {
+      final endTimeLastList =
+          _userInsulinCtrl.timesCtrl.last.endTime.split(':');
+
+      minimum = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        int.parse(endTimeLastList[0]),
+        int.parse(endTimeLastList[1]),
+      );
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -66,7 +158,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
           child: Wrap(
             children: [
               _InsulinTimeForm(
-                time: index != null ? _timeList[index] : null,
+                minimum: minimum,
+                maximum: maximum,
+                time: time,
                 onSubmit: (time) => _onTimeSubmit(time, index),
               ),
             ],
@@ -78,7 +172,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
 
   void _onTimeRemove(int index) {
     setState(() {
-      _timeList.removeAt(index);
+      _userInsulinCtrl.timesCtrl.removeAt(index);
     });
   }
 
@@ -108,27 +202,30 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                       'endocrinologista',
                       style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownField(
-                          label: 'Insulina',
-                          isRequired: true,
-                          controller: _userInsulinCtrl.insulinCtrl,
-                          options: _userInsulinCtrl.insulinList,
+                  Form(
+                    key: _formKey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DropdownField(
+                            label: 'Insulina',
+                            isRequired: true,
+                            controller: _userInsulinCtrl.insulinCtrl,
+                            options: _userInsulinCtrl.insulinList,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 4,
-                        child: DropdownField(
-                          label: 'Escala',
-                          isRequired: true,
-                          controller: _userInsulinCtrl.scaleCtrl,
-                          options: _userInsulinCtrl.scaleList,
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          child: DropdownField(
+                            label: 'Escala',
+                            isRequired: true,
+                            controller: _userInsulinCtrl.scaleCtrl,
+                            options: _userInsulinCtrl.scaleList,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Container(
@@ -166,9 +263,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                         ),
                         const SizedBox(height: 10),
                         Visibility(
-                          visible: _timeList.isEmpty,
-                          child: const Padding(
-                            padding: EdgeInsets.only(
+                          visible: _userInsulinCtrl.timesCtrl.isEmpty,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
                                 bottom: 10, left: 20, right: 20),
                             child: Text(
                               'Adicione um horário para ser mostrado aqui!',
@@ -176,16 +273,36 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontStyle: FontStyle.italic,
+                                color: _showError &&
+                                        _userInsulinCtrl.timesCtrl.isEmpty
+                                    ? Theme.of(context).colorScheme.error
+                                    : null,
                               ),
                             ),
                           ),
                         ),
                         Visibility(
-                          visible: _timeList.isNotEmpty,
+                          visible: _userInsulinCtrl.timesCtrl.isNotEmpty,
                           child: _InsulinTimeList(
-                            times: _timeList,
+                            times: _userInsulinCtrl.timesCtrl,
                             onSelected: _onTime,
                             onRemoved: _onTimeRemove,
+                          ),
+                        ),
+                        Visibility(
+                          visible: _userInsulinCtrl.timesCtrl.isNotEmpty &&
+                              _timeError24h,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text(
+                              'Os horários precisam constar 24 horas no total!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -240,6 +357,9 @@ class _InsulinTimeList extends StatelessWidget {
       color: Colors.grey.shade200,
       child: ListView.builder(
         itemCount: times.length,
+        primary: false,
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(),
         itemBuilder: (context, index) {
           final time = times[index];
 
@@ -247,7 +367,7 @@ class _InsulinTimeList extends StatelessWidget {
             minLeadingWidth: 20,
             onTap: () => onSelected(index),
             title: Text(
-              'Início: ${time.startTime} - Fim: ${time.endTime}',
+              '${time.startTime} às ${time.endTime}',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -281,8 +401,15 @@ class _InsulinTimeList extends StatelessWidget {
 }
 
 class _InsulinTimeForm extends StatefulWidget {
-  const _InsulinTimeForm({required this.onSubmit, this.time});
+  const _InsulinTimeForm({
+    required this.onSubmit,
+    this.time,
+    this.minimum,
+    this.maximum,
+  });
 
+  final DateTime? minimum;
+  final DateTime? maximum;
   final UserConfigInsulinTime? time;
   final ValueChanged<UserConfigInsulinTime> onSubmit;
 
@@ -306,6 +433,8 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
       _endTimeCtrl.text = widget.time!.endTime;
       _fcCtrl.text = widget.time!.fc.toString();
       _icCtrl.text = widget.time!.ic.toString();
+    } else if (widget.minimum != null) {
+      _startTimeCtrl.text = DateFormat('HH:mm').format(widget.minimum!);
     }
   }
 
@@ -327,7 +456,9 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
   void _onStartTime() {
     final startTimeList = _startTimeCtrl.text.split(':');
 
-    DateTime initialDateTime = DateTime.now();
+    DateTime initialDateTime = DateTime.now().add(
+      Duration(minutes: 5 - DateTime.now().minute % 5),
+    );
     if (_startTimeCtrl.text.isNotEmpty) {
       initialDateTime = DateTime(
         initialDateTime.year,
@@ -339,7 +470,9 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
     }
 
     UtilService(context).dateTimePicker(
-      initialDateTime: initialDateTime,
+      minuteInterval: 5,
+      minimumDate: widget.minimum,
+      initialDateTime: widget.minimum ?? initialDateTime,
       mode: CupertinoDatePickerMode.time,
       onChange: (dateTime) {
         setState(() {
@@ -358,7 +491,7 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
       now.month,
       now.day,
       int.parse(startTimeList[0]),
-      int.parse(startTimeList[1]),
+      int.parse(startTimeList[1]) + 5,
     );
     if (_endTimeCtrl.text.isNotEmpty) {
       final endTimeList = _endTimeCtrl.text.split(':');
@@ -372,7 +505,8 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
     }
 
     UtilService(context).dateTimePicker(
-      minimumDate: initialDateTime,
+      minuteInterval: 5,
+      maximumDate: widget.maximum,
       initialDateTime: initialDateTime,
       mode: CupertinoDatePickerMode.time,
       onChange: (dateTime) {
@@ -385,86 +519,89 @@ class _InsulinTimeFormState extends State<_InsulinTimeForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Parametros de Aplicação',
-              style: TextStyle(
-                color: primaryColor,
-                fontWeight: FontWeight.bold,
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Parametros de Aplicação',
+                style: TextStyle(
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: InputField(
-                  label: 'Início',
-                  controller: _startTimeCtrl,
-                  inputType: TextInputType.number,
-                  isRequired: true,
-                  readOnly: true,
-                  onTap: _onStartTime,
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: InputField(
+                    label: 'Início',
+                    controller: _startTimeCtrl,
+                    inputType: TextInputType.number,
+                    isRequired: true,
+                    readOnly: true,
+                    onTap: _onStartTime,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: InputField(
-                  label: 'Fim',
-                  controller: _endTimeCtrl,
-                  isDisabled: _startTimeCtrl.text.isEmpty,
-                  inputType: TextInputType.number,
-                  isRequired: true,
-                  readOnly: true,
-                  onTap: _onEndTime,
+                const SizedBox(width: 20),
+                Expanded(
+                  child: InputField(
+                    label: 'Fim',
+                    controller: _endTimeCtrl,
+                    isDisabled: _startTimeCtrl.text.isEmpty,
+                    inputType: TextInputType.number,
+                    isRequired: true,
+                    readOnly: true,
+                    onTap: _onEndTime,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: InputField(
-                  label: 'FC',
-                  maxLength: 3,
-                  isRequired: true,
-                  controller: _fcCtrl,
-                  inputType: TextInputType.number,
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: InputField(
+                    label: 'FC',
+                    maxLength: 3,
+                    isRequired: true,
+                    controller: _fcCtrl,
+                    inputType: TextInputType.number,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: InputField(
-                  label: 'I/C',
-                  maxLength: 3,
-                  isRequired: true,
-                  controller: _icCtrl,
-                  inputType: TextInputType.number,
+                const SizedBox(width: 20),
+                Expanded(
+                  child: InputField(
+                    label: 'I/C',
+                    maxLength: 3,
+                    isRequired: true,
+                    controller: _icCtrl,
+                    inputType: TextInputType.number,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            "* FC - Fator de Correção",
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          Text(
-            "* I/C - Relação Insulina/Carboidrato",
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 20),
-          ButtonCustom(
-            text: 'Salvar',
-            onPressed: _onSubmit,
-          )
-        ],
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "* FC - Fator de Correção",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              "* I/C - Relação Insulina/Carboidrato",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 20),
+            ButtonCustom(
+              text: 'Confirmar',
+              onPressed: _onSubmit,
+            )
+          ],
+        ),
       ),
     );
   }
