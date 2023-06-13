@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,14 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
   final _formKey = GlobalKey<FormState>();
   final _glycemiaApi = GlycemiaApiService();
   final _glycemiaCtrl = GlycemiaController();
+
+  @override
+  initState() {
+    super.initState();
+    if (widget.data != null) {
+      _glycemiaCtrl.initData(widget.data!);
+    }
+  }
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
@@ -80,6 +89,53 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
     );
   }
 
+  Future<bool> _openDeleteConfirm() async {
+    final dialog = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remover?'),
+          content: const Text('Deseja realmente remover está glicemia?'),
+          actions: [
+            TextButton(
+              child: const Text('Não'),
+              onPressed: () => context.pop(false),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: const MaterialStatePropertyAll(Colors.red),
+                overlayColor:
+                    MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
+              ),
+              child: const Text('Sim'),
+              onPressed: () => context.pop(true),
+            ),
+          ],
+        );
+      },
+    );
+    return dialog ?? false;
+  }
+
+  Future<void> _onDelete() async {
+    if (widget.data != null) {
+      final confirmed = await _openDeleteConfirm();
+
+      if (confirmed && mounted) {
+        UtilService(context).loading('Removendo...');
+
+        await _glycemiaApi.delete(widget.data!.id!);
+
+        if (!mounted) return;
+
+        context.pop();
+        context.pop('deleted');
+
+        UtilService(context).message('Glicemia removida!');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<SizedBox> types = [];
@@ -106,14 +162,24 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Registrar Glicemia',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 40),
+                    const Text(
+                      'Registrar Glicemia',
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _onDelete,
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                    )
+                  ],
                 ),
               ),
               const SizedBox(height: 10),

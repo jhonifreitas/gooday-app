@@ -34,6 +34,13 @@ final router = GoRouter(
     GoRoute(
       path: '/refeicao',
       builder: (context, state) => const MealFormPage(),
+      routes: [
+        GoRoute(
+          path: ':id',
+          builder: (context, state) =>
+              MealFormPage(id: state.pathParameters['id']),
+        ),
+      ],
     ),
     GoRoute(
       path: '/goodies',

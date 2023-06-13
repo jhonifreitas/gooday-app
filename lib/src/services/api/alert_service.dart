@@ -14,6 +14,7 @@ class AlertApiService {
 
     final query = await _ref
         .where('userId', isEqualTo: userId)
+        .where('deletedAt', isNull: true)
         .where('createdAt', isGreaterThanOrEqualTo: start)
         .where('createdAt', isLessThanOrEqualTo: end)
         .orderBy('createdAt', descending: true)

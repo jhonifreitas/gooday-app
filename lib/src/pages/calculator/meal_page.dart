@@ -20,7 +20,9 @@ import 'package:gooday/src/controllers/meal_controller.dart';
 import 'package:gooday/src/widgets/form/checkbox_field.dart';
 
 class MealFormPage extends StatefulWidget {
-  const MealFormPage({super.key});
+  const MealFormPage({this.id, super.key});
+
+  final String? id;
 
   @override
   State<MealFormPage> createState() => _MealFormPageState();
@@ -38,6 +40,8 @@ class _MealFormPageState extends State<MealFormPage> {
   final FocusNode _searchFocus = FocusNode();
   final _searchCtrl = TextEditingController();
 
+  bool? _favorite;
+
   List<FoodModel> _foodList = [];
   late Future<List<FoodModel>> _fetchFoodList;
 
@@ -48,6 +52,8 @@ class _MealFormPageState extends State<MealFormPage> {
     _searchCtrl.addListener(() {
       setState(() {});
     });
+
+    _loadData();
   }
 
   String get _getDateFullLabel {
@@ -77,6 +83,22 @@ class _MealFormPageState extends State<MealFormPage> {
     return NumberFormat().format(item.size * item.quantity);
   }
 
+  Future<void> _loadData() async {
+    if (widget.id != null) {
+      try {
+        final data = await _mealApi.getById(widget.id!);
+        if (data != null) {
+          setState(() {
+            _mealCtrl.initData(data);
+            _favorite = data.favorite;
+          });
+        }
+      } catch (e) {
+        UtilService(context).message('Não encontramos sua refeição!');
+      }
+    }
+  }
+
   bool _validator() {
     final isValid =
         _mealCtrl.foodListCtrl.isNotEmpty && _mealCtrl.typeCtrl.text.isNotEmpty;
@@ -89,6 +111,7 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   Future<void> _onSubmit() async {
+    debugPrint('submit');
     if (_validator()) {
       UtilService(context).loading('Salvando...');
 
@@ -96,7 +119,9 @@ class _MealFormPageState extends State<MealFormPage> {
       final user = userProvider.data;
 
       final data = MealModel(
+        id: widget.id,
         userId: user!.id!,
+        favorite: _favorite ?? false,
         glycemia: _mealCtrl.clearGlycemia(),
         type: _mealCtrl.clearType(),
         date: _mealCtrl.dateCtrl,
@@ -112,6 +137,63 @@ class _MealFormPageState extends State<MealFormPage> {
       UtilService(context).message('Refeição salva!');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
+    }
+  }
+
+  Future<bool> _openDeleteConfirm() async {
+    final dialog = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remover?'),
+          content: const Text('Deseja realmente remover está refeição?'),
+          actions: [
+            TextButton(
+              child: const Text('Não'),
+              onPressed: () => context.pop(false),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: const MaterialStatePropertyAll(Colors.red),
+                overlayColor:
+                    MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
+              ),
+              child: const Text('Sim'),
+              onPressed: () => context.pop(true),
+            ),
+          ],
+        );
+      },
+    );
+    return dialog ?? false;
+  }
+
+  Future<void> _onDelete() async {
+    if (widget.id != null) {
+      final confirmed = await _openDeleteConfirm();
+
+      if (confirmed && mounted) {
+        UtilService(context).loading('Removendo...');
+
+        await _mealApi.delete(widget.id!);
+
+        if (!mounted) return;
+
+        context.pop();
+        context.pop('deleted');
+
+        UtilService(context).message('Refeição removida!');
+      }
+    }
+  }
+
+  Future<void> _onFavorite() async {
+    if (widget.id != null) {
+      setState(() {
+        _favorite = !(_favorite ?? false);
+      });
+
+      await _mealApi.favorite(widget.id!, _favorite!);
     }
   }
 
@@ -386,8 +468,11 @@ class _MealFormPageState extends State<MealFormPage> {
             right: 0,
             bottom: 0,
             child: _MealFooter(
-              foodListCtrl: _mealCtrl.foodListCtrl,
+              favorite: _favorite,
               onSubmit: _onSubmit,
+              onDelete: widget.id != null ? _onDelete : null,
+              onFavorite: widget.id != null ? _onFavorite : null,
+              foodListCtrl: _mealCtrl.foodListCtrl,
             ),
           ),
           Visibility(
@@ -489,9 +574,18 @@ class _MealType extends StatelessWidget {
 }
 
 class _MealFooter extends StatelessWidget {
-  const _MealFooter({required this.foodListCtrl, required this.onSubmit});
+  const _MealFooter({
+    required this.foodListCtrl,
+    required this.onSubmit,
+    this.onDelete,
+    this.onFavorite,
+    this.favorite = false,
+  });
 
+  final bool? favorite;
   final VoidCallback onSubmit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onFavorite;
   final List<MealFood> foodListCtrl;
 
   String get _getTotalCho {
@@ -530,13 +624,35 @@ class _MealFooter extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Nutrientes',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Visibility(
+                visible: onFavorite != null,
+                child: IconButton(
+                  onPressed: onFavorite,
+                  icon: Icon(
+                    favorite == true ? Icons.bookmark : Icons.bookmark_outline,
+                    color: secondaryColor,
+                  ),
+                ),
+              ),
+              const Text(
+                'Nutrientes',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Visibility(
+                visible: onDelete != null,
+                child: IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           Row(
@@ -594,7 +710,7 @@ class _MealFooter extends StatelessWidget {
             height: 50,
             width: double.infinity,
             child: FilledButton(
-              onPressed: () => onSubmit,
+              onPressed: onSubmit,
               style: const ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(secondaryColor),
               ),

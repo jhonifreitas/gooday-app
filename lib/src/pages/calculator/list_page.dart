@@ -98,18 +98,22 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     });
   }
 
-  void _openGlycemiaForm() async {
+  void _openGlycemiaForm([GlycemiaModel? data]) async {
     final result = await showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return const GlycemiaPage();
+        return GlycemiaPage(data: data);
       },
     );
     if (result != null) _reloadData();
   }
 
-  void _goToMealForm() async {
-    final result = await context.push('/refeicao');
+  void _goToMealForm([String? id]) async {
+    String url = '/refeicao';
+
+    if (id != null) url += '/$id';
+
+    final result = await context.push(url);
     if (result != null) _reloadData();
   }
 
@@ -124,6 +128,14 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     setState(() {
       _loadList = _loadData();
     });
+  }
+
+  void _onEdit(dynamic item) {
+    if (item is GlycemiaModel) {
+      _openGlycemiaForm(item);
+    } else if (item is MealModel) {
+      _goToMealForm(item.id);
+    }
   }
 
   String _getDateLabel(DateTime date) {
@@ -362,6 +374,12 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                   final prevDate =
                       prev != null ? _getDateLabel(prev.date) : null;
 
+                  Color iconColor = primaryColor;
+
+                  if (item is MealModel && item.favorite) {
+                    iconColor = secondaryColor;
+                  }
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -392,21 +410,21 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                             SvgPicture.asset(
                               height: 30,
                               _getIcon(item),
-                              colorFilter: const ColorFilter.mode(
-                                primaryColor,
+                              colorFilter: ColorFilter.mode(
+                                iconColor,
                                 BlendMode.srcIn,
                               ),
                             ),
                             Text(
                               _getTimeLabel(item.date),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
-                                color: primaryColor,
+                                color: iconColor,
                               ),
                             )
                           ],
                         ),
-                        onPressed: () {},
+                        onPressed: () => _onEdit(item),
                       ),
                     ],
                   );

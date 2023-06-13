@@ -12,6 +12,7 @@ class GlycemiaApiService {
       String userId, DateTime start, DateTime end) async {
     final query = await _ref
         .where('userId', isEqualTo: userId)
+        .where('deletedAt', isNull: true)
         .where('date', isGreaterThanOrEqualTo: start)
         .where('date', isLessThanOrEqualTo: end)
         .orderBy('date', descending: true)
@@ -41,5 +42,9 @@ class GlycemiaApiService {
     final ref = _ref.doc(data.id);
     await ref.update(data.toJson());
     return ref;
+  }
+
+  Future<void> delete(String id) {
+    return _ref.doc(id).update({'deletedAt': Timestamp.now()});
   }
 }

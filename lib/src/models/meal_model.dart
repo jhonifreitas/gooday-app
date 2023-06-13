@@ -8,6 +8,7 @@ class MealModel extends BaseModel {
   MealType type;
   DateTime date;
   String userId;
+  bool favorite;
   List<MealFood> foods;
 
   MealModel({
@@ -15,6 +16,7 @@ class MealModel extends BaseModel {
     required this.glycemia,
     required this.type,
     required this.date,
+    this.favorite = false,
     this.foods = const [],
     String? id,
     DateTime? createdAt,
@@ -35,6 +37,7 @@ class MealModel extends BaseModel {
     return MealModel(
       userId: json['userId'],
       glycemia: json['glycemia'],
+      favorite: json['favorite'],
       type: MealType.values
           .firstWhere((value) => value.name == (json['type'] as String)),
       date: (json['date'] as Timestamp).toDate(),
@@ -51,6 +54,7 @@ class MealModel extends BaseModel {
     final json = super.toJson();
     json['userId'] = userId;
     json['glycemia'] = glycemia;
+    json['favorite'] = favorite;
     json['type'] = type.name;
     json['date'] = date;
     json['foods'] = foods.map((e) => e.toJson()).toList();
