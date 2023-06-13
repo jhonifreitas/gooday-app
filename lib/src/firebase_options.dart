@@ -29,7 +29,7 @@ class DefaultFirebaseOptions {
         return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macOS - '
+          'DefaultFirebaseOptions have not been configured for macos - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCCiABqWhJzlukSbbCQ5wckMYEfoFq6wBs',
-    appId: '1:285656052775:android:aca5c1857d249880f80a02',
+    appId: '1:285656052775:android:b7a50d5ad0b56b45f80a02',
     messagingSenderId: '285656052775',
     projectId: 'gooday-app',
     storageBucket: 'gooday-app.appspot.com',
@@ -59,14 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCcdeHaCMWaeCCazgV0-Uk-0dF9cVF8WX4',
-    appId: '1:285656052775:ios:9581faef920f81a2f80a02',
+    appId: '1:285656052775:ios:cbc3b94aad42ea4bf80a02',
     messagingSenderId: '285656052775',
     projectId: 'gooday-app',
     storageBucket: 'gooday-app.appspot.com',
-    androidClientId:
-        '285656052775-0bkcad381r1bgcaobau009hdes230lnd.apps.googleusercontent.com',
-    iosClientId:
-        '285656052775-0u4vhcena0mbrmmq15buvknt29piikt2.apps.googleusercontent.com',
+    androidClientId: '285656052775-0bkcad381r1bgcaobau009hdes230lnd.apps.googleusercontent.com',
+    iosClientId: '285656052775-4pc8k2bt089ndl3m29tev3qno47geef7.apps.googleusercontent.com',
     iosBundleId: 'care.gooday.app',
   );
 }
