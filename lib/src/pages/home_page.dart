@@ -1,5 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/pages/welcome_page.dart';
@@ -8,6 +10,7 @@ import 'package:gooday/src/widgets/circle_notch.dart';
 import 'package:gooday/src/pages/alert/list_page.dart';
 import 'package:gooday/src/pages/profile/profile_page.dart';
 import 'package:gooday/src/pages/calculator/list_page.dart';
+import 'package:gooday/src/controllers/auth_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,7 +40,14 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    _fetchUser();
     _positionCtrl.forward();
+  }
+
+  Future<void> _fetchUser() async {
+    final user = await AuthController(context).fetchUser();
+    FlutterNativeSplash.remove();
+    if (user == null && context.mounted) context.go('/auth');
   }
 
   @override

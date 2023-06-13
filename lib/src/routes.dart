@@ -41,12 +41,8 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/auth',
-      builder: (context, state) => const Placeholder(),
+      builder: (context, state) => const AuthLoginPage(),
       routes: [
-        GoRoute(
-          path: 'entrar',
-          builder: (context, state) => const AuthLoginPage(),
-        ),
         GoRoute(
           path: 'esqueci-senha',
           builder: (context, state) => const AuthForgotPasswordPage(),
