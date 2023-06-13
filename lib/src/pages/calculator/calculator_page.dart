@@ -30,6 +30,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   late Future<List<dynamic>> _loadList;
   final _glycemiaApi = GlycemiaApiService();
 
+  Set<int> _filter = <int>{7};
   List<LineChartBarData> _chartData = [];
 
   @override
@@ -42,8 +43,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
     final list = [];
     final user = context.read<UserProvider>().data!;
 
-    final glycemias = await _glycemiaApi.getAll(user.id!);
-    final meals = await _mealApi.getAll(user.id!);
+    final end = DateTime.now();
+    DateTime start = end.subtract(Duration(days: _filter.first));
+
+    final glycemias = await _glycemiaApi.getByRangeDate(user.id!, start, end);
+    final meals = await _mealApi.getByRangeDate(user.id!, start, end);
 
     list.addAll(glycemias);
     list.addAll(meals);
@@ -77,14 +81,15 @@ class _CalculatorPageState extends State<CalculatorPage> {
       }
     }
 
-    final chartData = [
-      LineChartBarData(
+    List<LineChartBarData> chartData = [];
+    if (spots.isNotEmpty) {
+      chartData.add(LineChartBarData(
         barWidth: 3,
         spots: spots,
         color: primaryColor,
         dotData: FlDotData(show: false),
-      )
-    ];
+      ));
+    }
 
     setState(() {
       _chartData = chartData;
@@ -104,6 +109,13 @@ class _CalculatorPageState extends State<CalculatorPage> {
   void _goToMealForm() async {
     final result = await context.push('/refeicao');
     if (result != null) _reloadData();
+  }
+
+  void _onFilter(Set<int> value) {
+    setState(() {
+      _filter = value;
+    });
+    _reloadData();
   }
 
   void _reloadData() {
@@ -295,11 +307,30 @@ class _CalculatorPageState extends State<CalculatorPage> {
           ),
         ),
         Padding(
-          padding:
-              const EdgeInsets.only(left: 20, right: 30, top: 30, bottom: 10),
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
           child: SizedBox(
-            height: 150,
-            child: LineChartCustom(lineBarsData: _chartData),
+            width: double.infinity,
+            child: SegmentedButton(
+              selected: _filter,
+              showSelectedIcon: false,
+              onSelectionChanged: _onFilter,
+              segments: const [
+                ButtonSegment(value: 1, label: Text('24h')),
+                ButtonSegment(value: 7, label: Text('7 dias')),
+                ButtonSegment(value: 14, label: Text('14 dias')),
+                ButtonSegment(value: 30, label: Text('30 dias')),
+              ],
+            ),
+          ),
+        ),
+        Visibility(
+          visible: _chartData.isNotEmpty,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SizedBox(
+              height: 150,
+              child: LineChartCustom(lineBarsData: _chartData),
+            ),
           ),
         ),
         Expanded(

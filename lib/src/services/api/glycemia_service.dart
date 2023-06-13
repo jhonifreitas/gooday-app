@@ -8,9 +8,12 @@ class GlycemiaApiService {
           GlycemiaModel.fromJson({'id': snapshot.id, ...snapshot.data()!}),
       toFirestore: (obj, _) => obj.toJson());
 
-  Future<List<GlycemiaModel>> getAll(String userId) async {
+  Future<List<GlycemiaModel>> getByRangeDate(
+      String userId, DateTime start, DateTime end) async {
     final query = await _ref
         .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: start)
+        .where('date', isLessThanOrEqualTo: end)
         .orderBy('date', descending: true)
         .limit(30)
         .get();
