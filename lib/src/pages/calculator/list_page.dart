@@ -16,16 +16,16 @@ import 'package:gooday/src/services/api/meal_service.dart';
 import 'package:gooday/src/services/api/glycemia_service.dart';
 import 'package:gooday/src/pages/calculator/glycemia_page.dart';
 
-class CalculatorPage extends StatefulWidget {
-  const CalculatorPage({required this.goToPage, super.key});
+class CalculatorListPage extends StatefulWidget {
+  const CalculatorListPage({required this.goToPage, super.key});
 
   final ValueChanged<int> goToPage;
 
   @override
-  State<CalculatorPage> createState() => _CalculatorPageState();
+  State<CalculatorListPage> createState() => _CalculatorListPageState();
 }
 
-class _CalculatorPageState extends State<CalculatorPage> {
+class _CalculatorListPageState extends State<CalculatorListPage> {
   final _mealApi = MealApiService();
   late Future<List<dynamic>> _loadList;
   final _glycemiaApi = GlycemiaApiService();
@@ -90,6 +90,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
         dotData: FlDotData(show: false),
       ));
     }
+
+    if (!mounted) return;
 
     setState(() {
       _chartData = chartData;
@@ -339,7 +341,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(

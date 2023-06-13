@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/providers/user_provider.dart';
+import 'package:gooday/src/models/notification_model.dart';
+import 'package:gooday/src/services/api/notification_service.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({required this.goToPage, super.key});
@@ -20,6 +22,7 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   final double _temperature = 10;
   DateTime _now = DateTime.now();
+  final _notificationApi = NotificationApiService();
 
   Timer? _timer;
 
@@ -41,6 +44,14 @@ class _WelcomePageState extends State<WelcomePage> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  Future<List<NotificationModel>> _loadNotifications() async {
+    final userProvider = context.read<UserProvider>();
+    if (userProvider.data == null) return [];
+
+    final userId = userProvider.data!.id!;
+    return _notificationApi.getByDate(userId, DateTime.now());
   }
 
   @override
@@ -91,7 +102,24 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
             ),
           ),
-          _WelcomeNotificationList(goToPage: widget.goToPage),
+          SizedBox(
+            height: 150,
+            child: FutureBuilder(
+              future: _loadNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
+                }
+
+                return _WelcomeNotificationList(
+                  notifications: snapshot.data!,
+                  goToPage: widget.goToPage,
+                );
+              },
+            ),
+          ),
           Expanded(
             child: Align(
               alignment: Alignment.center,
@@ -105,9 +133,27 @@ class _WelcomePageState extends State<WelcomePage> {
 }
 
 class _WelcomeNotificationList extends StatelessWidget {
-  const _WelcomeNotificationList({required this.goToPage});
+  const _WelcomeNotificationList({
+    required this.notifications,
+    required this.goToPage,
+  });
 
   final ValueChanged<int> goToPage;
+  final List<NotificationModel> notifications;
+
+  String getTime(DateTime date) {
+    return DateFormat('HH:mm').format(date);
+  }
+
+  String getIconType(NotificationType type) {
+    if (type == NotificationType.alert) return 'assets/icons/bell.svg';
+    return 'assets/icons/bell.svg';
+  }
+
+  String getTypeLabel(NotificationType type) {
+    if (type == NotificationType.alert) return 'Lembretes';
+    return '---';
+  }
 
   void _openNotification() {
     goToPage(3);
@@ -115,94 +161,95 @@ class _WelcomeNotificationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: ListView.builder(
-        itemCount: 1,
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 270,
-            child: Card(
-              elevation: 5,
-              clipBehavior: Clip.hardEdge,
-              margin: const EdgeInsets.all(8),
-              color: const Color(0xFF056799),
-              child: InkWell(
-                onTap: _openNotification,
-                splashColor: Colors.white.withAlpha(10),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Medicamento',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+    return ListView.builder(
+      itemCount: notifications.length,
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      itemBuilder: (context, index) {
+        final item = notifications[index];
+
+        return SizedBox(
+          width: 270,
+          child: Card(
+            elevation: 5,
+            clipBehavior: Clip.hardEdge,
+            margin: const EdgeInsets.all(8),
+            color: const Color(0xFF056799),
+            child: InkWell(
+              onTap: _openNotification,
+              splashColor: Colors.white.withAlpha(10),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          item.title,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                        ),
+                        Text(
+                          getTime(item.createdAt!),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                        )
+                      ],
+                    ),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          item.message,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            '03:00',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                width: 20,
+                                getIconType(item.type),
+                                colorFilter: const ColorFilter.mode(
+                                    Colors.white, BlendMode.srcIn),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                getTypeLabel(item.type),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
+                          ),
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Colors.white,
                           )
                         ],
                       ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Acabei de montar seu café da manhã!',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                SvgPicture.asset(
-                                  width: 20,
-                                  'assets/icons/bell.svg',
-                                  colorFilter: const ColorFilter.mode(
-                                      Colors.white, BlendMode.srcIn),
-                                ),
-                                const SizedBox(width: 5),
-                                const Text(
-                                  'Lembretes',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                )
-                              ],
-                            ),
-                            const Icon(
-                              Icons.chevron_right,
-                              color: Colors.white,
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

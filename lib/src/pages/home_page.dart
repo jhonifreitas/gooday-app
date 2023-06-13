@@ -5,9 +5,9 @@ import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/pages/welcome_page.dart';
 import 'package:gooday/src/pages/goal/goal_page.dart';
 import 'package:gooday/src/widgets/circle_notch.dart';
-import 'package:gooday/src/pages/notification_page.dart';
+import 'package:gooday/src/pages/alert/list_page.dart';
 import 'package:gooday/src/pages/profile/profile_page.dart';
-import 'package:gooday/src/pages/calculator/calculator_page.dart';
+import 'package:gooday/src/pages/calculator/list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -100,9 +100,9 @@ class _HomePageState extends State<HomePage>
         onPageChanged: _onPageChanged,
         children: [
           WelcomePage(goToPage: _goToPage),
-          CalculatorPage(goToPage: _goToPage),
+          CalculatorListPage(goToPage: _goToPage),
           GoalPage(goToPage: _goToPage),
-          NotificationPage(goToPage: _goToPage),
+          AlertListPage(goToPage: _goToPage),
           ProfilePage(goToPage: _goToPage)
         ],
       ),

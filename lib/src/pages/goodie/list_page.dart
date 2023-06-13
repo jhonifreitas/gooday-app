@@ -64,37 +64,36 @@ class _GoodieListPageState extends State<GoodieListPage> {
             child: FutureBuilder(
               future: _loadList(),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 10),
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      final goodie = snapshot.data![index];
-                      return _GoodieItem(
-                        goodie: goodie,
-                        isFirst: index == 0,
-                        isLast: snapshot.data!.length - 1 == index,
-                      );
-                    },
-                  );
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset('assets/icons/gift.svg', width: 150),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Nenhum registro encontrado!',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset('assets/icons/gift.svg', width: 150),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Nenhum registro encontrado!',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
+                return ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final goodie = snapshot.data![index];
+                    return _GoodieItem(
+                      goodie: goodie,
+                      isFirst: index == 0,
+                      isLast: snapshot.data!.length - 1 == index,
+                    );
+                  },
                 );
               },
             ),
