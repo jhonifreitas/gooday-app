@@ -2,12 +2,14 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
 import 'package:gooday/src/models/meal_model.dart';
+import 'package:gooday/src/widgets/line_chart.dart';
 import 'package:gooday/src/models/glycemia_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/services/api/meal_service.dart';
@@ -28,6 +30,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
   late Future<List<dynamic>> _loadList;
   final _glycemiaApi = GlycemiaApiService();
 
+  List<LineChartBarData> _chartData = [];
+
   @override
   void initState() {
     _loadList = _loadData();
@@ -46,7 +50,45 @@ class _CalculatorPageState extends State<CalculatorPage> {
 
     list.sort((a, b) => b.date.compareTo(a.date));
 
+    _loadChart(list);
+
     return list;
+  }
+
+  void _loadChart(List<dynamic> list) {
+    List<FlSpot> spots = [];
+
+    for (final item in list) {
+      double value = 0.0;
+      final double month = (item.date as DateTime).month.toDouble();
+
+      if (item is MealModel) {
+        value = item.glycemia.toDouble();
+      } else if (item is GlycemiaModel) {
+        value = item.value.toDouble();
+      }
+
+      final index = spots.indexWhere((spot) => spot.x == month);
+      if (index >= 0) {
+        final exist = spots[index];
+        spots[index] = FlSpot(month, value.toDouble() + exist.y);
+      } else {
+        spots.add(FlSpot(month, value.toDouble()));
+      }
+    }
+
+    final chartData = [
+      LineChartBarData(
+        barWidth: 3,
+        spots: spots,
+        color: primaryColor,
+        dotData: FlDotData(show: false),
+      )
+    ];
+
+    setState(() {
+      _chartData = chartData;
+    });
   }
 
   void _openGlycemiaForm() async {
@@ -253,12 +295,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(20),
-          child: Container(
+          padding:
+              const EdgeInsets.only(left: 20, right: 30, top: 30, bottom: 10),
+          child: SizedBox(
             height: 150,
-            decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10)),
+            child: LineChartCustom(lineBarsData: _chartData),
           ),
         ),
         Expanded(
