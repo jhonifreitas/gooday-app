@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -222,19 +224,22 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: FloatingActionButton(
-                    tooltip: 'Apple',
-                    heroTag: 'login-btn-apple',
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    onPressed: _signInApple,
-                    child: SvgPicture.asset(
-                      'assets/icons/apple.svg',
-                      width: 30,
+                Visibility(
+                  visible: Platform.isIOS,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: FloatingActionButton(
+                      tooltip: 'Apple',
+                      heroTag: 'login-btn-apple',
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      onPressed: _signInApple,
+                      child: SvgPicture.asset(
+                        'assets/icons/apple.svg',
+                        width: 30,
+                      ),
                     ),
                   ),
                 ),

@@ -254,19 +254,22 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: FloatingActionButton(
-                    tooltip: 'Apple',
-                    heroTag: 'register-btn-apple',
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    onPressed: _signInApple,
-                    child: SvgPicture.asset(
-                      'assets/icons/apple.svg',
-                      width: 30,
+                Visibility(
+                  visible: Platform.isIOS,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: FloatingActionButton(
+                      tooltip: 'Apple',
+                      heroTag: 'register-btn-apple',
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      onPressed: _signInApple,
+                      child: SvgPicture.asset(
+                        'assets/icons/apple.svg',
+                        width: 30,
+                      ),
                     ),
                   ),
                 ),
