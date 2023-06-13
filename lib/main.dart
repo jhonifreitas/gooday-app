@@ -17,6 +17,8 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
