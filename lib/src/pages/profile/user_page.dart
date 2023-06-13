@@ -476,6 +476,18 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
 
   @override
   Widget build(BuildContext context) {
+    List<ChipField> diabeteTypes = [];
+    for (final item in widget.userCtrl.diabeteTypeList) {
+      final diabeteType = ChipField(
+        text: item.name,
+        isDisabled: widget.diabeteTypeDisabled,
+        selected: widget.userCtrl.diabeteTypeCtrl.text == item.id,
+        onSelected: (value) =>
+            value ? _onDiabeteType(item.id) : _onDiabeteType(null),
+      );
+      diabeteTypes.add(diabeteType);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -524,17 +536,7 @@ class _UserAnamneseFormState extends State<UserAnamneseForm> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: [
-                  for (final item in widget.userCtrl.diabeteTypeList)
-                    ChipField(
-                      text: item.name,
-                      isDisabled: widget.diabeteTypeDisabled,
-                      selected: widget.userCtrl.diabeteTypeCtrl.text == item.id,
-                      onSelected: (value) => value
-                          ? _onDiabeteType(item.id)
-                          : _onDiabeteType(null),
-                    ),
-                ],
+                children: diabeteTypes,
               ),
               const SizedBox(height: 20),
               Visibility(

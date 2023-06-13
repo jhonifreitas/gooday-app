@@ -131,6 +131,53 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<CheckboxField> foodHelps = [];
+    for (final item in _bettyCtrl.foodHelpList) {
+      final food = CheckboxField(
+        selected: _bettyCtrl.foodHelpsCtrl.any((id) => id == item.id),
+        text: item.name,
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        onSelected: (value) => _onFoodHelps(item.id, value),
+      );
+      foodHelps.add(food);
+    }
+
+    List<GridImageItem> foodLikes = [];
+    for (final item in _bettyCtrl.foodList) {
+      final food = GridImageItem(
+        tooltip: item.name,
+        image: item.image!,
+        selected: _bettyCtrl.foodLikesCtrl.any((id) => id == item.id),
+        onSelected: (value) => _onFoodLikes(item.id, value),
+      );
+      foodLikes.add(food);
+    }
+
+    List<GridImageItem> foodNoLikes = [];
+    for (final item in _bettyCtrl.foodList) {
+      final food = GridImageItem(
+        tooltip: item.name,
+        image: item.image!,
+        selected: _bettyCtrl.foodNoLikesCtrl.any((id) => id == item.id),
+        onSelected: (value) => _onFoodNoLikes(item.id, value),
+      );
+      foodNoLikes.add(food);
+    }
+
+    List<SizedBox> foodLimits = [];
+    for (final item in _bettyCtrl.foodLimitList) {
+      final food = SizedBox(
+        width: (MediaQuery.of(context).size.width) / 2,
+        child: CheckboxField(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          selected: _bettyCtrl.foodLimitsCtrl.any((id) => id == item.id),
+          text: item.name,
+          onSelected: (value) => _onFoodLimits(item.id, value),
+        ),
+      );
+      foodLimits.add(food);
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 80),
@@ -263,16 +310,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                     ),
                     const SizedBox(height: 10),
                     Column(
-                      children: [
-                        for (final item in _bettyCtrl.foodHelpList)
-                          CheckboxField(
-                            selected: _bettyCtrl.foodHelpsCtrl
-                                .any((id) => id == item.id),
-                            text: item.name,
-                            padding: const EdgeInsets.symmetric(horizontal: 25),
-                            onSelected: (value) => _onFoodHelps(item.id, value),
-                          )
-                      ],
+                      children: foodHelps,
                     )
                   ],
                 ),
@@ -303,16 +341,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                       crossAxisSpacing: 10,
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
-                      children: [
-                        for (final item in _bettyCtrl.foodList)
-                          GridImageItem(
-                            tooltip: item.name,
-                            image: item.image!,
-                            selected: _bettyCtrl.foodLikesCtrl
-                                .any((id) => id == item.id),
-                            onSelected: (value) => _onFoodLikes(item.id, value),
-                          ),
-                      ],
+                      children: foodLikes,
                     ),
                   ),
                 ],
@@ -355,17 +384,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                       crossAxisSpacing: 10,
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
-                      children: [
-                        for (final item in _bettyCtrl.foodList)
-                          GridImageItem(
-                            tooltip: item.name,
-                            image: item.image!,
-                            selected: _bettyCtrl.foodNoLikesCtrl
-                                .any((id) => id == item.id),
-                            onSelected: (value) =>
-                                _onFoodNoLikes(item.id, value),
-                          ),
-                      ],
+                      children: foodNoLikes,
                     ),
                   ),
                 ],
@@ -405,21 +424,7 @@ class _BettyFormFoodPageState extends State<BettyFormFoodPage> {
                   Visibility(
                     visible: _limit == true,
                     child: Wrap(
-                      children: [
-                        for (final item in _bettyCtrl.foodLimitList)
-                          SizedBox(
-                            width: (MediaQuery.of(context).size.width) / 2,
-                            child: CheckboxField(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30),
-                              selected: _bettyCtrl.foodLimitsCtrl
-                                  .any((id) => id == item.id),
-                              text: item.name,
-                              onSelected: (value) =>
-                                  _onFoodLimits(item.id, value),
-                            ),
-                          )
-                      ],
+                      children: foodLimits,
                     ),
                   )
                 ],

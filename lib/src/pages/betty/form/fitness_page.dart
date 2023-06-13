@@ -90,6 +90,28 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<CheckboxField> exerciseHelps = [];
+    for (final item in _bettyCtrl.exerciseHelpList) {
+      final exercise = CheckboxField(
+        selected: _bettyCtrl.exerciseHelpsCtrl.any((id) => id == item.id),
+        text: item.name,
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        onSelected: (value) => _onExerciseHelps(item.id, value),
+      );
+      exerciseHelps.add(exercise);
+    }
+
+    List<GridImageItem> exercises = [];
+    for (final item in _bettyCtrl.exerciseList) {
+      final exercise = GridImageItem(
+        tooltip: item.name,
+        image: item.image!,
+        selected: _bettyCtrl.exercisesCtrl.any((id) => id == item.id),
+        onSelected: (value) => _onExercises(item.id, value),
+      );
+      exercises.add(exercise);
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 80),
@@ -188,17 +210,7 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                     ),
                     const SizedBox(height: 10),
                     Column(
-                      children: [
-                        for (final item in _bettyCtrl.exerciseHelpList)
-                          CheckboxField(
-                            selected: _bettyCtrl.exerciseHelpsCtrl
-                                .any((id) => id == item.id),
-                            text: item.name,
-                            padding: const EdgeInsets.symmetric(horizontal: 25),
-                            onSelected: (value) =>
-                                _onExerciseHelps(item.id, value),
-                          )
-                      ],
+                      children: exerciseHelps,
                     )
                   ],
                 ),
@@ -224,16 +236,7 @@ class _BettyFormFitnessPageState extends State<BettyFormFitnessPage> {
                       crossAxisSpacing: 10,
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 40),
-                      children: [
-                        for (final item in _bettyCtrl.exerciseList)
-                          GridImageItem(
-                            tooltip: item.name,
-                            image: item.image!,
-                            selected: _bettyCtrl.exercisesCtrl
-                                .any((id) => id == item.id),
-                            onSelected: (value) => _onExercises(item.id, value),
-                          ),
-                      ],
+                      children: exercises,
                     ),
                   ),
                 ],

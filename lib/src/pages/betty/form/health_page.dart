@@ -73,6 +73,31 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<SizedBox> timeExercises = [];
+    for (final item in _bettyCtrl.timeExerciseList) {
+      final timeExercise = SizedBox(
+        width: (MediaQuery.of(context).size.width) / 2,
+        child: CheckboxField(
+          selected: _bettyCtrl.timeExerciseCtrl.any((id) => id == item.id),
+          text: item.name,
+          padding: const EdgeInsets.symmetric(horizontal: 25),
+          onSelected: (value) => _onTimeList(item.id, value),
+        ),
+      );
+      timeExercises.add(timeExercise);
+    }
+
+    List<CheckboxField> frequencyExercises = [];
+    for (final item in _bettyCtrl.frequencyExerciseList) {
+      final frequencyExercise = CheckboxField(
+        selected: _bettyCtrl.frequencyExerciseCtrl.toString() == item.id,
+        text: item.name,
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        onSelected: (value) => _onFrequencyList(item.id, value),
+      );
+      frequencyExercises.add(frequencyExercise);
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 80),
@@ -107,19 +132,7 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                   ),
                   const SizedBox(height: 10),
                   Wrap(
-                    children: [
-                      for (final item in _bettyCtrl.timeExerciseList)
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width) / 2,
-                          child: CheckboxField(
-                            selected: _bettyCtrl.timeExerciseCtrl
-                                .any((id) => id == item.id),
-                            text: item.name,
-                            padding: const EdgeInsets.symmetric(horizontal: 25),
-                            onSelected: (value) => _onTimeList(item.id, value),
-                          ),
-                        )
-                    ],
+                    children: timeExercises,
                   )
                 ],
               ),
@@ -135,18 +148,7 @@ class _BettyFormHealthPageState extends State<BettyFormHealthPage> {
                   ),
                   const SizedBox(height: 10),
                   Column(
-                    children: [
-                      for (final item in _bettyCtrl.frequencyExerciseList)
-                        CheckboxField(
-                          selected:
-                              _bettyCtrl.frequencyExerciseCtrl.toString() ==
-                                  item.id,
-                          text: item.name,
-                          padding: const EdgeInsets.symmetric(horizontal: 25),
-                          onSelected: (value) =>
-                              _onFrequencyList(item.id, value),
-                        )
-                    ],
+                    children: frequencyExercises,
                   )
                 ],
               ),

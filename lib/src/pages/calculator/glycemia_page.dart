@@ -82,6 +82,21 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<SizedBox> types = [];
+    for (final item in _glycemiaCtrl.typeList) {
+      final type = SizedBox(
+        width: (MediaQuery.of(context).size.width) / 2,
+        child: CheckboxField(
+          selected: _glycemiaCtrl.typeCtrl.text == item.id,
+          text: item.name,
+          isRequired: _glycemiaCtrl.typeCtrl.text.isEmpty,
+          padding: const EdgeInsets.symmetric(horizontal: 25),
+          onSelected: (value) => _onType(item.id, value),
+        ),
+      );
+      types.add(type);
+    }
+
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -129,19 +144,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
                 child: Text('Selecione o tipo de glicemia'),
               ),
               Wrap(
-                children: [
-                  for (final item in _glycemiaCtrl.typeList)
-                    SizedBox(
-                      width: (MediaQuery.of(context).size.width) / 2,
-                      child: CheckboxField(
-                        selected: _glycemiaCtrl.typeCtrl.text == item.id,
-                        text: item.name,
-                        isRequired: _glycemiaCtrl.typeCtrl.text.isEmpty,
-                        padding: const EdgeInsets.symmetric(horizontal: 25),
-                        onSelected: (value) => _onType(item.id, value),
-                      ),
-                    )
-                ],
+                children: types,
               ),
               const SizedBox(height: 20),
               Padding(

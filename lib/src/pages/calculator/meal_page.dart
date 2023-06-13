@@ -16,6 +16,7 @@ import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
 import 'package:gooday/src/services/api/food_service.dart';
 import 'package:gooday/src/services/api/meal_service.dart';
+import 'package:gooday/src/controllers/meal_controller.dart';
 import 'package:gooday/src/widgets/form/checkbox_field.dart';
 
 class MealFormPage extends StatefulWidget {
@@ -27,6 +28,7 @@ class MealFormPage extends StatefulWidget {
 
 class _MealFormPageState extends State<MealFormPage> {
   bool _showError = false;
+  final _mealCtrl = MealController();
   final _formKey = GlobalKey<FormState>();
 
   final FoodApiService _foodApi = FoodApiService();
@@ -36,31 +38,8 @@ class _MealFormPageState extends State<MealFormPage> {
   final FocusNode _searchFocus = FocusNode();
   final _searchCtrl = TextEditingController();
 
-  String? _typeCtrl;
-  DateTime _dateCtrl = DateTime.now();
-  final List<MealFood> _foodListCtrl = [];
-  final _glycemiaCtrl = TextEditingController();
-
   List<FoodModel> _foodList = [];
   late Future<List<FoodModel>> _fetchFoodList;
-  final List<Item> _typeList = [
-    Item(
-        id: MealType.breakfast.name,
-        name: 'Café',
-        image: 'assets/icons/sandwich.svg'),
-    Item(
-        id: MealType.lunch.name,
-        name: 'Almoço',
-        image: 'assets/icons/chicken.svg'),
-    Item(
-        id: MealType.dinner.name,
-        name: 'Jantar',
-        image: 'assets/icons/cake.svg'),
-    Item(
-        id: MealType.snack.name,
-        name: 'Lanche',
-        image: 'assets/icons/fruits.svg'),
-  ];
 
   @override
   void initState() {
@@ -72,31 +51,10 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   String get _getDateFullLabel {
-    final week = DateFormat('EEE').format(_dateCtrl);
-    final month = DateFormat('MMM').format(_dateCtrl);
-    final time = DateFormat('HH:mm').format(_dateCtrl);
-    return "$week, ${_dateCtrl.day} de $month às $time".toUpperCase();
-  }
-
-  String get _getTotalCho {
-    final total = _foodListCtrl.fold(
-        0.0, (prev, value) => prev + (value.cho * value.quantity));
-    final fomated = NumberFormat().format(total);
-    return '${fomated}g';
-  }
-
-  String get _getTotalCalories {
-    final total = _foodListCtrl.fold(
-        0.0, (prev, value) => prev + (value.calories * value.quantity));
-    final fomated = NumberFormat().format(total);
-    return '${fomated}kcal';
-  }
-
-  String get _getTotalSize {
-    final total = _foodListCtrl.fold(
-        0.0, (prev, value) => prev + (value.size * value.quantity));
-    final fomated = NumberFormat().format(total);
-    return '$fomated(g/ml)';
+    final week = DateFormat('EEE').format(_mealCtrl.dateCtrl);
+    final month = DateFormat('MMM').format(_mealCtrl.dateCtrl);
+    final time = DateFormat('HH:mm').format(_mealCtrl.dateCtrl);
+    return "$week, ${_mealCtrl.dateCtrl.day} de $month às $time".toUpperCase();
   }
 
   List<FoodModel> get _getFoodList {
@@ -120,7 +78,8 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   bool _validator() {
-    final isValid = _foodListCtrl.isNotEmpty && _typeCtrl != null;
+    final isValid =
+        _mealCtrl.foodListCtrl.isNotEmpty && _mealCtrl.typeCtrl.text.isNotEmpty;
 
     setState(() {
       _showError = true;
@@ -136,16 +95,12 @@ class _MealFormPageState extends State<MealFormPage> {
       final userProvider = context.read<UserProvider>();
       final user = userProvider.data;
 
-      for (final food in _foodListCtrl) {
-        food.food = null;
-      }
-
       final data = MealModel(
         userId: user!.id!,
-        glycemia: num.parse(_glycemiaCtrl.text),
-        type: MealType.values.firstWhere((value) => value.name == _typeCtrl),
-        date: _dateCtrl,
-        foods: _foodListCtrl,
+        glycemia: _mealCtrl.clearGlycemia(),
+        type: _mealCtrl.clearType(),
+        date: _mealCtrl.dateCtrl,
+        foods: _mealCtrl.foodListCtrl,
       );
 
       await _mealApi.save(data);
@@ -162,16 +117,16 @@ class _MealFormPageState extends State<MealFormPage> {
 
   void _onDateTime() {
     UtilService(context).dateTimePicker(
-      initialDateTime: _dateCtrl,
+      initialDateTime: _mealCtrl.dateCtrl,
       maximumDate: DateTime.now(),
       mode: CupertinoDatePickerMode.dateAndTime,
-      onChange: (dateTime) => setState(() => _dateCtrl = dateTime),
+      onChange: (dateTime) => setState(() => _mealCtrl.dateCtrl = dateTime),
     );
   }
 
   void _onType(String id) {
     setState(() {
-      _typeCtrl = id;
+      _mealCtrl.typeCtrl.text = id;
     });
   }
 
@@ -217,19 +172,64 @@ class _MealFormPageState extends State<MealFormPage> {
 
   void _onFoodSubmit(MealFood item) {
     final index =
-        _foodListCtrl.indexWhere((food) => food.foodId == item.foodId);
+        _mealCtrl.foodListCtrl.indexWhere((food) => food.foodId == item.foodId);
 
     setState(() {
       if (index >= 0) {
-        _foodListCtrl[index] = item;
+        _mealCtrl.foodListCtrl[index] = item;
       } else {
-        _foodListCtrl.add(item);
+        _mealCtrl.foodListCtrl.add(item);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<ListTile> foods = [];
+
+    for (final item in _mealCtrl.foodListCtrl) {
+      final food = ListTile(
+        minLeadingWidth: 20,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+        onTap: () => _openFood(item),
+        title: Text(
+          item.name,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+        subtitle: Text(
+          '${getChoLabel(item)}g Carbos | '
+          '${getCaloriesLabel(item)}kcal Calorias | '
+          '${getSizeLabel(item)}(g/ml) Peso',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade600,
+          ),
+        ),
+        leading: SvgPicture.asset(
+          'assets/icons/edit-square.svg',
+          width: 20,
+          colorFilter: const ColorFilter.mode(
+            primaryColor,
+            BlendMode.srcIn,
+          ),
+        ),
+        trailing: Text(
+          '${getSizeLabel(item)}(g/ml)',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+      );
+
+      foods.add(food);
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -237,74 +237,69 @@ class _MealFormPageState extends State<MealFormPage> {
             key: _formKey,
             child: Column(
               children: [
-                Column(
-                  children: [
-                    AppBarCustom(
-                      title: Material(
-                        clipBehavior: Clip.hardEdge,
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          onTap: _onDateTime,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Text(_getDateFullLabel),
+                AppBarCustom(
+                  title: Material(
+                    clipBehavior: Clip.hardEdge,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      onTap: _onDateTime,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 10),
+                        child: Text(_getDateFullLabel),
+                      ),
+                    ),
+                  ),
+                  suffix: IconButton(
+                    icon: const Icon(Icons.calendar_today_outlined),
+                    onPressed: _onDateTime,
+                  ),
+                ),
+                FutureBuilder(
+                  future: _fetchFoodList,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      _foodList = snapshot.data!;
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 20, left: 30, right: 30),
+                      child: TextFormField(
+                        enabled:
+                            snapshot.connectionState == ConnectionState.done,
+                        controller: _searchCtrl,
+                        focusNode: _searchFocus,
+                        onTap: _onToggleSearchList,
+                        validator: (value) {
+                          if (_mealCtrl.foodListCtrl.isEmpty) {
+                            return 'Selecione uma refeição';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          labelText: 'Pesquisar...',
+                          suffixIcon: Icon(
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? Icons.sync
+                                : Icons.search,
+                          ),
+                          fillColor: Colors.grey.shade200,
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       ),
-                      suffix: IconButton(
-                        icon: const Icon(Icons.calendar_today_outlined),
-                        onPressed: _onDateTime,
-                      ),
-                    ),
-                    FutureBuilder(
-                      future: _fetchFoodList,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          _foodList = snapshot.data!;
-                        }
-
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 20, left: 30, right: 30),
-                          child: TextFormField(
-                            enabled: snapshot.connectionState ==
-                                ConnectionState.done,
-                            controller: _searchCtrl,
-                            focusNode: _searchFocus,
-                            onTap: _onToggleSearchList,
-                            validator: (value) {
-                              if (_foodListCtrl.isEmpty) {
-                                return 'Selecione uma refeição';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              filled: true,
-                              labelText: 'Pesquisar...',
-                              suffixIcon: Icon(
-                                snapshot.connectionState ==
-                                        ConnectionState.waiting
-                                    ? Icons.sync
-                                    : Icons.search,
-                              ),
-                              fillColor: Colors.grey.shade200,
-                              hintStyle: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.normal,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 20),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                    );
+                  },
                 ),
                 Expanded(
                   child: Material(
@@ -321,7 +316,7 @@ class _MealFormPageState extends State<MealFormPage> {
                                 InputField(
                                   label: 'Glicemia',
                                   hint: '000 mg/dL',
-                                  controller: _glycemiaCtrl,
+                                  controller: _mealCtrl.glycemiaCtrl,
                                   isRequired: true,
                                   inputType: TextInputType.number,
                                 ),
@@ -330,72 +325,21 @@ class _MealFormPageState extends State<MealFormPage> {
                                   'Tipo de refeição',
                                   style: TextStyle(
                                     fontSize: 18,
-                                    color: _showError && _typeCtrl == null
+                                    color: _showError &&
+                                            _mealCtrl.typeCtrl.text.isEmpty
                                         ? Theme.of(context).colorScheme.error
                                         : null,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    for (final item in _typeList)
-                                      Material(
-                                        color: Colors.transparent,
-                                        clipBehavior: Clip.hardEdge,
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: InkWell(
-                                          onTap: () => _onType(item.id),
-                                          child: Column(
-                                            children: [
-                                              Ink(
-                                                height: 55,
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey.shade300,
-                                                  gradient: _typeCtrl == item.id
-                                                      ? const LinearGradient(
-                                                          begin:
-                                                              Alignment.topLeft,
-                                                          end: Alignment
-                                                              .bottomRight,
-                                                          stops: [0.1, 0.5],
-                                                          colors: [
-                                                            tertiaryColor,
-                                                            primaryColor,
-                                                          ],
-                                                        )
-                                                      : null,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: SvgPicture.asset(
-                                                  item.image!,
-                                                  width: 40,
-                                                  colorFilter: _typeCtrl ==
-                                                          item.id
-                                                      ? const ColorFilter.mode(
-                                                          Colors.white,
-                                                          BlendMode.srcIn)
-                                                      : null,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Text(
-                                                item.name,
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                  ],
+                                _MealType(
+                                  typeCtrl: _mealCtrl.typeCtrl,
+                                  typeList: _mealCtrl.typeList,
+                                  onType: _onType,
                                 ),
                                 Visibility(
-                                  visible: _showError && _typeCtrl == null,
+                                  visible: _showError &&
+                                      _mealCtrl.typeCtrl.text.isEmpty,
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: Text(
@@ -413,7 +357,7 @@ class _MealFormPageState extends State<MealFormPage> {
                                     style: TextStyle(fontSize: 18)),
                                 const SizedBox(height: 10),
                                 Visibility(
-                                  visible: _foodListCtrl.isEmpty,
+                                  visible: _mealCtrl.foodListCtrl.isEmpty,
                                   child: const Text(
                                     'Procure pela sua refeição para adiciona-la aqui.',
                                     style:
@@ -424,50 +368,9 @@ class _MealFormPageState extends State<MealFormPage> {
                             ),
                           ),
                           Visibility(
-                            visible: _foodListCtrl.isNotEmpty,
+                            visible: _mealCtrl.foodListCtrl.isNotEmpty,
                             child: Column(
-                              children: [
-                                for (final item in _foodListCtrl)
-                                  ListTile(
-                                    minLeadingWidth: 20,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 30),
-                                    onTap: () => _openFood(item),
-                                    title: Text(
-                                      item.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: primaryColor,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      '${getChoLabel(item)}g Carbos | '
-                                      '${getCaloriesLabel(item)}kcal Calorias | '
-                                      '${getSizeLabel(item)}(g/ml) Peso',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    leading: SvgPicture.asset(
-                                      'assets/icons/edit-square.svg',
-                                      width: 20,
-                                      colorFilter: const ColorFilter.mode(
-                                        primaryColor,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                    trailing: Text(
-                                      '${getSizeLabel(item)}(g/ml)',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: primaryColor,
-                                      ),
-                                    ),
-                                  )
-                              ],
+                              children: foods,
                             ),
                           ),
                         ],
@@ -482,100 +385,9 @@ class _MealFormPageState extends State<MealFormPage> {
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  stops: [0.05, 0.5],
-                  colors: [tertiaryColor, primaryColor],
-                ),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Nutrientes',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          const Text(
-                            'Carbos',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            _getTotalCho,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const Text(
-                            'Calorias',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            _getTotalCalories,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const Text(
-                            'Peso',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            _getTotalSize,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _onSubmit,
-                      style: const ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(secondaryColor),
-                      ),
-                      child: const Text(
-                        'Salvar Refeição',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child: _MealFooter(
+              foodListCtrl: _mealCtrl.foodListCtrl,
+              onSubmit: _onSubmit,
             ),
           ),
           Visibility(
@@ -590,7 +402,208 @@ class _MealFormPageState extends State<MealFormPage> {
                 child: _FoodList(
                   foods: _getFoodList,
                   onSelected: _onFood,
-                  selecteds: _foodListCtrl.map((item) => item.foodId).toList(),
+                  selecteds: _mealCtrl.foodListCtrl
+                      .map((item) => item.foodId)
+                      .toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MealType extends StatelessWidget {
+  const _MealType({
+    required this.typeList,
+    required this.onType,
+    required this.typeCtrl,
+  });
+
+  final List<Item> typeList;
+  final ValueChanged<String> onType;
+  final TextEditingController typeCtrl;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Material> types = [];
+
+    for (final item in typeList) {
+      ColorFilter? color;
+      LinearGradient? bg;
+      if (typeCtrl.text == item.id) {
+        bg = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.1, 0.5],
+          colors: [
+            tertiaryColor,
+            primaryColor,
+          ],
+        );
+
+        color = const ColorFilter.mode(Colors.white, BlendMode.srcIn);
+      }
+
+      final type = Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          onTap: () => onType(item.id),
+          child: Column(
+            children: [
+              Ink(
+                height: 55,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  gradient: bg,
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: SvgPicture.asset(
+                  item.image!,
+                  width: 40,
+                  colorFilter: color,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                item.name,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      );
+      types.add(type);
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: types,
+    );
+  }
+}
+
+class _MealFooter extends StatelessWidget {
+  const _MealFooter({required this.foodListCtrl, required this.onSubmit});
+
+  final VoidCallback onSubmit;
+  final List<MealFood> foodListCtrl;
+
+  String get _getTotalCho {
+    final total = foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.cho * value.quantity));
+    final fomated = NumberFormat().format(total);
+    return '${fomated}g';
+  }
+
+  String get _getTotalCalories {
+    final total = foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.calories * value.quantity));
+    final fomated = NumberFormat().format(total);
+    return '${fomated}kcal';
+  }
+
+  String get _getTotalSize {
+    final total = foodListCtrl.fold(
+        0.0, (prev, value) => prev + (value.size * value.quantity));
+    final fomated = NumberFormat().format(total);
+    return '$fomated(g/ml)';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.05, 0.5],
+          colors: [tertiaryColor, primaryColor],
+        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Nutrientes',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  const Text(
+                    'Carbos',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    _getTotalCho,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  const Text(
+                    'Calorias',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    _getTotalCalories,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  const Text(
+                    'Peso',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    _getTotalSize,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 50,
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () => onSubmit,
+              style: const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(secondaryColor),
+              ),
+              child: const Text(
+                'Salvar Refeição',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -728,6 +741,21 @@ class _FoodEditState extends State<_FoodEdit> {
 
   @override
   Widget build(BuildContext context) {
+    List<SizedBox> measures = [];
+    for (final item in _measureList) {
+      final measure = SizedBox(
+        width: (MediaQuery.of(context).size.width) / 2,
+        child: CheckboxField(
+          isRequired: _measureCtrl.text.isEmpty,
+          selected: _measureCtrl.text == item.id,
+          onSelected: (value) => _onMeasure(item.id, value),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          text: item.name,
+        ),
+      );
+      measures.add(measure);
+    }
+
     return Form(
       key: _formKey,
       autovalidateMode: AutovalidateMode.always,
@@ -753,19 +781,7 @@ class _FoodEditState extends State<_FoodEdit> {
             ),
             const SizedBox(height: 10),
             Wrap(
-              children: [
-                for (final item in _measureList)
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width) / 2,
-                    child: CheckboxField(
-                      isRequired: _measureCtrl.text.isEmpty,
-                      selected: _measureCtrl.text == item.id,
-                      onSelected: (value) => _onMeasure(item.id, value),
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      text: item.name,
-                    ),
-                  ),
-              ],
+              children: measures,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
