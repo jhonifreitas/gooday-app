@@ -39,7 +39,6 @@ class AlertModel extends BaseModel {
 
   @override
   Map<String, dynamic> toJson() {
-    print('opa');
     final json = super.toJson();
     json['userId'] = userId;
     json['title'] = title;
