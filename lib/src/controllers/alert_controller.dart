@@ -8,8 +8,8 @@ class AlertController {
   final timeCtrl = TextEditingController();
 
   initData(AlertModel data) {
-    if (data.title != null) titleCtrl.text = data.title!;
-    if (data.message != null) messageCtrl.text = data.message!;
-    if (data.time != null) timeCtrl.text = data.time!;
+    titleCtrl.text = data.title;
+    messageCtrl.text = data.message;
+    timeCtrl.text = data.time;
   }
 }
