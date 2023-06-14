@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:gooday/src/app.dart';
-import 'package:gooday/src/firebase_options.dart';
+import 'package:gooday/firebase_options.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 
 void main() async {

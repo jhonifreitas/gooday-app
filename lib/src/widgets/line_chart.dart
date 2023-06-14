@@ -96,9 +96,9 @@ class LineChartCustom extends StatelessWidget {
   Widget build(BuildContext context) {
     return LineChart(
       LineChartData(
-        clipData: FlClipData.all(),
+        clipData: const FlClipData.all(),
         lineBarsData: lineBarsData,
-        gridData: FlGridData(show: false),
+        gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
@@ -107,8 +107,10 @@ class LineChartCustom extends StatelessWidget {
           ),
         ),
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               interval: 1,

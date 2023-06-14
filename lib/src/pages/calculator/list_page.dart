@@ -87,7 +87,7 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
         barWidth: 3,
         spots: spots,
         color: primaryColor,
-        dotData: FlDotData(show: false),
+        dotData: const FlDotData(show: false),
       ));
     }
 

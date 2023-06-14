@@ -488,7 +488,7 @@ class _GoalCardUpdate extends StatelessWidget {
         ),
         subtitle: Row(
           children: [
-            const Icon(Icons.sync, size: 20),
+            Icon(Icons.sync, size: 20, color: Colors.grey.shade400),
             const SizedBox(width: 5),
             Text(
               _lastUpdateLabel,

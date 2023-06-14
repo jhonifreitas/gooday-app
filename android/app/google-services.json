@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "285656052775-t0mdrk7k7hlqlh0or6527sonrc4d2q8s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "care.gooday.app",
+            "certificate_hash": "9e4c99804614b3f843d763f303db6a43454099f7"
+          }
+        },
+        {
           "client_id": "285656052775-2n12tluafdgftpf3hg3nsfbholg539lm.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -34,7 +42,7 @@
               "client_id": "285656052775-0u4vhcena0mbrmmq15buvknt29piikt2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "care.gooday.app"
+                "bundle_id": "care.gooday"
               }
             }
           ]
