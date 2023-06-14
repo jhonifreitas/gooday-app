@@ -631,21 +631,21 @@ PODS:
     - Firebase/Storage (= 10.9.0)
     - firebase_core
     - Flutter
-  - FirebaseAppCheckInterop (10.9.0)
+  - FirebaseAppCheckInterop (10.11.0)
   - FirebaseAuth (10.9.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
     - GoogleUtilities/Environment (~> 7.8)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
-  - FirebaseAuthInterop (10.9.0)
+  - FirebaseAuthInterop (10.11.0)
   - FirebaseCore (10.9.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
-  - FirebaseCoreExtension (10.9.0):
+  - FirebaseCoreExtension (10.11.0):
     - FirebaseCore (~> 10.0)
-  - FirebaseCoreInternal (10.9.0):
+  - FirebaseCoreInternal (10.11.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - FirebaseFirestore (10.9.0):
     - abseil/algorithm (~> 1.20211102.0)
@@ -833,12 +833,12 @@ SPEC CHECKSUMS:
   firebase_auth: 202fb0b14e267d2a91d83b75d0ce064ef2063383
   firebase_core: fc68c0f9eec4e800b9418deff14a7e0a504016f3
   firebase_storage: 09fe224b1ae65ffb74241f2e3e89c8ebabbaa5cb
-  FirebaseAppCheckInterop: e69dde5cd51b88ee1b4339d6766b691272256f9b
+  FirebaseAppCheckInterop: 255b6c0292fe5da995c8b2df0c02f6a3ca7f61b4
   FirebaseAuth: 21d5e902fcea44d0d961540fc4742966ae6118cc
-  FirebaseAuthInterop: e53c08e60a02de17d1ab77c5032db8ae22d3a799
+  FirebaseAuthInterop: 44e34efef7145776a107b9e7f79ed44beb4738fa
   FirebaseCore: b68d3616526ec02e4d155166bbafb8eca64af557
-  FirebaseCoreExtension: d3e9bba2930a8033042112397cd9f006a1bb203d
-  FirebaseCoreInternal: d2b4acb827908e72eca47a9fd896767c3053921e
+  FirebaseCoreExtension: cacdad57fdb60e0b86dcbcac058ec78237946759
+  FirebaseCoreInternal: 9e46c82a14a3b3a25be4e1e151ce6d21536b89c0
   FirebaseFirestore: 584d0e1b0f7f1666c516c5157ff06e785bd8836f
   FirebaseStorage: 075a0c10ec43f24193018c539d65e991db65d9ef
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
