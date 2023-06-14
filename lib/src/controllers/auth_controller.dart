@@ -14,53 +14,68 @@ class AuthController {
 
   // SIGN IN
   Future<UserModel?> signInGoogle() async {
-    final fbUser =
-        await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+    try {
+      final fbUser =
+          await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
 
-    final authId = fbUser.user?.uid;
+      final authId = fbUser.user?.uid;
 
-    if (authId != null) {
-      await _userProvider.getByAuthId(authId);
-      if (_userProvider.data == null) {
-        await _createUser(fbUser);
+      if (authId != null) {
         await _userProvider.getByAuthId(authId);
+        if (_userProvider.data == null) {
+          await _createUser(fbUser);
+          await _userProvider.getByAuthId(authId);
+        }
       }
-    }
 
-    return _userProvider.data;
+      return _userProvider.data;
+    } catch (e) {
+      debugPrint('Error Google: ${e.toString()}');
+      return null;
+    }
   }
 
   Future<UserModel?> signInFacebook() async {
-    final fbUser =
-        await FirebaseAuth.instance.signInWithProvider(FacebookAuthProvider());
+    try {
+      final fbUser = await FirebaseAuth.instance
+          .signInWithProvider(FacebookAuthProvider());
 
-    final authId = fbUser.user?.uid;
+      final authId = fbUser.user?.uid;
 
-    if (authId != null) {
-      await _userProvider.getByAuthId(authId);
-      if (_userProvider.data == null) {
-        await _createUser(fbUser);
+      if (authId != null) {
         await _userProvider.getByAuthId(authId);
+        if (_userProvider.data == null) {
+          await _createUser(fbUser);
+          await _userProvider.getByAuthId(authId);
+        }
       }
-    }
 
-    return _userProvider.data;
+      return _userProvider.data;
+    } catch (e) {
+      debugPrint('Error Facebook: ${e.toString()}');
+      return null;
+    }
   }
 
   Future<UserModel?> signInApple() async {
-    final fbUser =
-        await FirebaseAuth.instance.signInWithProvider(AppleAuthProvider());
-    final authId = fbUser.user?.uid;
+    try {
+      final fbUser =
+          await FirebaseAuth.instance.signInWithProvider(AppleAuthProvider());
+      final authId = fbUser.user?.uid;
 
-    if (authId != null) {
-      await _userProvider.getByAuthId(authId);
-      if (_userProvider.data == null) {
-        await _createUser(fbUser);
+      if (authId != null) {
         await _userProvider.getByAuthId(authId);
+        if (_userProvider.data == null) {
+          await _createUser(fbUser);
+          await _userProvider.getByAuthId(authId);
+        }
       }
-    }
 
-    return _userProvider.data;
+      return _userProvider.data;
+    } catch (e) {
+      debugPrint('Error Apple: ${e.toString()}');
+      return null;
+    }
   }
 
   Future<UserModel?> signInEmail(String email, String password) async {

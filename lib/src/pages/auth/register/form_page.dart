@@ -42,30 +42,27 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
     UtilService(context).loading('Entrando...');
     final user = await _authCtrl.signInFacebook();
 
-    if (user != null && mounted) {
-      context.pop();
-      context.push('/auth/cadastrar/anamnese');
-    }
+    if (!mounted) return;
+    context.pop();
+    if (user != null) context.push('/auth/cadastrar/anamnese');
   }
 
   Future<void> _signInGoogle() async {
     UtilService(context).loading('Entrando...');
     final user = await _authCtrl.signInGoogle();
 
-    if (user != null && mounted) {
-      context.pop();
-      context.push('/auth/cadastrar/anamnese');
-    }
+    if (!mounted) return;
+    context.pop();
+    if (user != null) context.push('/auth/cadastrar/anamnese');
   }
 
   Future<void> _signInApple() async {
     UtilService(context).loading('Entrando...');
     final user = await _authCtrl.signInApple();
 
-    if (user != null && mounted) {
-      context.pop();
-      context.push('/auth/cadastrar/anamnese');
-    }
+    if (!mounted) return;
+    context.pop();
+    if (user != null) context.push('/auth/cadastrar/anamnese');
   }
 
   Future<void> _onUploadImage() async {
