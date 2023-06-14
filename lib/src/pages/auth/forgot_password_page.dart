@@ -31,7 +31,7 @@ class _AuthForgotPasswordPageState extends State<AuthForgotPasswordPage> {
           .message('Verifique a caixa de entrada de seu e-mail!');
 
       context.pop();
-      context.go('/auth/entrar');
+      context.go('/auth');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }

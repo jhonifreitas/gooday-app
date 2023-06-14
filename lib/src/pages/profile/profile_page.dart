@@ -91,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return;
 
       context.pop();
-      context.go('/auth/entrar');
+      context.go('/auth');
     }
   }
 
