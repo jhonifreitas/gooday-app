@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:gooday/src/models/user_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
@@ -15,8 +17,15 @@ class AuthController {
   // SIGN IN
   Future<UserModel?> signInGoogle() async {
     try {
+      final googleUser = await GoogleSignIn().signIn();
+      final googleAuth = await googleUser?.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth?.idToken,
+        accessToken: googleAuth?.accessToken,
+      );
+
       final fbUser =
-          await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       final authId = fbUser.user?.uid;
 
@@ -37,8 +46,12 @@ class AuthController {
 
   Future<UserModel?> signInFacebook() async {
     try {
-      final fbUser = await FirebaseAuth.instance
-          .signInWithProvider(FacebookAuthProvider());
+      final facebookAuth = await FacebookAuth.instance.login();
+      final credential =
+          FacebookAuthProvider.credential(facebookAuth.accessToken!.token);
+
+      final fbUser =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       final authId = fbUser.user?.uid;
 

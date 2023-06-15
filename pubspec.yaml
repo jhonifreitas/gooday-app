@@ -56,6 +56,8 @@ dependencies:
       ref: health-dev
   flutter_native_splash: ^2.3.1
   fl_chart: ^0.63.0
+  google_sign_in: ^6.1.4
+  flutter_facebook_auth: ^5.0.11
 
 dev_dependencies:
   flutter_test:
