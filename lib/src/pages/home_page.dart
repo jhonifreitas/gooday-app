@@ -66,12 +66,12 @@ class _HomePageState extends State<HomePage>
 
   void setPosition() {
     final size = MediaQuery.of(context).size;
-    RenderBox btnCalculateBox =
+    final btnCalculateBox =
         btnCalculateKey.currentContext!.findRenderObject() as RenderBox;
-    Offset btnCalculatePosition = btnCalculateBox.localToGlobal(Offset.zero);
-    RenderBox btnNotificationBox =
+    final btnCalculatePosition = btnCalculateBox.localToGlobal(Offset.zero);
+    final btnNotificationBox =
         btnNotificationKey.currentContext!.findRenderObject() as RenderBox;
-    Offset btnNotificationPosition =
+    final btnNotificationPosition =
         btnNotificationBox.localToGlobal(Offset.zero);
 
     double position = _circleNotchRadius + _bottomBarSpace;

@@ -153,15 +153,20 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              _InsulinTimeForm(
-                minimum: minimum,
-                maximum: maximum,
-                time: time,
-                onSubmit: (time) => _onTimeSubmit(time, index),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: _InsulinTimeForm(
+                  time: time,
+                  minimum: minimum,
+                  maximum: maximum,
+                  onSubmit: (time) => _onTimeSubmit(time, index),
+                ),
               ),
             ],
           ),

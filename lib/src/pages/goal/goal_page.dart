@@ -83,7 +83,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   double get _getStepPercent {
-    final total = _userProvider.data!.config!.goal!.steps;
+    final total = _userProvider.data?.config?.goal?.steps;
     if (_data?.steps != null && total != null && total > 0) {
       if (_data!.steps >= total) return 1;
       return _data!.steps / total;
@@ -92,7 +92,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   double get _getDistancePercent {
-    final total = _userProvider.data!.config!.goal!.distance;
+    final total = _userProvider.data?.config?.goal?.distance;
     if (_data?.distance != null && total != null && total > 0) {
       if (_data!.distance >= total) return 1;
       return _data!.distance / total;
@@ -101,7 +101,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   double get _getCaloriePercent {
-    final total = _userProvider.data!.config!.goal!.calories;
+    final total = _userProvider.data?.config?.goal?.calories;
     if (_data?.calories != null && total != null && total > 0) {
       if (_data!.calories >= total) return 1;
       return _data!.calories / total;
@@ -110,7 +110,7 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   double get _getMinutePercent {
-    final total = _userProvider.data!.config!.goal!.exerciseTime;
+    final total = _userProvider.data?.config?.goal?.exerciseTime;
     if (_data?.exerciseTime != null && total != null && total > 0) {
       if (_data!.exerciseTime >= total) return 1;
       return _data!.exerciseTime / total;
@@ -148,6 +148,12 @@ class _GoalPageState extends State<GoalPage> with TickerProviderStateMixin {
   }
 
   Future<void> _fetchHealth() async {
+    if (_userProvider.data?.config?.goal?.steps == null) {
+      context.push('/config/metas');
+      return UtilService(context)
+          .message('Configure suas metas antes de sincronizizar!');
+    }
+
     setState(() {
       _loaderCtrl.repeat();
     });

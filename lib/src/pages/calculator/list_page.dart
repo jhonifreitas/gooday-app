@@ -41,7 +41,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
 
   Future<List<dynamic>> _loadData() async {
     final list = [];
-    final user = context.read<UserProvider>().data!;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.data!;
 
     final end = DateTime.now();
     DateTime start = end.subtract(Duration(days: _filter.first));

@@ -83,7 +83,7 @@ final router = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/user',
+      path: '/conta',
       builder: (context, state) => const UserPage(),
       routes: [
         GoRoute(

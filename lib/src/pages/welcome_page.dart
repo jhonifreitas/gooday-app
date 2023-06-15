@@ -47,7 +47,7 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   Future<List<NotificationModel>> _loadNotifications() async {
-    final userProvider = context.read<UserProvider>();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (userProvider.data == null) return [];
 
     final userId = userProvider.data!.id!;

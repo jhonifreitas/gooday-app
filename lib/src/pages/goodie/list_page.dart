@@ -21,7 +21,8 @@ class _GoodieListPageState extends State<GoodieListPage> {
   final _goodieApi = GoodieApiService();
 
   Future<List<GoodieModel>> _loadList() {
-    final userId = context.read<UserProvider>().data!.id!;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.data!.id!;
     return _goodieApi.getAll(userId);
   }
 

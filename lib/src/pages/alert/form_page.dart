@@ -35,7 +35,7 @@ class _AlertFormPageState extends State<AlertFormPage> {
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
-      final userProvider = context.read<UserProvider>();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
       final data = widget.data ?? AlertModel(userId: userProvider.data!.id!);
 
       data.title = _alertCtrl.titleCtrl.text;

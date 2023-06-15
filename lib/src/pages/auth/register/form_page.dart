@@ -24,9 +24,10 @@ class AuthRegisterPage extends StatefulWidget {
 }
 
 class _AuthRegisterPageState extends State<AuthRegisterPage> {
+  final _userCtrl = UserController();
   late final AuthController _authCtrl;
   final _formKey = GlobalKey<FormState>();
-  final _userCtrl = UserController();
+  late UserProvider _userProvider;
 
   File? _image;
 
@@ -35,6 +36,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
   @override
   void initState() {
     super.initState();
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
     _authCtrl = AuthController(context);
   }
 
@@ -74,7 +76,7 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
         if (pickedFile != null && mounted) {
           UtilService(context).loading('Carregando...');
           final file = File(pickedFile.path);
-          await context.read<UserProvider>().uploadImage(file).catchError((_) {
+          await _userProvider.uploadImage(file).catchError((_) {
             UtilService(context).message('Não foi possível salvar a imagem!');
           });
           if (mounted) context.pop();
@@ -97,15 +99,14 @@ class _AuthRegisterPageState extends State<AuthRegisterPage> {
         if (!mounted) return;
 
         if (user != null) {
-          final userProvider = context.read<UserProvider>();
           final Map<String, dynamic> data = {
             'name': _userCtrl.nameCtrl.text,
             'email': _userCtrl.emailCtrl.text,
             'phone': _userCtrl.clearPhone(),
           };
 
-          await userProvider.update(data);
-          if (_image != null) await userProvider.uploadImage(_image!);
+          await _userProvider.update(data);
+          if (_image != null) await _userProvider.uploadImage(_image!);
 
           if (!mounted) return;
           context.pop();

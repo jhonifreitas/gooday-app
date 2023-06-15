@@ -10,6 +10,7 @@ class AppBarCustom extends StatelessWidget {
     this.iconBackColor = Colors.black,
     this.prefix,
     this.suffix,
+    this.onBackButton,
     this.brightness = Brightness.light,
   });
 
@@ -19,6 +20,7 @@ class AppBarCustom extends StatelessWidget {
   final Widget? prefix;
   final Widget? suffix;
   final Brightness brightness;
+  final VoidCallback? onBackButton;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class AppBarCustom extends StatelessWidget {
       backButton = IconButton(
         tooltip: 'Voltar',
         icon: Icon(Icons.keyboard_backspace, color: iconBackColor),
-        onPressed: () => context.pop(),
+        onPressed: () => onBackButton != null ? onBackButton!() : context.pop(),
       );
     }
 

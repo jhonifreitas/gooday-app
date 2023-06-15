@@ -135,10 +135,18 @@ class UserConfig {
 
   UserConfig.fromJson(Map<String, dynamic> json)
       : this(
-          goal: UserConfigGoal.fromJson(json['goal'] ?? {}),
-          glycemia: UserConfigGlycemia.fromJson(json['glycemia'] ?? {}),
-          insulin: UserConfigInsulin.fromJson(json['insulin'] ?? {}),
-          betty: UserConfigBetty.fromJson(json['betty'] ?? {}),
+          goal: json['goal'] != null
+              ? UserConfigGoal.fromJson(json['goal'])
+              : null,
+          glycemia: json['glycemia'] != null
+              ? UserConfigGlycemia.fromJson(json['glycemia'])
+              : null,
+          insulin: json['insulin'] != null
+              ? UserConfigInsulin.fromJson(json['insulin'])
+              : null,
+          betty: json['betty'] != null
+              ? UserConfigBetty.fromJson(json['betty'])
+              : null,
         );
 
   Map<String, dynamic> toJson() {

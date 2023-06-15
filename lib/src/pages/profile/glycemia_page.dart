@@ -64,153 +64,158 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
           key: _formKey,
           autovalidateMode: AutovalidateMode.always,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppBarCustom(
                 iconBackColor: primaryColor,
                 title: Image.asset('assets/images/logo.png', width: 80),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Como anda sua Glicemia?',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Text('Informe a sua meta glicêmica!',
-                        style: Theme.of(context).textTheme.bodySmall),
-                    Text(
-                        'Estes dados são muito importantes para próxima etapa!',
-                        style: Theme.of(context).textTheme.bodySmall),
-                  ],
+              // const SizedBox(height: 30),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Como anda sua Glicemia?',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 10),
+                      Text('Informe a sua meta glicêmica!',
+                          style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                          'Estes dados são muito importantes para próxima etapa!',
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 40),
+                      const Text(
+                        "Pré refeição",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputField(
+                              label: 'Mínimo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.beforeMealMinCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Normal',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller:
+                                  _userGlycemiaCtrl.beforeMealNormalCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Máximo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.beforeMealMaxCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Pós refeição",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputField(
+                              label: 'Mínimo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.afterMealMinCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Normal',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.afterMealNormalCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Máximo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.afterMealMaxCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Ante de dormir",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InputField(
+                              label: 'Mínimo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.beforeSleepMinCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Normal',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller:
+                                  _userGlycemiaCtrl.beforeSleepNormalCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: InputField(
+                              label: 'Máximo',
+                              hint: 'ml/g',
+                              maxLength: 3,
+                              isRequired: true,
+                              controller: _userGlycemiaCtrl.beforeSleepMaxCtrl,
+                              inputType: TextInputType.number,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Pré refeição",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InputField(
-                            label: 'Mínimo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeMealMinCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Normal',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeMealNormalCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Máximo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeMealMaxCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Pós refeição",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InputField(
-                            label: 'Mínimo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.afterMealMinCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Normal',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.afterMealNormalCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Máximo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.afterMealMaxCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Ante de dormir",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InputField(
-                            label: 'Mínimo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeSleepMinCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Normal',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeSleepNormalCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: InputField(
-                            label: 'Máximo',
-                            hint: 'ml/g',
-                            maxLength: 3,
-                            controller: _userGlycemiaCtrl.beforeSleepMaxCtrl,
-                            inputType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ButtonCustom(text: 'Avançar', onPressed: _onSubmit),

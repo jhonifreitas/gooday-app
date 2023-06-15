@@ -12,7 +12,8 @@ class AuthController {
 
   final BuildContext context;
 
-  UserProvider get _userProvider => context.read<UserProvider>();
+  UserProvider get _userProvider =>
+      Provider.of<UserProvider>(context, listen: false);
 
   // SIGN IN
   Future<UserModel?> signInGoogle() async {

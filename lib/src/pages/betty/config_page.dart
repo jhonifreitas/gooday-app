@@ -19,7 +19,8 @@ class _BettyConfigPageState extends State<BettyConfigPage> {
 
   @override
   void initState() {
-    final bettyConfig = context.read<UserProvider>().data?.config?.betty;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final bettyConfig = userProvider.data?.config?.betty;
     final hasConfig = bettyConfig != null &&
         (bettyConfig.lostWeight != null ||
             bettyConfig.adequateFood != null ||

@@ -33,6 +33,8 @@ class _MealFormPageState extends State<MealFormPage> {
   final _mealCtrl = MealController();
   final _formKey = GlobalKey<FormState>();
 
+  final _appBarKey = GlobalKey();
+
   final FoodApiService _foodApi = FoodApiService();
   final MealApiService _mealApi = MealApiService();
 
@@ -69,6 +71,16 @@ class _MealFormPageState extends State<MealFormPage> {
             food.name.toLowerCase().contains(_searchCtrl.text.toLowerCase()))
         .toList();
     return foods;
+  }
+
+  double get _getTopFoodList {
+    final appBarBox =
+        _appBarKey.currentContext!.findRenderObject() as RenderBox;
+    final appBarPosition = appBarBox.localToGlobal(Offset.zero);
+
+    final top = appBarPosition.dy + appBarBox.size.height;
+
+    return top;
   }
 
   String getChoLabel(MealFood item) {
@@ -115,7 +127,7 @@ class _MealFormPageState extends State<MealFormPage> {
     if (_validator()) {
       UtilService(context).loading('Salvando...');
 
-      final userProvider = context.read<UserProvider>();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
       final user = userProvider.data;
 
       final data = MealModel(
@@ -213,6 +225,10 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   void _onToggleSearchList() {
+    if (_toggleSearchList) {
+      _searchFocus.unfocus();
+    }
+
     setState(() {
       _toggleSearchList = !_toggleSearchList;
     });
@@ -240,11 +256,16 @@ class _MealFormPageState extends State<MealFormPage> {
   void _openFood(MealFood item) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              _FoodEdit(item: item, onSubmit: _onFoodSubmit),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: _FoodEdit(item: item, onSubmit: _onFoodSubmit),
+              ),
             ],
           ),
         );
@@ -319,69 +340,77 @@ class _MealFormPageState extends State<MealFormPage> {
             key: _formKey,
             child: Column(
               children: [
-                AppBarCustom(
-                  title: Material(
-                    clipBehavior: Clip.hardEdge,
-                    borderRadius: BorderRadius.circular(10),
-                    child: InkWell(
-                      onTap: _onDateTime,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 10),
-                        child: Text(_getDateFullLabel),
-                      ),
-                    ),
-                  ),
-                  suffix: IconButton(
-                    icon: const Icon(Icons.calendar_today_outlined),
-                    onPressed: _onDateTime,
-                  ),
-                ),
-                FutureBuilder(
-                  future: _fetchFoodList,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      _foodList = snapshot.data!;
-                    }
-
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 20, left: 30, right: 30),
-                      child: TextFormField(
-                        enabled:
-                            snapshot.connectionState == ConnectionState.done,
-                        controller: _searchCtrl,
-                        focusNode: _searchFocus,
-                        onTap: _onToggleSearchList,
-                        validator: (value) {
-                          if (_mealCtrl.foodListCtrl.isEmpty) {
-                            return 'Selecione uma refeição';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          labelText: 'Pesquisar...',
-                          suffixIcon: Icon(
-                            snapshot.connectionState == ConnectionState.waiting
-                                ? Icons.sync
-                                : Icons.search,
-                          ),
-                          fillColor: Colors.grey.shade200,
-                          hintStyle: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 20),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
+                Column(
+                  key: _appBarKey,
+                  children: [
+                    AppBarCustom(
+                      onBackButton:
+                          _toggleSearchList ? _onToggleSearchList : null,
+                      title: Material(
+                        clipBehavior: Clip.hardEdge,
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: _onDateTime,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Text(_getDateFullLabel),
                           ),
                         ),
                       ),
-                    );
-                  },
+                      suffix: IconButton(
+                        icon: const Icon(Icons.calendar_today_outlined),
+                        onPressed: _onDateTime,
+                      ),
+                    ),
+                    FutureBuilder(
+                      future: _fetchFoodList,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          _foodList = snapshot.data!;
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 20, left: 30, right: 30),
+                          child: TextFormField(
+                            enabled: snapshot.connectionState ==
+                                ConnectionState.done,
+                            controller: _searchCtrl,
+                            focusNode: _searchFocus,
+                            onTap: _onToggleSearchList,
+                            validator: (value) {
+                              if (_mealCtrl.foodListCtrl.isEmpty) {
+                                return 'Selecione uma refeição';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              labelText: 'Pesquisar...',
+                              suffixIcon: Icon(
+                                snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? Icons.sync
+                                    : Icons.search,
+                              ),
+                              fillColor: Colors.grey.shade200,
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.normal,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 20),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Material(
@@ -475,10 +504,9 @@ class _MealFormPageState extends State<MealFormPage> {
               foodListCtrl: _mealCtrl.foodListCtrl,
             ),
           ),
-          Visibility(
-            visible: _toggleSearchList,
-            child: Positioned(
-              top: 190,
+          if (_toggleSearchList)
+            Positioned(
+              top: _getTopFoodList,
               left: 0,
               right: 0,
               bottom: 0,
@@ -493,7 +521,6 @@ class _MealFormPageState extends State<MealFormPage> {
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

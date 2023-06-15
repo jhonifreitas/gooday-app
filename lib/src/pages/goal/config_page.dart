@@ -36,9 +36,11 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
     if (user != null) {
       _goalCtrl.initData(user);
 
-      setState(() {
-        _stepList = _goalCtrl.stepList(user.dateBirth!);
-      });
+      if (user.dateBirth != null) {
+        setState(() {
+          _stepList = _goalCtrl.stepList(user.dateBirth!);
+        });
+      }
     }
   }
 
@@ -60,6 +62,10 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
+  }
+
+  void _goToUser() {
+    context.push('/conta');
   }
 
   @override
@@ -99,6 +105,26 @@ class _GoalConfigPageState extends State<GoalConfigPage> {
                     ),
                     options: _stepList,
                   ),
+                  if (_stepList.isEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'É preciso informar a data de nascimento!',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_forward,
+                            color: primaryColor,
+                          ),
+                          onPressed: _goToUser,
+                        ),
+                      ],
+                    ),
                   InputField(
                     label: 'Quilometros',
                     controller: _goalCtrl.distanceCtrl,

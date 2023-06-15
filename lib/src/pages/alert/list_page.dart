@@ -43,18 +43,24 @@ class _AlertListPageState extends State<AlertListPage> {
   }
 
   Future<List<AlertModel>> _loadData() {
-    final user = context.read<UserProvider>().data!;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = userProvider.data!;
     return _alertApi.getByDate(user.id!, _date);
   }
 
   Future<void> _openForm([AlertModel? alert]) async {
     final result = await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return SafeArea(
           child: Wrap(
             children: [
-              AlertFormPage(data: alert),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: AlertFormPage(data: alert),
+              ),
             ],
           ),
         );

@@ -39,7 +39,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
-      final userProvider = context.read<UserProvider>();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
       final data = widget.data ?? GlycemiaModel(userId: userProvider.data!.id!);
 
       data.date = _glycemiaCtrl.clearDate();

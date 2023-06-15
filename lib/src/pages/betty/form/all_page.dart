@@ -28,7 +28,7 @@ class _BettyFormAllPageState extends State<BettyFormAllPage> {
   Future<void> _onSubmit() async {
     UtilService(context).loading('Salvando...');
 
-    final userProvider = context.read<UserProvider>();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final config = userProvider.data!.config!.toJson();
 
     Map<String, dynamic> data = {

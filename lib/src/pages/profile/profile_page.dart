@@ -28,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _goToUser() {
-    context.push('/user');
+    context.push('/conta');
   }
 
   void _goToGlycemia() {
@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _goToPasswordReset() {
-    context.push('/user/redefinir-senha');
+    context.push('/conta/redefinir-senha');
   }
 
   void _goToIntrodution() {
@@ -104,7 +104,9 @@ class _ProfilePageState extends State<ProfilePage> {
         if (pickedFile != null && mounted) {
           UtilService(context).loading('Carregando...');
           final file = File(pickedFile.path);
-          await context.read<UserProvider>().uploadImage(file).catchError((_) {
+          final userProvider =
+              Provider.of<UserProvider>(context, listen: false);
+          await userProvider.uploadImage(file).catchError((_) {
             UtilService(context).message('Não foi possível salvar a imagem!');
           });
           if (mounted) context.pop();
