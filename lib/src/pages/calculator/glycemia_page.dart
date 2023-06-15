@@ -175,10 +175,12 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    IconButton(
-                      onPressed: _onDelete,
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                    )
+                    widget.data != null
+                        ? IconButton(
+                            onPressed: _onDelete,
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                          )
+                        : const SizedBox(width: 40)
                   ],
                 ),
               ),

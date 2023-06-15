@@ -52,6 +52,24 @@ class _IntroThreePageState extends State<IntroThreePage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget actionBtn = Column(
+      children: [
+        ButtonCustom(
+          text: 'Configurar Assistente Virtual',
+          onPressed: _goToBetty,
+        ),
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: _goToHome,
+          child: const Text('Configurar depois'),
+        ),
+      ],
+    );
+
+    if (widget.hideConfigBetty) {
+      actionBtn = ButtonCustom(text: 'Concluir', onPressed: _goToHome);
+    }
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -171,35 +189,10 @@ class _IntroThreePageState extends State<IntroThreePage> {
                 ],
               ),
             ),
-            Visibility(
-              visible: !widget.hideConfigBetty,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: Column(
-                  children: [
-                    ButtonCustom(
-                      text: 'Configurar Assistente Virtual',
-                      onPressed: _goToBetty,
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: _goToHome,
-                      child: const Text('Configurar depois'),
-                    )
-                  ],
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: actionBtn,
             ),
-            Visibility(
-              visible: widget.hideConfigBetty,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: ButtonCustom(
-                  text: 'Concluir',
-                  onPressed: _goToHome,
-                ),
-              ),
-            )
           ],
         ),
       ),

@@ -85,7 +85,6 @@ class _UserPageState extends State<UserPage> {
       };
 
       final isComplete = data['name'].isNotEmpty &&
-          data['name'].isNotEmpty &&
           data['email'].isNotEmpty &&
           data['phone'].isNotEmpty &&
           data['dateBirth'] != null &&
@@ -158,12 +157,16 @@ class _UserPageState extends State<UserPage> {
     if (_currentPage == 1) {
       _onSubmit();
     } else {
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
       _pageCtrl.nextPage(
           duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
   void _goToBack() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
     _pageCtrl.previousPage(
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
@@ -191,7 +194,7 @@ class _UserPageState extends State<UserPage> {
                   onPageChanged: _onPageChanged,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    Container(
+                    SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: _UserForm(
                         goodies: _goodies,

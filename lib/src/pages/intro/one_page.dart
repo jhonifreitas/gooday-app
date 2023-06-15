@@ -166,6 +166,9 @@ class _IntroOnePageState extends State<IntroOnePage> {
                       margin: const EdgeInsets.symmetric(horizontal: 30),
                       child: FilledButton(
                         onPressed: _goToNext,
+                        style: const ButtonStyle(
+                            padding: MaterialStatePropertyAll(
+                                EdgeInsets.symmetric(horizontal: 10))),
                         child: _currentPage == 0
                             ? const Icon(Icons.arrow_forward)
                             : const Text('Avançar'),

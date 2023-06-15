@@ -45,6 +45,8 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 
+      final user = _userProvider.data!;
+
       final Map<String, dynamic> data = {
         'dateBirth': _userCtrl.clearDateBirth(),
         'genre': _userCtrl.genreCtrl.text,
@@ -58,10 +60,9 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
           'drugs': _userCtrl.drugsCtrl,
         }
       };
-      final isComplete = data['name'].isNotEmpty &&
-          data['name'].isNotEmpty &&
-          data['email'].isNotEmpty &&
-          data['phone'].isNotEmpty &&
+      final isComplete = user.name != null &&
+          user.email != null &&
+          user.phone != null &&
           data['dateBirth'] != null &&
           data['genre'].isNotEmpty &&
           data['anamnese']['height'] != null &&
@@ -77,7 +78,7 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
 
       if (isComplete) await _addGoodie();
 
-      if (mounted) context.push('/introducao/1');
+      if (mounted) context.push('/introducao');
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
@@ -132,12 +133,16 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     if (_currentPage == 1) {
       _onSubmit();
     } else {
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
       _pageCtrl.nextPage(
           duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
   void _goToBack() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
     _pageCtrl.previousPage(
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
@@ -147,17 +152,15 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(bottom: 40),
+        padding: const EdgeInsets.only(bottom: 30),
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.always,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppBarCustom(
                 title: Image.asset('assets/images/logo.png', width: 80),
               ),
-              const SizedBox(height: 40),
               Expanded(
                 child: PageView(
                   controller: _pageCtrl,
@@ -179,7 +182,6 @@ class _AuthRegisterAnamnesisPageState extends State<AuthRegisterAnamnesisPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
@@ -284,6 +286,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        const SizedBox(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -353,6 +356,7 @@ class _AuthRegisterAnamneseStep1 extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(),
       ],
     );
   }

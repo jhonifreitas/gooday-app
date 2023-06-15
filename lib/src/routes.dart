@@ -66,12 +66,8 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/introducao',
-      builder: (context, state) => const Placeholder(),
+      builder: (context, state) => const IntroOnePage(),
       routes: [
-        GoRoute(
-          path: '1',
-          builder: (context, state) => const IntroOnePage(),
-        ),
         GoRoute(
           path: '2',
           builder: (context, state) => IntroTwoPage(

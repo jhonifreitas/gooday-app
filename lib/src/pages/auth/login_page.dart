@@ -98,94 +98,86 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(bottom: 40),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 40, left: 40, right: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppBarCustom(
               title: Image.asset('assets/images/logo.png', width: 80),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+            const SizedBox(height: 30),
+            Text('Já possui conta?',
+                style: Theme.of(context).textTheme.titleLarge),
+            const Text('Acesse agora para ver sua conta!'),
+            const SizedBox(height: 30),
+            Form(
+              key: _formKey,
               child: Column(
                 children: [
-                  Text('Já possui conta?',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const Text('Acesse agora para ver sua conta!'),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        InputField(
-                          label: 'E-mail',
-                          controller: _emailCtrl,
-                          isRequired: true,
-                          inputType: TextInputType.emailAddress,
-                        ),
-                        InputField(
-                          label: 'Senha',
-                          controller: _passwordCtrl,
-                          isRequired: true,
-                          obscureText: _togglePass,
-                          suffixIcon: IconButton(
-                            icon: _togglePass
-                                ? const Icon(Icons.visibility_off)
-                                : const Icon(Icons.visibility),
-                            onPressed: _onTogglePass,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: TextButton(
-                              onPressed: () => _goToForgotPass(),
-                              child: const Text(
-                                'Esqueceu a senha?',
-                                textAlign: TextAlign.end,
-                              ),
-                            ),
-                          ),
-                        ),
-                        ButtonCustom(
-                          text: 'Entrar',
-                          onPressed: _onSubmit,
-                        )
-                      ],
+                  InputField(
+                    label: 'E-mail',
+                    controller: _emailCtrl,
+                    isRequired: true,
+                    inputType: TextInputType.emailAddress,
+                  ),
+                  InputField(
+                    label: 'Senha',
+                    controller: _passwordCtrl,
+                    isRequired: true,
+                    obscureText: _togglePass,
+                    suffixIcon: IconButton(
+                      icon: _togglePass
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                      onPressed: _onTogglePass,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Não possui uma conta?',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: () => _goToForgotPass(),
+                        child: const Text(
+                          'Esqueceu a senha?',
+                          textAlign: TextAlign.end,
+                        ),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  FilledButton.tonal(
-                    onPressed: _goToRegister,
-                    child: const Text('Cadastre-se'),
+                  ButtonCustom(
+                    text: 'Entrar',
+                    onPressed: _onSubmit,
                   )
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      'Ou acesse usando',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
+            const SizedBox(height: 30),
+            Text(
+              'Não possui uma conta?',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
+            const SizedBox(height: 10),
+            FilledButton.tonal(
+              onPressed: _goToRegister,
+              child: const Text('Cadastre-se'),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Expanded(child: Divider()),
+                const SizedBox(width: 10),
+                Text(
+                  'Ou acesse usando',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(width: 10),
+                const Expanded(child: Divider()),
+              ],
+            ),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -104,7 +104,7 @@ class UserAnamnese {
           insulin: json['insulin'],
           insulinSlow: json['insulinSlow'],
           insulinFast: json['insulinFast'],
-          drugs: (json['drugs'] as List<dynamic>).cast(),
+          drugs: (json['drugs'] as List<dynamic>? ?? []).cast(),
         );
 
   Map<String, dynamic> toJson() {
@@ -245,7 +245,7 @@ class UserConfigInsulin {
   });
 
   factory UserConfigInsulin.fromJson(Map<String, dynamic> json) {
-    final timeCast = (json['times'] as List<dynamic>).cast();
+    final timeCast = (json['times'] as List<dynamic>? ?? []).cast();
     final times =
         timeCast.map((e) => UserConfigInsulinTime.fromJson(e)).toList();
 
@@ -328,14 +328,14 @@ class UserConfigBetty {
       : this(
           lostWeight: json['lostWeight'],
           adequateFood: json['adequateFood'],
-          foodHelps: (json['foodHelps'] as List<dynamic>).cast(),
-          foodLikes: (json['foodLikes'] as List<dynamic>).cast(),
-          foodNoLikes: (json['foodNoLikes'] as List<dynamic>).cast(),
-          foodLimits: (json['foodLimits'] as List<dynamic>).cast(),
+          foodHelps: (json['foodHelps'] as List<dynamic>? ?? []).cast(),
+          foodLikes: (json['foodLikes'] as List<dynamic>? ?? []).cast(),
+          foodNoLikes: (json['foodNoLikes'] as List<dynamic>? ?? []).cast(),
+          foodLimits: (json['foodLimits'] as List<dynamic>? ?? []).cast(),
           doExercise: json['doExercise'],
-          exerciseHelps: (json['exerciseHelps'] as List<dynamic>).cast(),
-          exercises: (json['exercises'] as List<dynamic>).cast(),
-          timeExercise: (json['timeExercise'] as List<dynamic>).cast(),
+          exerciseHelps: (json['exerciseHelps'] as List<dynamic>? ?? []).cast(),
+          exercises: (json['exercises'] as List<dynamic>? ?? []).cast(),
+          timeExercise: (json['timeExercise'] as List<dynamic>? ?? []).cast(),
           frequencyExercise: json['frequencyExercise'],
         );
 

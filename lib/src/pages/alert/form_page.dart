@@ -112,7 +112,6 @@ class _AlertFormPageState extends State<AlertFormPage> {
                   isRequired: true,
                 ),
               ),
-              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: InputField(
