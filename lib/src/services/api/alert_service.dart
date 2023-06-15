@@ -44,4 +44,8 @@ class AlertApiService {
     await ref.update(data.toJson());
     return ref;
   }
+
+  Future<void> delete(String id) {
+    return _ref.doc(id).update({'deletedAt': Timestamp.now()});
+  }
 }

@@ -145,13 +145,12 @@ class _WelcomeNotificationList extends StatelessWidget {
     return DateFormat('HH:mm').format(date);
   }
 
-  String getIconType(NotificationType type) {
-    if (type == NotificationType.alert) return 'assets/icons/bell.svg';
+  String getIconType(Map<String, dynamic>? params) {
     return 'assets/icons/bell.svg';
   }
 
-  String getTypeLabel(NotificationType type) {
-    if (type == NotificationType.alert) return 'Lembretes';
+  String getTypeLabel(Map<String, dynamic>? params) {
+    if (params != null && params['alertId'] != null) return 'Lembretes';
     return '---';
   }
 
@@ -222,13 +221,13 @@ class _WelcomeNotificationList extends StatelessWidget {
                             children: [
                               SvgPicture.asset(
                                 width: 20,
-                                getIconType(item.type),
+                                getIconType(item.params),
                                 colorFilter: const ColorFilter.mode(
                                     Colors.white, BlendMode.srcIn),
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                getTypeLabel(item.type),
+                                getTypeLabel(item.params),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,

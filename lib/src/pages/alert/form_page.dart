@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +56,26 @@ class _AlertFormPageState extends State<AlertFormPage> {
     }
   }
 
+  Future<void> _onDelete() async {
+    if (widget.data != null) {
+      final confirmed = await UtilService(context)
+          .dialogConfirm('Remover?', 'Deseja realmente remover este alerta?');
+
+      if (confirmed && mounted) {
+        UtilService(context).loading('Removendo...');
+
+        await _alertApi.delete(widget.data!.id!);
+
+        if (!mounted) return;
+
+        context.pop();
+        context.pop('deleted');
+
+        UtilService(context).message('Alerta removido!');
+      }
+    }
+  }
+
   void _onDate() {
     DateTime initialDateTime = DateTime.now().add(
       Duration(minutes: 5 - DateTime.now().minute % 5),
@@ -93,14 +114,29 @@ class _AlertFormPageState extends State<AlertFormPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Alerta',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 40),
+                    const Text(
+                      'Alerta',
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    widget.data != null
+                        ? IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            onPressed: _onDelete,
+                          )
+                        : const SizedBox(width: 40)
+                  ],
                 ),
               ),
               const SizedBox(height: 10),

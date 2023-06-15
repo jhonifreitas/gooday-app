@@ -152,37 +152,10 @@ class _MealFormPageState extends State<MealFormPage> {
     }
   }
 
-  Future<bool> _openDeleteConfirm() async {
-    final dialog = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Remover?'),
-          content: const Text('Deseja realmente remover está refeição?'),
-          actions: [
-            TextButton(
-              child: const Text('Não'),
-              onPressed: () => context.pop(false),
-            ),
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: const MaterialStatePropertyAll(Colors.red),
-                overlayColor:
-                    MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
-              ),
-              child: const Text('Sim'),
-              onPressed: () => context.pop(true),
-            ),
-          ],
-        );
-      },
-    );
-    return dialog ?? false;
-  }
-
   Future<void> _onDelete() async {
     if (widget.id != null) {
-      final confirmed = await _openDeleteConfirm();
+      final confirmed = await UtilService(context)
+          .dialogConfirm('Remover?', 'Deseja realmente remover está refeição?');
 
       if (confirmed && mounted) {
         UtilService(context).loading('Removendo...');

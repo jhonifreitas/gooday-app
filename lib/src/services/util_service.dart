@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 class UtilService {
   const UtilService(this.context);
@@ -35,6 +36,34 @@ class UtilService {
         );
       },
     );
+  }
+
+  Future<bool> dialogConfirm(String title, String message) async {
+    final dialog = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text('Não'),
+              onPressed: () => context.pop(false),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: const MaterialStatePropertyAll(Colors.red),
+                overlayColor:
+                    MaterialStatePropertyAll(Colors.red.withOpacity(0.1)),
+              ),
+              child: const Text('Sim'),
+              onPressed: () => context.pop(true),
+            ),
+          ],
+        );
+      },
+    );
+    return dialog ?? false;
   }
 
   void dateTimePicker({
