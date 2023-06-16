@@ -47,6 +47,26 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb460759369470452</string>
+					<string>com.googleusercontent.apps.285656052775-0u4vhcena0mbrmmq15buvknt29piikt2</string>
+				</array>
+			</dict>
+		</array>
+		<key>FacebookAppID</key>
+		<string>460759369470452</string>
+		<key>FacebookClientToken</key>
+		<string>97118733884e826e6df7cf23553e5753</string>
+		<key>FacebookDisplayName</key>
+		<string>Gooday</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>fbauth2</string>
+		</array>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>We will access the photo library</string>
 		<key>NSHealthShareUsageDescription</key>
