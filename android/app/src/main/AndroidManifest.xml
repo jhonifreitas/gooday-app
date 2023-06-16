@@ -14,7 +14,7 @@
     </queries>
 
     <application
-        android:label="gooday"
+        android:label="Gooday"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
