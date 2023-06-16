@@ -33,7 +33,10 @@ class HealthService {
       permissions.add(HealthDataAccess.READ);
     }
 
-    await _health.requestAuthorization(_types, permissions: permissions);
+    final auth =
+        await _health.requestAuthorization(_types, permissions: permissions);
+
+    if (!auth) throw 'Não permitido!';
 
     final points = await _health.getHealthDataFromTypes(start, end, _types);
 
