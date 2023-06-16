@@ -183,8 +183,9 @@ class _MealFormPageState extends State<MealFormPage> {
 
   void _onDateTime() {
     UtilService(context).dateTimePicker(
-      initialDateTime: _mealCtrl.dateCtrl,
+      minuteInterval: 5,
       maximumDate: DateTime.now(),
+      initialDateTime: _mealCtrl.dateCtrl,
       mode: CupertinoDatePickerMode.dateAndTime,
       onChange: (dateTime) => setState(() => _mealCtrl.dateCtrl = dateTime),
     );

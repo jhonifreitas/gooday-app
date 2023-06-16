@@ -70,13 +70,16 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
   }
 
   void _onDate() {
-    DateTime initialDateTime = DateTime.now();
+    DateTime initialDateTime = DateTime.now().add(
+      Duration(minutes: 5 - DateTime.now().minute % 5),
+    );
     if (_glycemiaCtrl.dateCtrl.text.isNotEmpty) {
       initialDateTime =
           DateFormat('dd/MM/yyyy HH:mm').parse(_glycemiaCtrl.dateCtrl.text);
     }
 
     UtilService(context).dateTimePicker(
+      minuteInterval: 5,
       maximumDate: DateTime.now(),
       initialDateTime: initialDateTime,
       mode: CupertinoDatePickerMode.dateAndTime,
