@@ -28,7 +28,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
   }
 
   void _openFacebook() {
-    final url = Uri.parse('https://facebook.com.br');
+    final url = Uri.parse('https://www.facebook.com/gooday.care');
     launchUrl(url);
   }
 
