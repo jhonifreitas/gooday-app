@@ -34,7 +34,6 @@ class AuthController {
         await _userProvider.getByAuthId(authId);
         if (_userProvider.data == null) {
           await _createUser(fbUser);
-          await _userProvider.getByAuthId(authId);
         }
       }
 
@@ -60,7 +59,6 @@ class AuthController {
         await _userProvider.getByAuthId(authId);
         if (_userProvider.data == null) {
           await _createUser(fbUser);
-          await _userProvider.getByAuthId(authId);
         }
       }
 
@@ -81,7 +79,6 @@ class AuthController {
         await _userProvider.getByAuthId(authId);
         if (_userProvider.data == null) {
           await _createUser(fbUser);
-          await _userProvider.getByAuthId(authId);
         }
       }
 
@@ -134,6 +131,7 @@ class AuthController {
 
   // SIGN OUT
   Future<void> signOut() {
+    _userProvider.clear();
     return FirebaseAuth.instance.signOut();
   }
 

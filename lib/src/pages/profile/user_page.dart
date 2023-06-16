@@ -47,11 +47,11 @@ class _UserPageState extends State<UserPage> {
     if (user != null) {
       _userCtrl.initData(user);
 
-      final userCompleted = user.name!.isNotEmpty &&
-          user.email!.isNotEmpty &&
-          user.phone!.isNotEmpty &&
+      final userCompleted = (user.name != null && user.name!.isNotEmpty) &&
+          (user.email != null && user.email!.isNotEmpty) &&
+          (user.phone != null && user.phone!.isNotEmpty) &&
+          (user.genre != null && user.genre!.isNotEmpty) &&
           user.dateBirth != null &&
-          user.genre!.isNotEmpty &&
           user.anamnese?.height != null &&
           user.anamnese?.weight != null &&
           user.anamnese?.diabeteType != null &&

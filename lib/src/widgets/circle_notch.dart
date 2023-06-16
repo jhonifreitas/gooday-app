@@ -56,7 +56,7 @@ class CircleNotch extends CustomPainter {
       ..lineTo(shapeBounds.bottomRight.dx, shapeBounds.bottomRight.dy)
       ..close();
 
-    canvas.drawShadow(path.shift(const Offset(0, -10)), Colors.black, 10, true);
+    canvas.drawShadow(path.shift(const Offset(0, -5)), Colors.black, 10, true);
     canvas.drawPath(path, paint);
   }
 

@@ -73,4 +73,8 @@ class UserProvider extends ChangeNotifier {
       }
     }
   }
+
+  void clear() {
+    _data = null;
+  }
 }
