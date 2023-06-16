@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="care.gooday.app">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-permission android:name="android.permission.health.READ_STEPS"/>
     <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
@@ -9,6 +10,7 @@
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
+        <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
     </queries>
 
     <application
@@ -40,5 +42,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
     </application>
 </manifest>
