@@ -1,6 +1,6 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 
 class LineChartCustom extends StatelessWidget {
   const LineChartCustom({required this.lineBarsData, super.key});
@@ -34,60 +34,43 @@ class LineChartCustom extends StatelessWidget {
   }
 
   Widget _bottomTitleWidgets(double value, TitleMeta meta) {
-    String text = '';
-
-    switch (value.toInt()) {
-      case 1:
-        text = 'Jan';
-        break;
-      case 2:
-        text = 'Fev';
-        break;
-      case 3:
-        text = 'Mar';
-        break;
-      case 4:
-        text = 'Abr';
-        break;
-      case 5:
-        text = 'Mai';
-        break;
-      case 6:
-        text = 'Jun';
-        break;
-      case 7:
-        text = 'Jul';
-        break;
-      case 8:
-        text = 'Ago';
-        break;
-      case 9:
-        text = 'Set';
-        break;
-      case 10:
-        text = 'Out';
-        break;
-      case 11:
-        text = 'Nov';
-        break;
-      case 12:
-        text = 'Dez';
-        break;
-      default:
-        return const SizedBox();
-    }
+    final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    String text = DateFormat('dd/MM').format(date);
 
     return Text(text, style: const TextStyle(fontSize: 12));
   }
 
   List<LineTooltipItem?> _getTooltipItems(List<LineBarSpot> lineBarsSpot) {
     return lineBarsSpot.map((lineBarSpot) {
+      final dateTime =
+          DateTime.fromMillisecondsSinceEpoch(lineBarSpot.x.toInt());
+      final valueStr = NumberFormat().format(lineBarSpot.y);
+      final dateTimeStr = DateFormat('dd/MM/yyyy').format(dateTime);
+
       return LineTooltipItem(
-        NumberFormat().format(lineBarSpot.y),
+        valueStr,
         const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
+        children: [
+          const TextSpan(
+            text: ' (mg/dL)\n',
+            style: TextStyle(
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+          TextSpan(
+            text: dateTimeStr,
+            style: const TextStyle(
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
+        ],
       );
     }).toList();
   }
@@ -120,8 +103,8 @@ class LineChartCustom extends StatelessWidget {
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              interval: 1,
               showTitles: true,
+              interval: (864 * 100000) * 7, // DAYS
               getTitlesWidget: _bottomTitleWidgets,
             ),
           ),

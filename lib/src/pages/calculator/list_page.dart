@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
   late Future<List<dynamic>> _loadList;
   final _glycemiaApi = GlycemiaApiService();
 
-  Set<int> _filter = <int>{7};
+  int _filter = 7;
   List<LineChartBarData> _chartData = [];
 
   @override
@@ -45,7 +46,7 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     final user = userProvider.data!;
 
     final end = DateTime.now();
-    DateTime start = end.subtract(Duration(days: _filter.first));
+    DateTime start = end.subtract(Duration(days: _filter));
 
     final glycemias = await _glycemiaApi.getByRangeDate(user.id!, start, end);
     final meals = await _mealApi.getByRangeDate(user.id!, start, end);
@@ -65,7 +66,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
 
     for (final item in list) {
       double value = 0.0;
-      final double month = (item.date as DateTime).month.toDouble();
+      final dateTime = (item.date as DateTime);
+      final double time = dateTime.millisecondsSinceEpoch.toDouble();
 
       if (item is MealModel) {
         value = item.glycemia.toDouble();
@@ -73,12 +75,18 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
         value = item.value.toDouble();
       }
 
-      final index = spots.indexWhere((spot) => spot.x == month);
+      final index = spots.indexWhere((spot) {
+        final spotDateTime =
+            DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
+        return spotDateTime.day == dateTime.day &&
+            spotDateTime.month == dateTime.month &&
+            spotDateTime.year == dateTime.year;
+      });
       if (index >= 0) {
         final exist = spots[index];
-        spots[index] = FlSpot(month, value.toDouble() + exist.y);
+        spots[index] = FlSpot(time, value.toDouble() + exist.y);
       } else {
-        spots.add(FlSpot(month, value.toDouble()));
+        spots.add(FlSpot(time, value.toDouble()));
       }
     }
 
@@ -87,8 +95,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
       chartData.add(LineChartBarData(
         barWidth: 3,
         spots: spots,
+        isCurved: true,
         color: primaryColor,
-        dotData: const FlDotData(show: false),
       ));
     }
 
@@ -118,11 +126,13 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     if (result != null) _reloadData();
   }
 
-  void _onFilter(Set<int> value) {
-    setState(() {
-      _filter = value;
-    });
-    _reloadData();
+  void _onFilter(int? value) {
+    if (value != null) {
+      setState(() {
+        _filter = value;
+      });
+      _reloadData();
+    }
   }
 
   void _reloadData() {
@@ -181,9 +191,15 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
       final sizeTotal =
           item.foods.fold(0.0, (prev, value) => prev + value.size);
 
-      return '${choTotal}g Carbos | '
-          '${caloriesTotal}kcal Calorias | '
-          '$sizeTotal(g/ml) Peso';
+      final choStr = NumberFormat().format(choTotal);
+      final caloriesStr = NumberFormat().format(caloriesTotal);
+      final sizeStr = NumberFormat().format(sizeTotal);
+      final glycemiaStr = NumberFormat().format(item.glycemia);
+
+      return '${choStr}g Carbos | '
+          '${caloriesStr}kcal Calorias | '
+          '$sizeStr(g/ml) Peso | '
+          '$glycemiaStr(mg/dL) Glicemia';
     }
 
     return '';
@@ -281,8 +297,9 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
               ),
               const SizedBox(width: 20),
               Material(
-                clipBehavior: Clip.hardEdge,
+                elevation: 10,
                 color: tertiaryColor,
+                clipBehavior: Clip.hardEdge,
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   onTap: _openGlycemiaForm,
@@ -321,29 +338,64 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-          child: SizedBox(
-            width: double.infinity,
-            child: SegmentedButton(
-              selected: _filter,
-              showSelectedIcon: false,
-              onSelectionChanged: _onFilter,
-              segments: const [
-                ButtonSegment(value: 1, label: Text('24h')),
-                ButtonSegment(value: 7, label: Text('7 dias')),
-                ButtonSegment(value: 14, label: Text('14 dias')),
-                ButtonSegment(value: 30, label: Text('30 dias')),
-              ],
-            ),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+                color: Colors.grey.shade400,
+              )
+            ],
+          ),
+          child: CupertinoSlidingSegmentedControl<int>(
+            groupValue: _filter,
+            thumbColor: primaryColor,
+            backgroundColor: Colors.white,
+            children: {
+              1: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '24h',
+                  style: TextStyle(
+                      color: _filter == 1 ? Colors.white : primaryColor),
+                ),
+              ),
+              7: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '7 dias',
+                  style: TextStyle(
+                      color: _filter == 7 ? Colors.white : primaryColor),
+                ),
+              ),
+              14: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '14 dias',
+                  style: TextStyle(
+                      color: _filter == 14 ? Colors.white : primaryColor),
+                ),
+              ),
+              30: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '30 dias',
+                  style: TextStyle(
+                      color: _filter == 30 ? Colors.white : primaryColor),
+                ),
+              ),
+            },
+            onValueChanged: _onFilter,
           ),
         ),
         Visibility(
           visible: _chartData.isNotEmpty,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
             child: SizedBox(
-              height: 150,
+              height: 180,
               child: LineChartCustom(lineBarsData: _chartData),
             ),
           ),

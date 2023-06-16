@@ -123,7 +123,6 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   Future<void> _onSubmit() async {
-    debugPrint('submit');
     if (_validator()) {
       UtilService(context).loading('Salvando...');
 
