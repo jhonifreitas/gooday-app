@@ -36,8 +36,8 @@ class _IntroTwoPageState extends State<IntroTwoPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    'Somos profissionais com mais de 25 anos de experiência e renome '
-                    'no cuidado do diabetes.',
+                    'Somos profissionais com mais de 25 anos de experiência e '
+                    'renome no cuidado do diabetes.',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -45,14 +45,15 @@ class _IntroTwoPageState extends State<IntroTwoPage> {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     'Percebemos que pessoas com diabetes têm dificuldades em '
-                    'gerenciar o diabetes e precisam de orientações que vão além da '
-                    'consulta médica.',
+                    'gerenciar o diabetes e precisam de orientações que vão '
+                    'além da consulta médica.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 Text(
-                  'Nosso objetivo é fornecer essa assistência, auxiliando você na '
-                  'sua alimentação, atividades fisícas, monitorização e bem-star.',
+                  'Nosso objetivo é fornecer essa assistência, auxiliando '
+                  'você na sua alimentação, atividades físicas, monitorização '
+                  'e bem-estar.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
