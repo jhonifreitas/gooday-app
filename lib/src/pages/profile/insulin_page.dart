@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +26,6 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
   final _formKey = GlobalKey<FormState>();
   final _userInsulinCtrl = UserInsulinController();
 
-  bool _showError = false;
   bool _paramError24h = false;
 
   @override
@@ -68,7 +66,6 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
         _userInsulinCtrl.paramsCtrl.isNotEmpty && hourTotal >= 24;
 
     setState(() {
-      _showError = true;
       _paramError24h = hourTotal < 24;
     });
 
@@ -100,7 +97,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
     });
   }
 
-  void _onParam([int? index]) {
+  void _openParam([int? index]) {
     DateTime? minimum;
     DateTime? maximum;
     UserConfigInsulinParam? param;
@@ -175,7 +172,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
     );
   }
 
-  void _onParamRemove(int index) {
+  void _removeParam(int index) {
     setState(() {
       _userInsulinCtrl.paramsCtrl.removeAt(index);
     });
@@ -198,7 +195,7 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Vamos definir seus parâmentros de Insulina?',
+                    'Vamos definir seus parâmetros de Insulina?',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 10),
@@ -240,59 +237,22 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, left: 10, right: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Expanded(
-                                child: Text(
-                                  "Parâmetros",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 26,
-                                child: FilledButton.tonal(
-                                  onPressed: _onParam,
-                                  child: const Text(
-                                    'Adicionar',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              )
-                            ],
+                        const Padding(
+                          padding:
+                              EdgeInsets.only(top: 10, left: 10, right: 10),
+                          child: Text(
+                            "Parâmetros",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Visibility(
-                          visible: _userInsulinCtrl.paramsCtrl.isEmpty,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 10, left: 20, right: 20),
-                            child: Text(
-                              'Adicione um horário para ser mostrado aqui!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontStyle: FontStyle.italic,
-                                color: _showError &&
-                                        _userInsulinCtrl.paramsCtrl.isEmpty
-                                    ? Theme.of(context).colorScheme.error
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: _userInsulinCtrl.paramsCtrl.isNotEmpty,
-                          child: _InsulinParamList(
-                            params: _userInsulinCtrl.paramsCtrl,
-                            onSelected: _onParam,
-                            onRemoved: _onParamRemove,
-                          ),
+                        _InsulinParamList(
+                          params: _userInsulinCtrl.paramsCtrl,
+                          onAdd: _openParam,
+                          onEdit: _openParam,
+                          onRemoved: _removeParam,
                         ),
                         Visibility(
                           visible: _userInsulinCtrl.paramsCtrl.isNotEmpty &&
@@ -348,12 +308,14 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
 class _InsulinParamList extends StatelessWidget {
   const _InsulinParamList({
     required this.params,
-    required this.onSelected,
+    required this.onAdd,
+    required this.onEdit,
     required this.onRemoved,
   });
 
   final List<UserConfigInsulinParam> params;
-  final ValueChanged<int> onSelected;
+  final VoidCallback onAdd;
+  final ValueChanged<int> onEdit;
   final ValueChanged<int> onRemoved;
 
   @override
@@ -361,16 +323,24 @@ class _InsulinParamList extends StatelessWidget {
     return Material(
       color: Colors.grey.shade200,
       child: ListView.builder(
-        itemCount: params.length,
         primary: false,
         shrinkWrap: true,
+        itemCount: params.length + 1,
         padding: const EdgeInsets.symmetric(),
         itemBuilder: (context, index) {
+          if (params.length == index) {
+            return ListTile(
+              onTap: onAdd,
+              leading: const Icon(Icons.add_circle, color: Colors.green),
+              title: const Text('Adicionar novo parâmetro'),
+            );
+          }
+
           final param = params[index];
 
           return ListTile(
             minLeadingWidth: 20,
-            onTap: () => onSelected(index),
+            onTap: () => onEdit(index),
             title: Text(
               '${param.startTime} às ${param.endTime}',
               style: const TextStyle(
@@ -386,18 +356,11 @@ class _InsulinParamList extends StatelessWidget {
                 color: Colors.grey.shade600,
               ),
             ),
-            leading: SvgPicture.asset(
-              'assets/icons/edit-square.svg',
-              width: 20,
-              colorFilter: const ColorFilter.mode(
-                primaryColor,
-                BlendMode.srcIn,
-              ),
-            ),
-            trailing: IconButton(
+            leading: IconButton(
               icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
               onPressed: () => onRemoved(index),
             ),
+            trailing: const Icon(Icons.chevron_right),
           );
         },
       ),
