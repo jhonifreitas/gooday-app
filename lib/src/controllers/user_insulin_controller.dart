@@ -6,13 +6,9 @@ import 'package:gooday/src/models/user_model.dart';
 class UserInsulinController {
   final insulinCtrl = TextEditingController();
   final scaleCtrl = TextEditingController();
-  List<UserConfigInsulinTime> timesCtrl = [];
+  List<UserConfigInsulinParam> paramsCtrl = [];
 
   final List<Item> insulinList = const [
-    Item(id: 'NPH', name: 'NPH'),
-    Item(id: 'Lantus', name: 'Lantus'),
-    Item(id: 'Tresiba', name: 'Tresiba'),
-    Item(id: 'U300', name: 'U300'),
     Item(id: 'Apidra', name: 'Apidra'),
     Item(id: 'Humalog', name: 'Humalog'),
     Item(id: 'Novorapid', name: 'Novorapid'),
@@ -28,18 +24,18 @@ class UserInsulinController {
     if (user.config?.insulin != null) {
       insulinCtrl.text = user.config!.insulin!.insulin!;
       scaleCtrl.text = user.config!.insulin!.scale.toString();
-      timesCtrl = user.config!.insulin!.times;
+      paramsCtrl = user.config!.insulin!.params;
     }
   }
 
   Map<String, dynamic> clearValues() {
-    List<Map<String, dynamic>> times =
-        timesCtrl.map((val) => val.toJson()).toList();
+    List<Map<String, dynamic>> params =
+        paramsCtrl.map((val) => val.toJson()).toList();
 
     return {
       'insulin': insulinCtrl.text,
       'scale': double.parse(scaleCtrl.text),
-      'times': times,
+      'params': params,
     };
   }
 }

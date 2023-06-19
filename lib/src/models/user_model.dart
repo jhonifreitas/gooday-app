@@ -244,23 +244,23 @@ class UserConfigGlycemia {
 class UserConfigInsulin {
   String? insulin;
   double? scale;
-  List<UserConfigInsulinTime> times;
+  List<UserConfigInsulinParam> params;
 
   UserConfigInsulin({
     required this.insulin,
     required this.scale,
-    required this.times,
+    required this.params,
   });
 
   factory UserConfigInsulin.fromJson(Map<String, dynamic> json) {
-    final timeCast = (json['times'] as List<dynamic>? ?? []).cast();
-    final times =
-        timeCast.map((e) => UserConfigInsulinTime.fromJson(e)).toList();
+    final timeCast = (json['params'] as List<dynamic>? ?? []).cast();
+    final params =
+        timeCast.map((e) => UserConfigInsulinParam.fromJson(e)).toList();
 
     return UserConfigInsulin(
       insulin: json['insulin'],
       scale: json['scale'],
-      times: times,
+      params: params,
     );
   }
 
@@ -268,25 +268,25 @@ class UserConfigInsulin {
     return {
       'insulin': insulin,
       'scale': scale,
-      'times': times.map((e) => e.toJson()).toList(),
+      'params': params.map((e) => e.toJson()).toList(),
     };
   }
 }
 
-class UserConfigInsulinTime {
+class UserConfigInsulinParam {
   String startTime;
   String endTime;
   num fc;
   num ic;
 
-  UserConfigInsulinTime({
+  UserConfigInsulinParam({
     required this.startTime,
     required this.endTime,
     required this.fc,
     required this.ic,
   });
 
-  UserConfigInsulinTime.fromJson(Map<String, dynamic> json)
+  UserConfigInsulinParam.fromJson(Map<String, dynamic> json)
       : this(
           startTime: json['startTime'],
           endTime: json['endTime'],
