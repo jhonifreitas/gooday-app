@@ -1,14 +1,13 @@
-import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
-import 'package:gooday/src/models/alert_model.dart';
 import 'package:gooday/src/pages/alert/form_page.dart';
+import 'package:gooday/src/models/drug_alert_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
-import 'package:gooday/src/services/api/alert_service.dart';
+import 'package:gooday/src/services/api/drug_alert_service.dart';
 
 class AlertListPage extends StatefulWidget {
   const AlertListPage({required this.goToPage, super.key});
@@ -20,10 +19,9 @@ class AlertListPage extends StatefulWidget {
 }
 
 class _AlertListPageState extends State<AlertListPage> {
-  final _alertApi = AlertApiService();
+  final _alertApi = DrugAlertApiService();
 
-  DateTime _date = DateTime.now();
-  late Future<List<AlertModel>> _loadList;
+  late Future<List<DrugAlertModel>> _loadList;
 
   @override
   void initState() {
@@ -31,24 +29,13 @@ class _AlertListPageState extends State<AlertListPage> {
     super.initState();
   }
 
-  String get _getDateFullLabel {
-    final week = DateFormat('EEEE').format(_date);
-    final month = DateFormat('MMMM').format(_date);
-    return "$week, ${_date.day} de $month".toUpperCase();
-  }
-
-  String get _getDateLabel {
-    final month = DateFormat('MMMM').format(_date);
-    return "${_date.day} de $month";
-  }
-
-  Future<List<AlertModel>> _loadData() {
+  Future<List<DrugAlertModel>> _loadData() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.data!;
-    return _alertApi.getByDate(user.id!, _date);
+    return _alertApi.getAll(user.id!);
   }
 
-  Future<void> _openForm([AlertModel? alert]) async {
+  Future<void> _openForm([DrugAlertModel? alert]) async {
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -76,20 +63,6 @@ class _AlertListPageState extends State<AlertListPage> {
     });
   }
 
-  void _goToPrev() {
-    setState(() {
-      _date = _date.subtract(const Duration(days: 1));
-    });
-    _reloadData();
-  }
-
-  void _goToNext() {
-    setState(() {
-      _date = _date.add(const Duration(days: 1));
-    });
-    _reloadData();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -101,23 +74,6 @@ class _AlertListPageState extends State<AlertListPage> {
               prefix: SvgPicture.asset('assets/icons/bell.svg'),
               title: const Text('Lembrete de Medicamentos'),
               suffix: SvgPicture.asset(width: 20, 'assets/icons/coin.svg'),
-            ),
-            Container(
-              decoration: BoxDecoration(color: Colors.grey.shade300),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: _goToPrev,
-                    icon: const Icon(Icons.arrow_left),
-                  ),
-                  Text(_getDateFullLabel),
-                  IconButton(
-                    onPressed: _goToNext,
-                    icon: const Icon(Icons.arrow_right),
-                  )
-                ],
-              ),
             ),
             Expanded(
               child: FutureBuilder(
@@ -143,27 +99,7 @@ class _AlertListPageState extends State<AlertListPage> {
                         top: 20, bottom: 160, left: 20, right: 20),
                     itemBuilder: (context, index) {
                       final item = snapshot.data![index];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Hoje '.toUpperCase(),
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                                TextSpan(
-                                  text: '| $_getDateLabel',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _NotificationCard(data: item, onEdit: _openForm),
-                        ],
-                      );
+                      return _NotificationCard(data: item, onEdit: _openForm);
                     },
                   );
                 },
@@ -196,56 +132,80 @@ class _AlertListPageState extends State<AlertListPage> {
 class _NotificationCard extends StatelessWidget {
   const _NotificationCard({required this.data, required this.onEdit});
 
-  final AlertModel data;
-  final ValueChanged<AlertModel> onEdit;
+  final DrugAlertModel data;
+  final ValueChanged<DrugAlertModel> onEdit;
+
+  String get _getPeriodLabel {
+    if (data.period == 1) {
+      return 'Diário';
+    } else if (data.period == 2) {
+      return 'A cada 2 dias';
+    } else if (data.period == 3) {
+      return 'A cada 3 dias';
+    } else if (data.period == 5) {
+      return 'A cada 5 dias';
+    } else if (data.period == 7) {
+      return 'Semanal';
+    }
+
+    return '---';
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<_NotificationCardListTile> drugs = [];
+
+    for (final drug in data.drugs) {
+      final item = _NotificationCardListTile(drug: drug);
+      drugs.add(item);
+    }
+
     return Card(
       elevation: 0,
       clipBehavior: Clip.hardEdge,
       color: Colors.grey.shade200,
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            Container(
-              width: 100,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              decoration: const BoxDecoration(
-                border: Border(
-                  right: BorderSide(width: 1, color: Colors.grey),
+      child: InkWell(
+        onTap: () => onEdit(data),
+        splashColor: Colors.black.withAlpha(10),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Container(
+                width: 100,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: const BoxDecoration(
+                  border: Border(
+                    right: BorderSide(width: 1, color: Colors.grey),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      _getPeriodLabel,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: primaryColor,
+                      ),
+                    ),
+                    Text(
+                      data.time,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
                 ),
               ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Manhã',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: primaryColor,
-                    ),
-                  ),
-                  Text(
-                    data.time,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  _NotificationCardListTile(data: data, onEdit: onEdit),
-                  _NotificationCardListTile(data: data, onEdit: onEdit)
-                ],
-              ),
-            )
-          ],
+              Expanded(
+                child: Column(
+                  children: drugs,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -253,29 +213,20 @@ class _NotificationCard extends StatelessWidget {
 }
 
 class _NotificationCardListTile extends StatelessWidget {
-  const _NotificationCardListTile({required this.data, required this.onEdit});
+  const _NotificationCardListTile({required this.drug});
 
-  final AlertModel data;
-  final ValueChanged<AlertModel> onEdit;
+  final String drug;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        data.title,
+        drug,
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.normal,
         ),
       ),
-      subtitle: Text(
-        data.message,
-        style: const TextStyle(
-          fontSize: 12,
-          color: primaryColor,
-        ),
-      ),
-      onTap: () => onEdit(data),
     );
   }
 }

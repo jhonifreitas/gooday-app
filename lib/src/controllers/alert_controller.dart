@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'package:gooday/src/models/alert_model.dart';
+import 'package:gooday/src/common/item.dart';
+import 'package:gooday/src/models/drug_alert_model.dart';
 
-class AlertController {
-  final titleCtrl = TextEditingController();
-  final messageCtrl = TextEditingController();
+class DrugAlertController {
+  final periodCtrl = TextEditingController();
   final timeCtrl = TextEditingController();
+  List<String> drugsCtrl = [];
 
-  initData(AlertModel data) {
-    titleCtrl.text = data.title;
-    messageCtrl.text = data.message;
+  List<Item> periodList = const [
+    Item(id: '1', name: 'Diario'),
+    Item(id: '2', name: 'A cada 2 dias'),
+    Item(id: '3', name: 'A cada 3 dias'),
+    Item(id: '5', name: 'A cada 5 dias'),
+    Item(id: '7', name: 'Semanal'),
+  ];
+
+  initData(DrugAlertModel data) {
+    drugsCtrl = data.drugs;
+    periodCtrl.text = data.period.toString();
     timeCtrl.text = data.time;
+  }
+
+  int cleaPeriod() {
+    return int.parse(periodCtrl.text);
   }
 }

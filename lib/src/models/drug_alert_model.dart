@@ -1,15 +1,15 @@
 import 'package:gooday/src/models/base_model.dart';
 
-class AlertModel extends BaseModel {
+class DrugAlertModel extends BaseModel {
   String userId;
-  String title;
-  String message;
+  List<String> drugs;
+  int period;
   String time;
 
-  AlertModel({
+  DrugAlertModel({
     required this.userId,
-    this.title = '',
-    this.message = '',
+    this.drugs = const [],
+    this.period = 1,
     this.time = '',
     String? id,
     DateTime? createdAt,
@@ -22,13 +22,13 @@ class AlertModel extends BaseModel {
           deletedAt: deletedAt,
         );
 
-  factory AlertModel.fromJson(Map<String, dynamic> json) {
+  factory DrugAlertModel.fromJson(Map<String, dynamic> json) {
     final base = BaseModel.fromJson(json);
 
-    return AlertModel(
+    return DrugAlertModel(
       userId: json['userId'],
-      title: json['title'],
-      message: json['message'],
+      drugs: (json['drugs'] as List<dynamic>).cast(),
+      period: json['period'],
       time: json['time'],
       id: base.id,
       createdAt: base.createdAt,
@@ -41,8 +41,8 @@ class AlertModel extends BaseModel {
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     json['userId'] = userId;
-    json['title'] = title;
-    json['message'] = message;
+    json['drugs'] = drugs;
+    json['period'] = period;
     json['time'] = time;
     return json;
   }

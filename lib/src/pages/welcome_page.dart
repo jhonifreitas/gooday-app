@@ -20,7 +20,6 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  final double _temperature = 10;
   DateTime _now = DateTime.now();
   final _notificationApi = NotificationApiService();
 
@@ -74,7 +73,7 @@ class _WelcomePageState extends State<WelcomePage> {
               brightness: Brightness.dark,
               title: Image.asset(width: 80, 'assets/images/logo-white.png'),
               suffix: Text(
-                '$_temperature ºC | $_timeLabel',
+                _timeLabel,
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,

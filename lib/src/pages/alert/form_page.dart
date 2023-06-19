@@ -1,22 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/button.dart';
-import 'package:gooday/src/models/alert_model.dart';
+import 'package:gooday/src/widgets/drug_list.dart';
 import 'package:gooday/src/services/util_service.dart';
+import 'package:gooday/src/models/drug_alert_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/widgets/form/input_field.dart';
-import 'package:gooday/src/services/api/alert_service.dart';
+import 'package:gooday/src/widgets/form/dropdown_field.dart';
 import 'package:gooday/src/controllers/alert_controller.dart';
+import 'package:gooday/src/services/api/drug_alert_service.dart';
 
 class AlertFormPage extends StatefulWidget {
   const AlertFormPage({this.data, super.key});
 
-  final AlertModel? data;
+  final DrugAlertModel? data;
 
   @override
   State<AlertFormPage> createState() => _AlertFormPageState();
@@ -24,23 +26,28 @@ class AlertFormPage extends StatefulWidget {
 
 class _AlertFormPageState extends State<AlertFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _alertApi = AlertApiService();
-  final _alertCtrl = AlertController();
+  final _alertApi = DrugAlertApiService();
+  final _alertCtrl = DrugAlertController();
+  final _drugsCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    if (widget.data != null) _alertCtrl.initData(widget.data!);
+    if (widget.data != null) {
+      _alertCtrl.initData(widget.data!);
+      _drugsCtrl.text = _alertCtrl.drugsCtrl.join(', ');
+    }
   }
 
   Future<void> _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final data = widget.data ?? AlertModel(userId: userProvider.data!.id!);
+      final data =
+          widget.data ?? DrugAlertModel(userId: userProvider.data!.id!);
 
-      data.title = _alertCtrl.titleCtrl.text;
-      data.message = _alertCtrl.messageCtrl.text;
+      data.drugs = _alertCtrl.drugsCtrl;
+      data.period = int.parse(_alertCtrl.periodCtrl.text);
       data.time = _alertCtrl.timeCtrl.text;
 
       await _alertApi.save(data);
@@ -74,6 +81,31 @@ class _AlertFormPageState extends State<AlertFormPage> {
         UtilService(context).message('Alerta removido!');
       }
     }
+  }
+
+  void _onDrug(String id, bool selected) {
+    setState(() {
+      if (selected) {
+        _alertCtrl.drugsCtrl.add(id);
+      } else {
+        final index = _alertCtrl.drugsCtrl.indexWhere((drug) => drug == id);
+        _alertCtrl.drugsCtrl.removeAt(index);
+      }
+
+      _drugsCtrl.text = _alertCtrl.drugsCtrl.join(', ');
+    });
+  }
+
+  void _openDrug() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return DrugList(
+          onSelected: _onDrug,
+          selecteds: _alertCtrl.drugsCtrl,
+        );
+      },
+    );
   }
 
   void _onDate() {
@@ -143,16 +175,19 @@ class _AlertFormPageState extends State<AlertFormPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: InputField(
-                  label: 'Titúlo',
-                  controller: _alertCtrl.titleCtrl,
+                  label: 'Medicamentos',
+                  controller: _drugsCtrl,
                   isRequired: true,
+                  readOnly: true,
+                  onTap: _openDrug,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: InputField(
-                  label: 'Mensagem',
-                  controller: _alertCtrl.messageCtrl,
+                child: DropdownField(
+                  label: 'Período',
+                  options: _alertCtrl.periodList,
+                  controller: _alertCtrl.periodCtrl,
                   isRequired: true,
                 ),
               ),
