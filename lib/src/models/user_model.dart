@@ -244,11 +244,13 @@ class UserConfigGlycemia {
 class UserConfigInsulin {
   String? insulin;
   double? scale;
+  int? duration;
   List<UserConfigInsulinParam> params;
 
   UserConfigInsulin({
     required this.insulin,
     required this.scale,
+    required this.duration,
     required this.params,
   });
 
@@ -260,6 +262,7 @@ class UserConfigInsulin {
     return UserConfigInsulin(
       insulin: json['insulin'],
       scale: json['scale'],
+      duration: json['duration'],
       params: params,
     );
   }
@@ -268,6 +271,7 @@ class UserConfigInsulin {
     return {
       'insulin': insulin,
       'scale': scale,
+      'duration': duration,
       'params': params.map((e) => e.toJson()).toList(),
     };
   }

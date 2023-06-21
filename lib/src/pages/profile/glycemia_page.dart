@@ -21,6 +21,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
   late final UserProvider _userProvider;
   final _formKey = GlobalKey<FormState>();
 
+  bool _changed = false;
   final _userGlycemiaCtrl = UserGlycemiaController();
 
   @override
@@ -35,10 +36,14 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
   }
 
   Future<void> _onSubmit() async {
+    final user = _userProvider.data!;
+
+    if (!_changed && user.config?.glycemia != null) return _goToNext();
+
     if (_formKey.currentState!.validate()) {
       UtilService(context).loading('Salvando...');
 
-      final config = _userProvider.data!.config!.toJson();
+      final config = user.config!.toJson();
       final data = _userGlycemiaCtrl.clearValues();
 
       config['glycemia'] = data;
@@ -47,11 +52,21 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
       if (!mounted) return;
 
       context.pop();
-      context.pop();
-      context.push('/config/insulina');
+      _goToNext();
     } else {
       UtilService(context).message('Verifique os campos destacados!');
     }
+  }
+
+  void _onChange(String? value) {
+    setState(() {
+      _changed = true;
+    });
+  }
+
+  void _goToNext() {
+    context.pop();
+    context.push('/config/insulina');
   }
 
   @override
@@ -100,6 +115,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.beforeMealMinCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -111,6 +127,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller:
                                   _userGlycemiaCtrl.beforeMealNormalCtrl,
                               inputType: TextInputType.number,
@@ -123,6 +140,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.beforeMealMaxCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -142,6 +160,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.afterMealMinCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -153,6 +172,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.afterMealNormalCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -164,6 +184,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.afterMealMaxCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -183,6 +204,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.beforeSleepMinCtrl,
                               inputType: TextInputType.number,
                             ),
@@ -194,6 +216,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller:
                                   _userGlycemiaCtrl.beforeSleepNormalCtrl,
                               inputType: TextInputType.number,
@@ -206,6 +229,7 @@ class _GlycemiaConfigPageState extends State<GlycemiaConfigPage> {
                               hint: 'ml/g',
                               maxLength: 3,
                               isRequired: true,
+                              onChange: _onChange,
                               controller: _userGlycemiaCtrl.beforeSleepMaxCtrl,
                               inputType: TextInputType.number,
                             ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:gooday/src/models/base_model.dart';
 
 class GlycemiaModel extends BaseModel {

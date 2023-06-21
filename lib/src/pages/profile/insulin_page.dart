@@ -46,9 +46,9 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
       final endTimeList = param.endTime.split(':');
 
       final startHour = int.parse(startTimeList[0]);
-      final startMinute = int.parse(startTimeList[0]);
+      final startMinute = int.parse(startTimeList[1]);
       final endHour = int.parse(endTimeList[0]);
-      final endMinute = int.parse(endTimeList[0]);
+      final endMinute = int.parse(endTimeList[1]);
 
       final start =
           DateTime(now.year, now.month, now.day, startHour, startMinute);
@@ -189,24 +189,24 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
               iconBackColor: primaryColor,
               title: Image.asset('assets/images/logo.png', width: 80),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Vamos definir seus parâmetros de Insulina?',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                      'Informe os parametros receitados pelo seu '
-                      'endocrinologista',
-                      style: Theme.of(context).textTheme.bodySmall),
-                  const SizedBox(height: 10),
-                  Form(
-                    key: _formKey,
-                    child: Row(
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Vamos definir seus parâmetros de Insulina?',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                        'Informe os parametros receitados pelo seu '
+                        'endocrinologista',
+                        style: Theme.of(context).textTheme.bodySmall),
+                    const SizedBox(height: 10),
+                    Row(
                       children: [
                         Expanded(
                           child: DropdownField(
@@ -228,61 +228,68 @@ class _InsulinConfigPageState extends State<InsulinConfigPage> {
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(10),
+                    InputField(
+                      label: 'Tempo de ação da insulina',
+                      hint: 'min',
+                      isRequired: true,
+                      inputType: TextInputType.number,
+                      controller: _userInsulinCtrl.durationCtrl,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(top: 10, left: 10, right: 10),
-                          child: Text(
-                            "Parâmetros",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _InsulinParamList(
-                          params: _userInsulinCtrl.paramsCtrl,
-                          onAdd: _openParam,
-                          onEdit: _openParam,
-                          onRemoved: _removeParam,
-                        ),
-                        Visibility(
-                          visible: _userInsulinCtrl.paramsCtrl.isNotEmpty &&
-                              _paramError24h,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
+                    const SizedBox(height: 20),
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding:
+                                EdgeInsets.only(top: 10, left: 10, right: 10),
                             child: Text(
-                              'Os horários precisam constar 24 horas no total!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontStyle: FontStyle.italic,
-                                color: Theme.of(context).colorScheme.error,
+                              "Parâmetros",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _InsulinParamList(
+                            params: _userInsulinCtrl.paramsCtrl,
+                            onAdd: _openParam,
+                            onEdit: _openParam,
+                            onRemoved: _removeParam,
+                          ),
+                          Visibility(
+                            visible: _userInsulinCtrl.paramsCtrl.isNotEmpty &&
+                                _paramError24h,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                'Os horários precisam constar 24 horas no total!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "* FC - Fator de Correção",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Text(
-                    "* I/C - Relação Insulina/Carboidrato",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    Text(
+                      "* FC - Fator de Correção",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Text(
+                      "* I/C - Relação Insulina/Carboidrato",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
