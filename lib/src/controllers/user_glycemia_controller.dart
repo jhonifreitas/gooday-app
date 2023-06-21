@@ -15,40 +15,20 @@ class UserGlycemiaController {
 
   initData(UserModel user) {
     if (user.config?.glycemia != null) {
-      if (user.config!.glycemia!.beforeMealMin != null) {
-        beforeMealMinCtrl.text =
-            user.config!.glycemia!.beforeMealMin!.toString();
-      }
-      if (user.config!.glycemia!.beforeMealNormal != null) {
-        beforeMealNormalCtrl.text =
-            user.config!.glycemia!.beforeMealNormal!.toString();
-      }
-      if (user.config!.glycemia!.beforeMealMax != null) {
-        beforeMealMaxCtrl.text =
-            user.config!.glycemia!.beforeMealMax!.toString();
-      }
-      if (user.config!.glycemia!.afterMealMin != null) {
-        afterMealMinCtrl.text = user.config!.glycemia!.afterMealMin!.toString();
-      }
-      if (user.config!.glycemia!.afterMealNormal != null) {
-        afterMealNormalCtrl.text =
-            user.config!.glycemia!.afterMealNormal!.toString();
-      }
-      if (user.config!.glycemia!.afterMealMax != null) {
-        afterMealMaxCtrl.text = user.config!.glycemia!.afterMealMax!.toString();
-      }
-      if (user.config!.glycemia!.beforeSleepMin != null) {
-        beforeSleepMinCtrl.text =
-            user.config!.glycemia!.beforeSleepMin!.toString();
-      }
-      if (user.config!.glycemia!.beforeSleepNormal != null) {
-        beforeSleepNormalCtrl.text =
-            user.config!.glycemia!.beforeSleepNormal!.toString();
-      }
-      if (user.config!.glycemia!.beforeSleepMax != null) {
-        beforeSleepMaxCtrl.text =
-            user.config!.glycemia!.beforeSleepMax!.toString();
-      }
+      beforeMealMinCtrl.text = user.config!.glycemia!.beforeMealMin.toString();
+      beforeMealNormalCtrl.text =
+          user.config!.glycemia!.beforeMealNormal.toString();
+      beforeMealMaxCtrl.text = user.config!.glycemia!.beforeMealMax.toString();
+      afterMealMinCtrl.text = user.config!.glycemia!.afterMealMin.toString();
+      afterMealNormalCtrl.text =
+          user.config!.glycemia!.afterMealNormal.toString();
+      afterMealMaxCtrl.text = user.config!.glycemia!.afterMealMax.toString();
+      beforeSleepMinCtrl.text =
+          user.config!.glycemia!.beforeSleepMin.toString();
+      beforeSleepNormalCtrl.text =
+          user.config!.glycemia!.beforeSleepNormal.toString();
+      beforeSleepMaxCtrl.text =
+          user.config!.glycemia!.beforeSleepMax.toString();
     }
   }
 

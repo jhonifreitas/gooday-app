@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
@@ -9,11 +9,15 @@ import 'package:go_router/go_router.dart';
 import 'package:gooday/src/common/theme.dart';
 import 'package:gooday/src/widgets/appbar.dart';
 import 'package:gooday/src/widgets/timeline.dart';
+import 'package:gooday/src/models/user_model.dart';
 import 'package:gooday/src/models/meal_model.dart';
 import 'package:gooday/src/widgets/line_chart.dart';
+import 'package:gooday/src/models/insulin_model.dart';
 import 'package:gooday/src/models/glycemia_model.dart';
 import 'package:gooday/src/providers/user_provider.dart';
 import 'package:gooday/src/services/api/meal_service.dart';
+import 'package:gooday/src/services/api/insulin_service.dart';
+import 'package:gooday/src/pages/calculator/insulin_page.dart';
 import 'package:gooday/src/services/api/glycemia_service.dart';
 import 'package:gooday/src/pages/calculator/glycemia_page.dart';
 
@@ -27,32 +31,39 @@ class CalculatorListPage extends StatefulWidget {
 }
 
 class _CalculatorListPageState extends State<CalculatorListPage> {
+  late final UserProvider _userProvider;
+
   final _mealApi = MealApiService();
-  late Future<List<dynamic>> _loadList;
+  final _insulinApi = InsulinApiService();
   final _glycemiaApi = GlycemiaApiService();
+
+  List<dynamic> _items = [];
+  late Future<List<dynamic>> _loadList;
 
   int _filter = 7;
   List<LineChartBarData> _chartData = [];
 
   @override
   void initState() {
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
     _loadList = _loadData();
     super.initState();
   }
 
   Future<List<dynamic>> _loadData() async {
     final list = [];
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final user = userProvider.data!;
+    final user = _userProvider.data!;
 
     final end = DateTime.now();
     DateTime start = end.subtract(Duration(days: _filter));
 
     final glycemias = await _glycemiaApi.getByRangeDate(user.id!, start, end);
     final meals = await _mealApi.getByRangeDate(user.id!, start, end);
+    final insulins = await _insulinApi.getByRangeDate(user.id!, start, end);
 
     list.addAll(glycemias);
     list.addAll(meals);
+    list.addAll(insulins);
 
     list.sort((a, b) => b.date.compareTo(a.date));
 
@@ -64,7 +75,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
   void _loadChart(List<dynamic> list) {
     List<FlSpot> spots = [];
 
-    for (final item in list) {
+    final items = list.where((item) => item is! InsulinModel);
+    for (final item in items) {
       double value = 0.0;
       final dateTime = (item.date as DateTime);
       final double time = dateTime.millisecondsSinceEpoch.toDouble();
@@ -107,6 +119,21 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     });
   }
 
+  void _goToMealForm([String? id]) async {
+    String url = '/refeicao';
+
+    if (id != null) url += '/$id';
+
+    final result = await context.push(url);
+    if (result != null) {
+      _reloadData();
+
+      if (id == null && result is MealModel) {
+        _openInsulinForm(meal: result);
+      }
+    }
+  }
+
   void _openGlycemiaForm([GlycemiaModel? data]) async {
     final result = await showModalBottomSheet(
       context: context,
@@ -117,13 +144,90 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
     if (result != null) _reloadData();
   }
 
-  void _goToMealForm([String? id]) async {
-    String url = '/refeicao';
+  void _openInsulinForm({InsulinModel? data, MealModel? meal}) async {
+    num? insulinActive;
+    num? valueRecommended;
 
-    if (id != null) url += '/$id';
+    if (data == null && _items.isNotEmpty) {
+      num cho = 0;
+      num calories = 0;
+      num glycemia = 0;
+      DateTime date = DateTime.now();
 
-    final result = await context.push(url);
+      meal ??= _items.firstWhere((item) => item is MealModel,
+          orElse: () => null) as MealModel?;
+
+      if (meal != null) {
+        date = meal.date;
+        glycemia = meal.glycemia;
+        cho = meal.foods.fold(0.0, (prev, value) => prev + value.cho);
+        calories = meal.foods.fold(0.0, (prev, value) => prev + value.calories);
+      }
+
+      final result = _insulinCalc(
+          date: date, glycemia: glycemia, cho: cho, calories: calories);
+      if (result.active > 0) insulinActive = result.active;
+      if (result.recommended > 0) valueRecommended = result.recommended;
+    }
+
+    final result = await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return InsulinPage(
+          data: data,
+          insulinActive: insulinActive,
+          valueRecommended: valueRecommended,
+        );
+      },
+    );
     if (result != null) _reloadData();
+  }
+
+  InsulinCalc _insulinCalc({
+    required DateTime date,
+    required num glycemia,
+    required num cho,
+    required num calories,
+  }) {
+    final result = InsulinCalc();
+    final now = DateTime.now();
+
+    if (_userProvider.data?.config?.insulin != null &&
+        _userProvider.data?.config?.glycemia != null) {
+      final insulinConfig = _userProvider.data!.config!.insulin!;
+      final glycemiaConfig = _userProvider.data!.config!.glycemia!;
+      final duration = Duration(minutes: insulinConfig.duration);
+
+      result.active = _items
+          .where((item) =>
+              item is InsulinModel && item.date.add(duration).isAfter(now))
+          .fold(0.0, (prev, cur) {
+        final item = (cur as InsulinModel);
+        final endDate = item.date.add(duration);
+        final valueInMin = item.value / insulinConfig.duration;
+        final diff = endDate.difference(now);
+        final value = valueInMin * diff.inMinutes;
+        return prev + value;
+      });
+
+      final param = insulinConfig.params
+          .cast<UserConfigInsulinParam?>()
+          .firstWhere((param) {
+        final startTime = int.parse(param!.startTime.replaceAll(':', ''));
+        final endTime = int.parse(param.endTime.replaceAll(':', ''));
+        final timeDate = int.parse('${date.hour}${date.minute}');
+
+        return startTime >= timeDate && endTime <= timeDate;
+      }, orElse: () => null);
+
+      if (param != null && cho > 0 && glycemia > 0) {
+        result.recommended = (cho / param.ic) - result.active;
+        result.recommended +=
+            (glycemia - glycemiaConfig.beforeMealNormal) / param.fc;
+      }
+    }
+
+    return result;
   }
 
   void _onFilter(int? value) {
@@ -146,6 +250,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
       _openGlycemiaForm(item);
     } else if (item is MealModel) {
       _goToMealForm(item.id);
+    } else if (item is InsulinModel) {
+      _openInsulinForm(data: item);
     }
   }
 
@@ -176,9 +282,13 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
       } else if (MealType.snack == item.type) {
         return 'Lanche';
       }
+    } else if (item is GlycemiaModel) {
+      return 'Glicemia';
+    } else if (item is InsulinModel) {
+      return 'Insulina';
     }
 
-    return 'Glicemia';
+    return '---';
   }
 
   String _getDescription(dynamic item) {
@@ -200,9 +310,12 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
           '${caloriesStr}kcal Calorias | '
           '$sizeStr(g/ml) Peso | '
           '$glycemiaStr(mg/dL) Glicemia';
+    } else if (item is InsulinModel) {
+      final valueStr = NumberFormat().format(item.value);
+      return '$valueStr(uni)';
     }
 
-    return '';
+    return '---';
   }
 
   String _getIcon(dynamic item) {
@@ -216,6 +329,8 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
       } else if (MealType.snack == item.type) {
         return 'assets/icons/fruits.svg';
       }
+    } else if (item is InsulinModel) {
+      return 'assets/icons/syringe.svg';
     }
 
     return 'assets/icons/water.svg';
@@ -250,46 +365,35 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                     ),
                     child: InkWell(
                       onTap: _goToMealForm,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: Image.asset('assets/images/betty-intro.png',
-                                width: 70),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/meal.svg',
-                                  colorFilter: const ColorFilter.mode(
-                                    Colors.white,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                const Text(
-                                  'Calcular',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const Text(
-                                  'Refeição',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/meal.svg',
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Calcular',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Text(
+                              'Refeição',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -324,6 +428,47 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                         ),
                         const Text(
                           'Glicemia',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              Material(
+                elevation: 10,
+                color: secondaryColor,
+                clipBehavior: Clip.hardEdge,
+                borderRadius: BorderRadius.circular(10),
+                child: InkWell(
+                  onTap: _openInsulinForm,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/syringe.svg',
+                          height: 40,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Aplicar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const Text(
+                          'Insulina',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -417,6 +562,7 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                 );
               }
 
+              _items = snapshot.data!;
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 padding: const EdgeInsets.only(bottom: 60),

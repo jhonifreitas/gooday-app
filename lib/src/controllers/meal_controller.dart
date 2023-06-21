@@ -7,8 +7,8 @@ class MealController {
   final typeCtrl = TextEditingController();
   final glycemiaCtrl = TextEditingController();
   List<MealFood> foodListCtrl = [];
-  DateTime dateCtrl = DateTime.now().add(
-    Duration(minutes: 5 - DateTime.now().minute % 5),
+  DateTime dateCtrl = DateTime.now().subtract(
+    Duration(minutes: DateTime.now().minute % 5),
   );
 
   final List<Item> typeList = [

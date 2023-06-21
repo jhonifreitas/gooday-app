@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -70,9 +70,10 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
   }
 
   void _onDate() {
-    DateTime initialDateTime = DateTime.now().add(
-      Duration(minutes: 5 - DateTime.now().minute % 5),
+    final maximumDate = DateTime.now().subtract(
+      Duration(minutes: DateTime.now().minute % 5),
     );
+    DateTime initialDateTime = maximumDate;
     if (_glycemiaCtrl.dateCtrl.text.isNotEmpty) {
       initialDateTime =
           DateFormat('dd/MM/yyyy HH:mm').parse(_glycemiaCtrl.dateCtrl.text);
@@ -80,7 +81,7 @@ class _GlycemiaPageState extends State<GlycemiaPage> {
 
     UtilService(context).dateTimePicker(
       minuteInterval: 5,
-      maximumDate: DateTime.now(),
+      maximumDate: maximumDate,
       initialDateTime: initialDateTime,
       mode: CupertinoDatePickerMode.dateAndTime,
       onChange: (dateTime) {

@@ -23,7 +23,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
   final _youtubeCtrl = YoutubePlayerController(initialVideoId: 'S_bnutPbyWc');
 
   void _openWebsite() async {
-    final url = Uri.parse('https://google.com.br');
+    final url = Uri.parse('https://gooday.care');
     launchUrl(url);
   }
 
@@ -38,7 +38,7 @@ class _IntroThreePageState extends State<IntroThreePage> {
   }
 
   void _openInstagram() {
-    final url = Uri.parse('https://instagram.com.br');
+    final url = Uri.parse('https://www.instagram.com/gooday.care');
     launchUrl(url);
   }
 

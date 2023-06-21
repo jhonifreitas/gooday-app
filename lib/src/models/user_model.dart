@@ -160,10 +160,10 @@ class UserConfig {
 }
 
 class UserConfigGoal {
-  num? steps;
-  num? distance;
-  num? calories;
-  num? exerciseTime;
+  num steps;
+  num distance;
+  num calories;
+  num exerciseTime;
 
   UserConfigGoal({
     this.steps = 0,
@@ -191,15 +191,15 @@ class UserConfigGoal {
 }
 
 class UserConfigGlycemia {
-  int? beforeMealMin;
-  int? beforeMealNormal;
-  int? beforeMealMax;
-  int? afterMealMin;
-  int? afterMealNormal;
-  int? afterMealMax;
-  int? beforeSleepMin;
-  int? beforeSleepNormal;
-  int? beforeSleepMax;
+  int beforeMealMin;
+  int beforeMealNormal;
+  int beforeMealMax;
+  int afterMealMin;
+  int afterMealNormal;
+  int afterMealMax;
+  int beforeSleepMin;
+  int beforeSleepNormal;
+  int beforeSleepMax;
 
   UserConfigGlycemia({
     this.beforeMealMin = 0,
@@ -242,9 +242,9 @@ class UserConfigGlycemia {
 }
 
 class UserConfigInsulin {
-  String? insulin;
-  double? scale;
-  int? duration;
+  String insulin;
+  double scale;
+  int duration;
   List<UserConfigInsulinParam> params;
 
   UserConfigInsulin({

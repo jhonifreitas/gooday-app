@@ -182,9 +182,12 @@ class _MealFormPageState extends State<MealFormPage> {
   }
 
   void _onDateTime() {
+    final maximumDate = DateTime.now().subtract(
+      Duration(minutes: DateTime.now().minute % 5),
+    );
     UtilService(context).dateTimePicker(
       minuteInterval: 5,
-      maximumDate: DateTime.now(),
+      maximumDate: maximumDate,
       initialDateTime: _mealCtrl.dateCtrl,
       mode: CupertinoDatePickerMode.dateAndTime,
       onChange: (dateTime) => setState(() => _mealCtrl.dateCtrl = dateTime),
