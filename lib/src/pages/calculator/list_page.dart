@@ -504,7 +504,9 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                 child: Text(
                   '24h',
                   style: TextStyle(
-                      color: _filter == 1 ? Colors.white : primaryColor),
+                    fontSize: 12,
+                    color: _filter == 1 ? Colors.white : primaryColor,
+                  ),
                 ),
               ),
               7: Padding(
@@ -512,7 +514,9 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                 child: Text(
                   '7 dias',
                   style: TextStyle(
-                      color: _filter == 7 ? Colors.white : primaryColor),
+                    fontSize: 12,
+                    color: _filter == 7 ? Colors.white : primaryColor,
+                  ),
                 ),
               ),
               14: Padding(
@@ -520,7 +524,9 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                 child: Text(
                   '14 dias',
                   style: TextStyle(
-                      color: _filter == 14 ? Colors.white : primaryColor),
+                    fontSize: 12,
+                    color: _filter == 14 ? Colors.white : primaryColor,
+                  ),
                 ),
               ),
               30: Padding(
@@ -528,7 +534,9 @@ class _CalculatorListPageState extends State<CalculatorListPage> {
                 child: Text(
                   '30 dias',
                   style: TextStyle(
-                      color: _filter == 30 ? Colors.white : primaryColor),
+                    fontSize: 12,
+                    color: _filter == 30 ? Colors.white : primaryColor,
+                  ),
                 ),
               ),
             },
